@@ -1,1 +1,1 @@
-"# msci-342-project" 
+# MSCI 342 Project
