@@ -14,7 +14,6 @@
     "node-fetch": "^2.6.1",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
-    "react-dom": "^16.8.6",
     "react-gsap": "^1.2.0",
     "react-hot-loader": "^4.12.19",
     "react-redux": "^7.1.0",
@@ -28,7 +27,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "jest",
+    "cypress": "cypress open",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -45,5 +45,16 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.20.2",
+    "@babel/preset-react": "^7.18.6",
+    "@testing-library/react": "^12.1.2",
+    "babel-jest": "^24.9.0",
+    "cypress": "^10.9.0",
+    "jest": "^24.9.0",
+    "react-dom": "^16.8.6",
+    "react-test-renderer": "^16.8.6",
+    "ts-jest": "^29.0.5"
   }
 }
