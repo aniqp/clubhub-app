@@ -186,7 +186,6 @@ const UserName = () => {
         <p>{user.displayName}</p>
         <p>{user.email}</p>
         <p>{user.uid}</p>
-        <p>{token && token['Authorization']}</p>
       </>
     ) : 'No user'}</div>
   </>
