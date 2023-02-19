@@ -7,7 +7,7 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import { SignIn } from '../SignIn';
-import { useAuthHeader, useUser } from '../Firebase';
+import { useUser } from '../Firebase';
 import { SignOut } from '../SignOut';
 import { Hello } from '../Hello';
 
@@ -179,7 +179,6 @@ Home.propTypes = {
 
 const UserName = () => {
   const user = useUser()
-  const token = useAuthHeader()
   return (<>
     <div>{user ? (
       <>
