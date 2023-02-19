@@ -25,6 +25,6 @@ export function useAuth(auth) {
       clearTimeout(intervalId);
     };
   }, [user]);
-
+  
   return { tokenRef };
 }

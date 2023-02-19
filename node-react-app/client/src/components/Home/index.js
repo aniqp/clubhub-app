@@ -9,6 +9,7 @@ import Paper from "@material-ui/core/Paper";
 import { SignIn } from '../SignIn';
 import { useAuthHeader, useUser } from '../Firebase';
 import { SignOut } from '../SignOut';
+import { Hello } from '../Hello';
 
 
 //Dev mode
@@ -161,6 +162,7 @@ class Home extends Component {
           >
             <SignIn />
             <SignOut />
+            <Hello/>
             <UserName />
             {mainMessage}
           </Paper>
