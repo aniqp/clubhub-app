@@ -1,36 +1,17 @@
-import app from 'firebase/app';
-import 'firebase/auth';
+import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
-  //Enter your firebase API details
-  };
-class Firebase {
-  constructor() {
-    app.initializeApp(firebaseConfig);
-    this.auth = app.auth();
-  }
-  
-  // *** Auth API ***
+  apiKey: "AIzaSyAxvoOYI41pvvi7Vdye2CuivU-4tL2Gm-M",
+  authDomain: "clunhouse-msci342.firebaseapp.com",
+  projectId: "clunhouse-msci342",
+  storageBucket: "clunhouse-msci342.appspot.com",
+  messagingSenderId: "36409040893",
+  appId: "1:36409040893:web:4f9d4dcfd272c19aac0394"
+};
 
-  doCreateUserWithEmailAndPassword = (email, password) =>
-  this.auth.createUserWithEmailAndPassword(email, password);
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app)
 
-  doSignInWithEmailAndPassword = (email, password) =>
-  this.auth.signInWithEmailAndPassword(email, password);
 
-  doSignOut = () => this.auth.signOut();
-
-  doPasswordReset = email => this.auth.sendPasswordResetEmail(email);
-
-  doPasswordUpdate = password =>
-    this.auth.currentUser.updatePassword(password);
-
-  doGetIdToken = (bool) => {
-    return this.auth.currentUser.getIdToken(/* forceRefresh */ bool);
-  }
-
-  doGetUserByEmail = email => this.auth.getUserByEmail(email);
-
-}
-
-export default Firebase;
+export { auth, app }

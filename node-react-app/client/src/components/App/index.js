@@ -1,43 +1,36 @@
-import React, { Component } from 'react';
+import React, { createContext } from 'react';
 import {
-  BrowserRouter as Router,
-  Route,
-  Link,
+  BrowserRouter as Router
 } from 'react-router-dom';
 
 import Home from '../Home';
 import PrivateRoute from '../Navigation/PrivateRoute.js';
+import { useAuth, auth } from '../Firebase';
+import { UserContext } from '../Firebase/context';
+import { useAuthState } from 'react-firebase-hooks/auth';
 
+export const authContext = createContext(null);
 
+const App = () => {
 
-class App extends Component {
-  constructor(props) {
-    super(props);
+  const { tokenRef } = useAuth(auth)
 
-    this.state = {
-      //
-    };
-  }
+  const authHeader = { Authorization: `Bearer ${tokenRef.current}` }
 
-  componentDidMount() {
-    //
-  }
+  const [user] = useAuthState(auth)
 
-
-  componentWillUnmount() {
-    this.listener();
-  }
-
-
-  render() {
-    return (
-	  <Router>
-	    <div>
-        <PrivateRoute exact path="/" component={Home}/>
-	    </div>
-	  </Router>
-    );
-  }
+  return (
+    <Router>
+      <authContext.Provider value={authHeader}>
+        <UserContext.Provider value={user ?? null}>
+          <div>
+            <PrivateRoute exact path="/" component={Home} />
+          </div>
+        </UserContext.Provider>
+      </authContext.Provider>
+    </Router >
+  )
 }
+
 
 export default App;

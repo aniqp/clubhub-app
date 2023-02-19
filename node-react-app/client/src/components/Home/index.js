@@ -6,6 +6,9 @@ import { MuiThemeProvider, createTheme } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
+import { SignIn } from '../SignIn';
+import { useUser } from '../Firebase';
+import { SignOut } from '../SignOut';
 
 
 //Dev mode
@@ -156,6 +159,9 @@ class Home extends Component {
           <Paper
             className={classes.paper}
           >
+            <SignIn />
+            <SignOut />
+            <UserName />
             {mainMessage}
           </Paper>
 
@@ -168,5 +174,20 @@ class Home extends Component {
 Home.propTypes = {
   classes: PropTypes.object.isRequired
 };
+
+const UserName = () => {
+  const user = useUser()
+  return (<>
+    <div>{user ? (
+      <>
+        <p>{user.displayName}</p>
+        <p>{user.email}</p>
+        <p>{user.uid}</p>
+      </>
+    ) : 'No user'}</div>
+  </>
+  )
+}
+
 
 export default withStyles(styles)(Home);

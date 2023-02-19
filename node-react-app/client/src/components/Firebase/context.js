@@ -1,11 +1,10 @@
-import React from 'react';
+import { createContext, useContext } from "react";
 
-const FirebaseContext = React.createContext(null);
+export const UserContext = createContext(null);
 
-export const withFirebase = Component => props => (
-  <FirebaseContext.Consumer>
-    {firebase => <Component {...props} firebase={firebase} />}
-  </FirebaseContext.Consumer>
-);
-
-export default FirebaseContext;
+/**
+ * Hook to return currently authenticated user as provided by the /me endpoint.
+ */
+export function useUser() {
+  return useContext(UserContext);
+}

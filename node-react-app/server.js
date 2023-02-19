@@ -4,14 +4,46 @@ const fetch = require('node-fetch');
 const express = require("express");
 const path = require("path");
 const bodyParser = require("body-parser");
+const admin = require('firebase-admin')
 
-const { response } = require('express');
+admin.initializeApp()
 const app = express();
 const port = process.env.PORT || 5000;
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 app.use(express.static(path.join(__dirname, "client/build")));
+
+
+app.use(decodeIDToken);
+// Middleware to decode Bearer Token 
+// if logged, in Firebase user added to req['currentUser']
+async function decodeIDToken(req, res, next) {
+	if (req.headers?.authorization?.startsWith('Bearer ')) {
+		const idToken = req.headers.authorization.split('Bearer ')[1];
+
+		try {
+			const decodedToken = await admin.auth().verifyIdToken(idToken);
+			req['currentUser'] = decodedToken;
+		} catch (err) {
+			console.log(err);
+		}
+	}
+
+	next();
+}
+
+/** Example of using user authentication: */
+app.get('/hello', (req, res) => {
+
+    const user = req['currentUser'];
+
+    if (!user) { 
+        res.status(403).send('You must be logged in!');
+    } else{
+		console.log(user)
+	}
+})
 
 
 app.post('/api/loadUserSettings', (req, res) => {
