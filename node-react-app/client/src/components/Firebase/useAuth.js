@@ -11,7 +11,7 @@ export function useAuth(auth) {
 
   useEffect(() => {
     async function updateToken() {
-      const token = await user?.getIdToken();
+      const token = user && await user.getIdToken();
       if (token) {
         tokenRef.current = token;
       }

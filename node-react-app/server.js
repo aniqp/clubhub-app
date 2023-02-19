@@ -4,9 +4,15 @@ const fetch = require('node-fetch');
 const express = require("express");
 const path = require("path");
 const bodyParser = require("body-parser");
-const admin = require('firebase-admin')
 
-admin.initializeApp()
+var admin = require("firebase-admin");
+
+var serviceAccount = require("./serviceAccountKey.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+
 const app = express();
 const port = process.env.PORT || 5000;
 app.use(bodyParser.json({ limit: '50mb' }));
@@ -17,7 +23,7 @@ app.use(express.static(path.join(__dirname, "client/build")));
 
 app.use(decodeIDToken);
 // Middleware to decode Bearer Token 
-// if logged, in Firebase user added to req['currentUser']
+// if logged in, Firebase user added to req['currentUser']
 async function decodeIDToken(req, res, next) {
 	if (req.headers?.authorization?.startsWith('Bearer ')) {
 		const idToken = req.headers.authorization.split('Bearer ')[1];
@@ -41,7 +47,8 @@ app.get('/hello', (req, res) => {
     if (!user) { 
         res.status(403).send('You must be logged in!');
     } else{
-		console.log(user)
+		console.log(`${user.displayName} said hello`)
+		res.send(`Hello ${user.name}`)
 	}
 })
 
