@@ -39,6 +39,12 @@ def generatePage(num: int) -> str:
 
 
 
-print(parsePage(generatePage(4)))
+clubs = []
+for i in range(1, 19):
+    clubs = clubs + parsePage(generatePage(i))
 
-# data = pandas.DataFrame(clubs)
+data = pandas.DataFrame(clubs)
+
+print(data)
+
+data.to_csv('clubList.csv')
