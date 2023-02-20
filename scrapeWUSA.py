@@ -1,19 +1,20 @@
 import requests
 from bs4 import BeautifulSoup
 import pandas
+import csv
 
 CATEGORIES = [
-    'academic',
-    'business-and-entrepreneurial',
-    'charitable-community-service-international-development',
-    'creative-arts-dance-and-music',
-    'cultural',
-    'environmental-and-sustainability',
-    'games-recreational-and-social',
-    'health-promotion',
-    'media-publications-and-web-development',
-    'political-and-social-awareness',
-    'religious-and-spiritual'
+    ('academic', 5),
+    ('business-and-entrepreneurial', 2),
+    ('charitable-community-service-international-development', 4),
+    ('creative-arts-dance-and-music', 4),
+    ('cultural', 5),
+    ('environmental-and-sustainability', 1),
+    ('games-recreational-and-social', 6),
+    ('health-promotion', 3),
+    ('media-publications-and-web-development', 2),
+    ('political-and-social-awareness', 3),
+    ('religious-and-spiritual', 2)
 ]
 
 
@@ -23,23 +24,27 @@ def parseClub(card):
     descriptionTag = card.find(class_='read-more-text')
     description = '\n\n'.join([tag.text for tag in descriptionTag.find_all('p')])
 
-    return {'title': title, 'description': description}
+    return {'name': title, 'categories': '', 'description': description}
 
 def getTitle(card):
     title = card.find('h4').text.strip()
     return title
 
 def parseCategory(category):
-    url = generatePage(category)
+    clubs = []
+    for i in range(1, category[1] + 1):
+        url = f"https://clubs.wusa.ca/club_listings/{category[0]}?page={str(i)}"
+        print(url)
+        r = requests.get(url)
+        res = r.text
 
-    r = requests.get(url)
-    res = r.text
+        soup = BeautifulSoup(res, 'html.parser')
 
-    soup = BeautifulSoup(res, 'html.parser')
+        cards = soup.find_all(class_="card")
 
-    cards = soup.find_all(class_="card")
-
-    clubs = [{'club': getTitle(c), 'category': category } for c in cards]
+        newClubs = [{'club': getTitle(c), 'category': category[0] } for c in cards]
+        print(newClubs)
+        clubs = clubs + newClubs
     
     return clubs
 
@@ -72,12 +77,7 @@ def getAllClubs():
     for i in range(1, 19):
         clubs = clubs + parsePage(generatePage(i))
 
-    data = pandas.DataFrame(clubs)
-
-    # print(data)
-    # data.to_csv('clubList.csv')
-
-    return data
+    return clubs
 
 def getCategories():
     categoryMappings = []
@@ -91,4 +91,27 @@ def attributeCategories():
     clubList = getAllClubs()
     categoryMap = getCategories()
 
-pandas.DataFrame(getCategories()).to_csv('categories.csv')
+def mapCategoriesToList():
+    data = getCategories()
+    results = {}        
+    for entry in data:
+        if entry['club'] in results:
+            results[entry['club']] = results.get(entry['club']) + f",{entry['category']}"
+        else:
+            results[entry['club']] = f"{entry['category']}"
+    
+    clubList = getAllClubs()
+    for club in clubList:
+        if club['name'] in results:
+            club['categories'] = results[club['name']]
+    
+    pandas.DataFrame(clubList).to_csv('clublist.csv', index=False, quotechar='"', header=None, quoting=csv.QUOTE_NONNUMERIC)
+
+    
+    mapList = [{'club': k, 'categories': v} for k, v in results.items()]
+    return mapList
+            
+        
+
+pandas.DataFrame(mapCategoriesToList()).to_csv('categoryMap.csv')
+# pandas.DataFrame(getCategories()).to_csv('categories.csv')
