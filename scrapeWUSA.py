@@ -2,6 +2,20 @@ import requests
 from bs4 import BeautifulSoup
 import pandas
 
+CATEGORIES = [
+    'academic',
+    'business-and-entrepreneurial',
+    'charitable-community-service-international-development',
+    'creative-arts-dance-and-music',
+    'cultural',
+    'environmental-and-sustainability',
+    'games-recreational-and-social',
+    'health-promotion',
+    'media-publications-and-web-development',
+    'political-and-social-awareness',
+    'religious-and-spiritual'
+]
+
 
 def parseClub(card):
     title = card.find('h4').text.strip()
@@ -11,7 +25,23 @@ def parseClub(card):
 
     return {'title': title, 'description': description}
 
+def getTitle(card):
+    title = card.find('h4').text.strip()
+    return title
 
+def parseCategory(category):
+    url = generatePage(category)
+
+    r = requests.get(url)
+    res = r.text
+
+    soup = BeautifulSoup(res, 'html.parser')
+
+    cards = soup.find_all(class_="card")
+
+    clubs = [{'club': getTitle(c), 'category': category } for c in cards]
+    
+    return clubs
 
 def parsePage(url):
     r = requests.get(url)
@@ -32,19 +62,33 @@ def parsePage(url):
     return clubs
 
 
-def generatePage(num: int) -> str:
+def generatePage(val):
     base = 'https://clubs.wusa.ca/club_listings'
     query = '?page='
-    return base + query + str(num)
+    return base + query + str(val)
+
+def getAllClubs():
+    clubs = []
+    for i in range(1, 19):
+        clubs = clubs + parsePage(generatePage(i))
+
+    data = pandas.DataFrame(clubs)
+
+    # print(data)
+    # data.to_csv('clubList.csv')
+
+    return data
+
+def getCategories():
+    categoryMappings = []
+    for category in CATEGORIES:
+        clubs = parseCategory(category)
+        categoryMappings = categoryMappings + clubs
+    return categoryMappings
 
 
+def attributeCategories():
+    clubList = getAllClubs()
+    categoryMap = getCategories()
 
-clubs = []
-for i in range(1, 19):
-    clubs = clubs + parsePage(generatePage(i))
-
-data = pandas.DataFrame(clubs)
-
-print(data)
-
-data.to_csv('clubList.csv')
+pandas.DataFrame(getCategories()).to_csv('categories.csv')
