@@ -1,34 +1,4 @@
-create DATABASE clubhouse;
-
--- Create users table
-CREATE TABLE `users` (
-	`uid` VARCHAR(255),
-	`name` VARCHAR(255),
-	`email` VARCHAR(255),
-	PRIMARY KEY (`uid`)
-);
-
--- Create clubs table
-CREATE TABLE `clubs` (
-	`id` INT NOT NULL AUTO_INCREMENT,
-	`name` VARCHAR(255),
-	`description` TEXT,
-	PRIMARY KEY (`id`)
-);
-
---Create memberships table
-CREATE TABLE `memberships` (
-	`uid` VARCHAR(255) NOT NULL,
-	`club_id` INT NOT NULL,
-	`role` ENUM("pending", "user", "admin", "owner"),
-	`title` VARCHAR(255) NOT NULL,
-	PRIMARY KEY (`uid`,`club_id`),
-	FOREIGN KEY (`uid`) REFERENCES users(uid),
-	FOREIGN KEY (`club_id`) REFERENCES clubs(id)
-);
-
---Populate clubs table with clubs from WUSA
-INSERT INTO `clubs` (name, description) VALUES ("A Cappella Club","The UW A Cappella Club is the umbrella club of all a cappella groups at the University of Waterloo! UWACC was founded in 2008 originally with one ensemble and has since expanded to include many different groups including the AcaBellas, the Unaccompanied Minors, ACE, the Musical InterDudes, the Water Boys, and In Full Colour. 
+("A Cappella Club","The UW A Cappella Club is the umbrella club of all a cappella groups at the University of Waterloo! UWACC was founded in 2008 originally with one ensemble and has since expanded to include many different groups including the AcaBellas, the Unaccompanied Minors, ACE, the Musical InterDudes, the Water Boys, and In Full Colour. 
 
 The Water Boys
 The Water Boys is a lower-voice auditioned group.
