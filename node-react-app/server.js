@@ -5,13 +5,65 @@ const express = require("express");
 const path = require("path");
 const bodyParser = require("body-parser");
 
-const { response } = require('express');
+var admin = require("firebase-admin");
+
+var serviceAccount = require("./serviceAccountKey.json");
+
+admin.initializeApp({
+	credential: admin.credential.cert(serviceAccount)
+});
+
 const app = express();
 const port = process.env.PORT || 5000;
+
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 app.use(express.static(path.join(__dirname, "client/build")));
+
+
+// Allow localhost to make calls to API
+app.use((req, res, next) => {
+	// console.log(req.headers.origin)
+	if (req.headers.origin?.includes('://localhost:')) {
+		// console.log('Accepted')
+		res.header('Access-Control-Allow-Origin', req.headers.origin)
+		res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
+		res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+	}
+	next()
+})
+
+app.use(decodeIDToken);
+// Middleware to decode Bearer Token 
+// if logged in, Firebase user added to req['currentUser']
+async function decodeIDToken(req, res, next) {
+	if (req.headers?.authorization?.startsWith('Bearer ')) {
+		const idToken = req.headers.authorization.split('Bearer ')[1];
+
+		try {
+			const decodedToken = await admin.auth().verifyIdToken(idToken);
+			req['currentUser'] = decodedToken;
+		} catch (err) {
+			console.log(err);
+		}
+	}
+
+	next();
+}
+
+/** Example of using user authentication: */
+app.get('/hello', (req, res) => {
+
+	const user = req['currentUser'];
+
+	if (!user) {
+		res.status(403).send('You must be logged in to say hello!');
+	} else {
+		console.log(`${user.name} said hello`)
+		res.header('Access-Control-Allow-Origin: ').send(`Hello ${user.name}!`)
+	}
+})
 
 
 app.post('/api/loadUserSettings', (req, res) => {

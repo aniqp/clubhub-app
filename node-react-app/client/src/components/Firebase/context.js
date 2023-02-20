@@ -1,11 +1,19 @@
-import React from 'react';
+import { createContext, useContext } from "react";
 
-const FirebaseContext = React.createContext(null);
+export const UserContext = createContext(null);
 
-export const withFirebase = Component => props => (
-  <FirebaseContext.Consumer>
-    {firebase => <Component {...props} firebase={firebase} />}
-  </FirebaseContext.Consumer>
-);
+/**
+ * Hook to return currently authenticated user as provided by Firebase
+ */
+export function useUser() {
+  return useContext(UserContext);
+}
 
-export default FirebaseContext;
+export const AuthHeaderContext = createContext(null);
+
+/**
+ * Hook to return authentication header for http requests
+ */
+export function useAuthHeader() {
+  return useContext(AuthHeaderContext);
+}
