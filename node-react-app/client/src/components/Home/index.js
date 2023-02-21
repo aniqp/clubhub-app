@@ -10,6 +10,7 @@ import { SignIn } from '../SignIn';
 import { useUser } from '../Firebase';
 import { SignOut } from '../SignOut';
 import { Hello } from '../Hello';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
 
 //Dev mode
@@ -154,8 +155,21 @@ class Home extends Component {
 
 
     return (
+      //render the navbar
+      
+
       <MuiThemeProvider theme={theme}>
         <div className={classes.root}>
+        {/* <Router>
+          <Navbar />
+          <Switch>
+            <Route path='/' exact component={Home} />
+            <Route path='/signin' component={SignIn} />
+            <Route path='/signout' component={SignOut} />
+            <Route path='/hello' component={Hello} />
+        </Switch>
+        </Router> */}
+          
           <CssBaseline />
           <Paper
             className={classes.paper}
