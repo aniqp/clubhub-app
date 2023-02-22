@@ -39,7 +39,6 @@ const Navbar = () => {
                     <div className={classes.navlinks}>
                         
                         <SignIn />
-                        <SignOut />
                         
                         <Link to="/" className={classes.link}>
                             {refreshPage}
