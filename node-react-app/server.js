@@ -66,7 +66,10 @@ app.get('/hello', (req, res) => {
 	}
 })
 
-app.put('api/login', (req, res) => {
+app.put('/api/login', (req, res) => {
+	
+	const user = req['currentUser'];
+
 	if (!user) {
 		res.status(403).send('You are not logged in');
 	} else {
