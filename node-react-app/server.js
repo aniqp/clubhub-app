@@ -8,6 +8,7 @@ const bodyParser = require("body-parser");
 var admin = require("firebase-admin");
 
 var serviceAccount = require("./serviceAccountKey.json");
+const { user } = require('./config.js');
 
 admin.initializeApp({
 	credential: admin.credential.cert(serviceAccount)
@@ -64,6 +65,48 @@ app.get('/hello', (req, res) => {
 		res.header('Access-Control-Allow-Origin: ').send(`Hello ${user.name}!`)
 	}
 })
+
+app.put('api/login', (req, res) => {
+	if (!user) {
+		res.status(403).send('You are not logged in');
+	} else {
+		// Initialize connection to db
+		let connection = mysql.createConnection(config);
+
+
+		// SQL Query to upsert user in database
+		const {uid, name, email} = user;
+
+		console.log(`User: ${name} logged in`);
+		
+		const sql =
+		`
+		SET
+			@uid = ?,
+			@name = ?,
+			@email = ?;
+		INSERT INTO users
+			(uid, name, email)
+		Values
+			(@uid, @name, @email)
+		ON DUPLICATE KEY UPDATE
+			uid = @uid,
+			name = @name,
+			email = @email;
+		`;
+		const data = [uid, name, email, uid, name, email]
+
+		connection.query(sql, data, (error, results, fields) => {
+			if (error) {
+				return console.error(error.message);
+			}
+			res.status(200).send('Logged in, user updated');
+		})
+		connection.end();
+
+	}
+}
+)
 
 
 app.post('/api/loadUserSettings', (req, res) => {
