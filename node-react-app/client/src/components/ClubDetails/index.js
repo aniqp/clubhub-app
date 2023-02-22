@@ -182,11 +182,14 @@ ClubDetails.propTypes = {
 
 const Details = () => {
 
+    const [clubTitle, setClubTitle] = React.useState()
+    const [clubDescription, setClubDescription] = React.useState("")
+
     const { clubID } = useParams();
 
     React.useEffect(() => {
         getClubs();
-      }, []);
+    }, []);
 
     const getClubs = () => {
         callApiGetClubs()
@@ -194,10 +197,12 @@ const Details = () => {
                 console.log("callApiGetClubs returned: ", res)
                 var parsed = JSON.parse(res.express);
                 console.log("callApiGetClubs: ", parsed);
+                setClubTitle(parsed[0].name)
+                setClubDescription(parsed[0].description)
             })
     }
 
-     const callApiGetClubs = async () => {
+    const callApiGetClubs = async () => {
         const url = serverURL + '/api/getClubs';
         const response = await fetch(url, {
             method: "POST",
@@ -218,80 +223,68 @@ const Details = () => {
     return (
         <Box>
             <Typography variant='h3' align="inherit">
-                Club 1
+                {clubTitle}
             </Typography>
             <br></br>
-            <Grid container spacing={2}>
-                <Grid item xs={6}>
+            <Grid container spacing={4} direction = "column">
+                <Grid item xs={9}>
                     <Item>
                         <Card
                             variant="outlined">
                             <CardHeader title="Description" />
                             <CardContent>
                                 <Typography variant='body2' color='textPrimary'>
-                                    Club 1 is fun, Club 1 is fun,Club 1 is fun,Club 1 is fun,Club 1 is fun,Club 1 is fun,Club 1 is fun,
-                                    Club 1 is fun,Club 1 is fun,Club 1 is fun,Club 1 is fun,
+                                    {clubDescription}
                                 </Typography>
                             </CardContent>
                         </Card>
                     </Item>
                 </Grid>
-                <Grid item xs={4}>
-                    <Item>
-                        <Card
-                            variant="outlined" >
-                            <CardHeader title="Additional Information" />
-                            <CardContent>
-                                <Typography variant='body2' color='textPrimary'>
-                                    New members should read the documentation.
-                                </Typography>
-                            </CardContent>
-                        </Card>
-                    </Item>
-                </Grid>
-                <Grid item xs={3}>
-                    <Item>
-                        <Card variant="outlined">
-                        <CardMedia
-                                sx={{ height: 140 }}
-                                image = {require ("../../images/bliss.png")}
-                                title="placeholder"
-                                alt='unsplash image'
-                            />
-                            <CardHeader title="Photo"/>
-                            <CardContent>
-                                <Typography variant='body2' color='textPrimary'>
-                                    Placeholder
-                                </Typography>
-                            </CardContent>
-                        </Card>
-                    </Item>
-                </Grid>
-                <Grid item xs={3}>
-                    <Item>
-                        <Card
-                            variant="outlined" >
-                            <CardHeader title="Photo" />
-                            <CardContent>
-                                <Typography variant='body2' color='textPrimary'>
-                                    Placeholder
-                                </Typography>
-                            </CardContent>
-                        </Card>
-                    </Item>
-                </Grid>
-                <Grid item xs={3}>
-                    <Item>
-                        <Card
-                            variant="outlined" >
-                            <CardHeader title="Photo" />
-                            <CardContent>
-                                <Typography variant='body2' color='textPrimary'>
-                                    Placeholder
-                                </Typography>
-                            </CardContent>
-                        </Card>
-                    </Item>
+                <Grid container direction = "row" spacing = {2}>
+                    <Grid item xs={3}>
+                        <Item>
+                            <Card variant="outlined">
+                                <CardMedia
+                                    sx={{ height: 140 }}
+                                    image={require("../../images/bliss.png")}
+                                    title="placeholder"
+                                    alt='unsplash image'
+                                />
+                                <CardHeader title="Photo" />
+                                <CardContent>
+                                    <Typography variant='body2' color='textPrimary'>
+                                        Placeholder
+                                    </Typography>
+                                </CardContent>
+                            </Card>
+                        </Item>
+                    </Grid>
+                    <Grid item xs={3}>
+                        <Item>
+                            <Card
+                                variant="outlined" >
+                                <CardHeader title="Photo" />
+                                <CardContent>
+                                    <Typography variant='body2' color='textPrimary'>
+                                        Placeholder
+                                    </Typography>
+                                </CardContent>
+                            </Card>
+                        </Item>
+                    </Grid>
+                    <Grid item xs={3}>
+                        <Item>
+                            <Card
+                                variant="outlined" >
+                                <CardHeader title="Photo" />
+                                <CardContent>
+                                    <Typography variant='body2' color='textPrimary'>
+                                        Placeholder
+                                    </Typography>
+                                </CardContent>
+                            </Card>
+                        </Item>
+                    </Grid>
                 </Grid>
             </Grid>
         </Box>
