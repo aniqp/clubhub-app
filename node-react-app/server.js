@@ -8,7 +8,6 @@ const bodyParser = require("body-parser");
 var admin = require("firebase-admin");
 
 var serviceAccount = require("./serviceAccountKey.json");
-const { user } = require('./config.js');
 
 admin.initializeApp({
 	credential: admin.credential.cert(serviceAccount)
@@ -93,9 +92,10 @@ app.put('/api/login', (req, res) => {
 
 		connection.query(sql, data, (error, results, fields) => {
 			if (error) {
+				res.status(500).send('could not make database request');
 				return console.error(error.message);
 			}
-			res.status(200).send('Logged in, user updated');
+			res.status(201).send('Logged in, user updated');
 		})
 		connection.end();
 
