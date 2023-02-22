@@ -84,20 +84,12 @@ app.put('/api/login', (req, res) => {
 		
 		const sql =
 		`
-		SET
-			@uid = ?,
-			@name = ?,
-			@email = ?;
-		INSERT INTO users
-			(uid, name, email)
-		Values
-			(@uid, @name, @email)
-		ON DUPLICATE KEY UPDATE
-			uid = @uid,
-			name = @name,
-			email = @email;
+		INSERT INTO users (uid, name, email)
+		VALUES (?, ?, ?)
+		ON DUPLICATE KEY 
+		UPDATE name = ?, email = ?;
 		`;
-		const data = [uid, name, email, uid, name, email]
+		const data = [uid, name, email, name, email]
 
 		connection.query(sql, data, (error, results, fields) => {
 			if (error) {
