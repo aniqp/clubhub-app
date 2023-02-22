@@ -51,7 +51,6 @@ const Navbar = () => {
                         <Link to="/explore" className={classes.link}>
                             Explore
                         </Link>
-
                     </div>
                 </Toolbar>
             </AppBar>

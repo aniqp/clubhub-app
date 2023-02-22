@@ -88,6 +88,27 @@ app.post('/api/loadUserSettings', (req, res) => {
 	connection.end();
 });
 
+app.post('/api/getClubs', (req, res) => {
+
+	let connection = mysql.createConnection(config)
+	let clubID = req.body.clubID
+
+	let sql = `SELECT name, description
+	FROM clubs
+	WHERE clubs.id = ${clubID}`;
+
+	console.log(sql);
+
+	connection.query(sql, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message);
+		}
+		let string = JSON.stringify(results)
+		res.send({ express: string })
+	});
+	connection.end();
+});
+
 
 
 app.listen(port, () => console.log(`Listening on port ${port}`)); //for the dev version
