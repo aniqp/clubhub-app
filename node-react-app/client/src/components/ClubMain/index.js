@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import { makeStyles } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { MuiThemeProvider, createTheme } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
@@ -16,51 +16,42 @@ import Box from "@material-ui/core/Box";
 import { CardHeader } from '@material-ui/core';
 import Item from '@material-ui/core/Grid';
 import { useParams } from 'react-router-dom';
+import SideBar from './Sidebar';
+import AnnouncementPost from './AnnouncementPost';
 
 const classes = {
     root:{
         textAlign: "center",
+        margin:'20px 10px 0 10px'
     },
     
 }
 
 const ClubMain = () => {
 
-    return(
+    return (
         <div style={classes.root}>
             <Grid
             container
-            spacing={2}
+            spacing={5}
             >
-                <Grid item xs>
-                    <h3>Announcements</h3>
-                    <Announcement />
+                <Grid item xs={8}>
+                    <Typography variant="div" component="h1">
+                        ANNOUNCEMENTS
+                    </Typography>
+                    <AnnouncementPost />
+                    <AnnouncementPost />
+                    <AnnouncementPost />
+                    <AnnouncementPost />
+                    <AnnouncementPost />
+                    <AnnouncementPost />
                 </Grid>
-                <Grid item xs style={{border:'1px green solid'}}>
-                    <h3>Polls</h3>
-                </Grid>
-                <Grid item xs style={{border:'1px pink solid'}}>
-                    <h3>Sidebar</h3>
+                <Grid item xs={4}>
+                    <SideBar />
                 </Grid>
             </Grid>
-            
         </div>
-
     )
 }
-
-const Announcement = () => {
-    return(
-        <Grid item style={{padding:'8px', background:'grey', padding:'5px', borderRadius:'10px', margin:'10px'}}>
-            <Box style={{background:'white', margin:'10px'}}>
-                Announcement Title
-            </Box>
-            <Box style={{background:'white', margin:'10px', padding:'5px', textAlign:'left'}}>
-                Announcement Content
-            </Box>
-        </Grid>
-    )
-}
-
 
 export default ClubMain;
