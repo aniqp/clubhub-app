@@ -65,6 +65,44 @@ app.get('/hello', (req, res) => {
 	}
 })
 
+app.put('/api/login', (req, res) => {
+	
+	const user = req['currentUser'];
+
+	if (!user) {
+		res.status(403).send('You are not logged in');
+	} else {
+		// Initialize connection to db
+		let connection = mysql.createConnection(config);
+
+
+		// SQL Query to upsert user in database
+		const {uid, name, email} = user;
+
+		console.log(`User: ${name} logged in`);
+		
+		const sql =
+		`
+		INSERT INTO users (uid, name, email)
+		VALUES (?, ?, ?)
+		ON DUPLICATE KEY 
+		UPDATE name = ?, email = ?;
+		`;
+		const data = [uid, name, email, name, email]
+
+		connection.query(sql, data, (error, results, fields) => {
+			if (error) {
+				res.status(500).send('could not make database request');
+				return console.error(error.message);
+			}
+			res.status(201).send('Logged in, user updated');
+		})
+		connection.end();
+
+	}
+}
+)
+
 
 app.post('/api/loadUserSettings', (req, res) => {
 

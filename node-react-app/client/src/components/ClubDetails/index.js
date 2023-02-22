@@ -8,7 +8,6 @@ import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import { SignIn } from '../SignIn';
 import { useUser } from '../Firebase';
-import { SignOut } from '../SignOut';
 import { Hello } from '../Hello';
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
@@ -166,7 +165,6 @@ class ClubDetails extends Component {
                         className={classes.paper}
                     >
                         <SignIn />
-                        <SignOut />
                         <Hello />
                         {/* <UserName /> */}
                         {mainMessage}
