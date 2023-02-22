@@ -8,7 +8,6 @@ import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import { SignIn } from '../SignIn';
 import { useUser } from '../Firebase';
-import { SignOut } from '../SignOut';
 import { Hello } from '../Hello';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
@@ -165,7 +164,6 @@ class Home extends Component {
           <Switch>
             <Route path='/' exact component={Home} />
             <Route path='/signin' component={SignIn} />
-            <Route path='/signout' component={SignOut} />
             <Route path='/hello' component={Hello} />
         </Switch>
         </Router> */}
@@ -175,7 +173,6 @@ class Home extends Component {
             className={classes.paper}
           >
             <SignIn />
-            <SignOut />
             <Hello/>
             <UserName />
             {mainMessage}
