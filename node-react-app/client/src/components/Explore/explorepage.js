@@ -6,6 +6,9 @@ const ExplorePage = () => {
         <div>
         <h1>Explore Page</h1>
         <Link to="/">Home</Link>
+        {/* <p>
+        <Link to = "club-details">Club Details</Link>
+        </p> */}
         </div>
     );
     }

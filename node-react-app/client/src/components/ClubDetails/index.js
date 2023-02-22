@@ -16,6 +16,7 @@ import CardMedia from "@material-ui/core/CardMedia";
 import Box from "@material-ui/core/Box";
 import { CardHeader } from '@material-ui/core';
 import Item from '@material-ui/core/Grid';
+import { useParams } from 'react-router-dom';
 
 
 //Dev mode
@@ -182,6 +183,40 @@ ClubDetails.propTypes = {
 };
 
 const Details = () => {
+
+    const { clubID } = useParams();
+
+    React.useEffect(() => {
+        getClubs();
+      }, []);
+
+    const getClubs = () => {
+        callApiGetClubs()
+            .then(res => {
+                console.log("callApiGetClubs returned: ", res)
+                var parsed = JSON.parse(res.express);
+                console.log("callApiGetClubs: ", parsed);
+            })
+    }
+
+     const callApiGetClubs = async () => {
+        const url = serverURL + '/api/getClubs';
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                //authorization: `Bearer ${this.state.token}`
+            },
+            body: JSON.stringify({
+                clubID: clubID
+            })
+        });
+        const body = await response.json();
+        if (response.status !== 200) throw Error(body.message);
+        console.log("Searched club: ", body);
+        return body;
+    }
+
     return (
         <Box>
             <Typography variant='h3' align="inherit">
@@ -198,7 +233,6 @@ const Details = () => {
                                 <Typography variant='body2' color='textPrimary'>
                                     Club 1 is fun, Club 1 is fun,Club 1 is fun,Club 1 is fun,Club 1 is fun,Club 1 is fun,Club 1 is fun,
                                     Club 1 is fun,Club 1 is fun,Club 1 is fun,Club 1 is fun,
-
                                 </Typography>
                             </CardContent>
                         </Card>
@@ -222,7 +256,7 @@ const Details = () => {
                         <Card variant="outlined">
                         <CardMedia
                                 sx={{ height: 140 }}
-                                image="../../../images/bliss.png"
+                                image = {require ("../../images/bliss.png")}
                                 title="placeholder"
                                 alt='unsplash image'
                             />

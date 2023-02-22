@@ -12,8 +12,9 @@ export default function PrivateRoute({
 
     <Router history={history}>
       <Switch>
-      <Route path="/" exact component={Home} />
-      <Route path="/clubdetails" exact component={ClubDetails} />
+        <Route path="/" exact component={Home} />
+        <Route path="/club-details" exact component={ClubDetails} />
+        <Route path = "/clubs/:clubID" exact component = {ClubDetails}/>
       </Switch>
     </Router>
   );
