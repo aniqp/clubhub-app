@@ -4,19 +4,7 @@ import Typography from "@material-ui/core/Typography";
 import { useParams } from 'react-router-dom';
 import SideBar from './Sidebar';
 import AnnouncementPost from './AnnouncementPost';
-import Box from "@material-ui/core/Box";
-import Button from "@material-ui/core/Button";
-import { createMuiTheme } from '@material-ui/core';
 import AnnouncementForm from '../AnnouncementForm.js';
-
-
-const theme = createMuiTheme({
-    typography: {
-        button:{
-            textTransform:'none'
-        }
-    }
-})
 
 const classes = {
     root:{
@@ -24,7 +12,6 @@ const classes = {
     },
     
 }
-
 const serverURL = ""; 
 
 const ClubMain = () => {
@@ -40,18 +27,22 @@ const ClubMain = () => {
         }
     };
 
-    console.log(toggle);
     React.useEffect(() => {
         getClubAnnouncements();
         getClubTitle();
     }, []);
 
+    React.useEffect(() => {
+        getClubAnnouncements();
+    }, [clubAnnouncements]);
+
+
     const getClubTitle = () => {
         callApiGetClubs()
             .then(res => {
-                console.log("callApiGetClubs returned: ", res)
+                // console.log("callApiGetClubs returned: ", res)
                 var parsed = JSON.parse(res.express);
-                console.log("callApiGetClubs: ", parsed);
+                // console.log("callApiGetClubs: ", parsed);
                 setClubTitle(parsed[0].name)
             })
     }
@@ -70,11 +61,11 @@ const ClubMain = () => {
         });
         const body = await response.json();
         if (response.status !== 200) throw Error(body.message);
-        console.log("Searched club: ", body);
         return body;
     }
 
     const getClubAnnouncements = () => {
+        console.log('updating announcements!!!!')
     
         callApiGetClubAnnouncements()
             .then(res => {
@@ -100,7 +91,7 @@ const ClubMain = () => {
         if (response.status !== 200) throw Error(body.message);
         return body;
     }
-
+    console.log(clubAnnouncements);
     return (
         <div style={classes.root}>
             <Grid
@@ -126,7 +117,7 @@ const ClubMain = () => {
                 </Grid>
                 <Grid item xs={4} style={{padding:'0px'}}>
                     <SideBar value={toggle} handleToggle={handleToggle} />
-                    {toggle === '1' && <AnnouncementForm />}
+                    {toggle === '1' && <AnnouncementForm clubID={clubID} onChange={getClubAnnouncements} />}
                 </Grid>
             </Grid>
         </div>
@@ -134,15 +125,3 @@ const ClubMain = () => {
 }
 
 export default ClubMain;
-
-// {(clubAnnouncements.length > 0) ? (<>
-//     {Object.values(clubAnnouncements).map((announcement, index) => (
-//         <>
-//             <AnnouncementPost />
-            
-//             Hello
-
-//         </>
-//     ))}
-//     </> ) : (<Typography variant={'h6'}><b>No Announcements</b></Typography>)
-// } 

@@ -135,7 +135,7 @@ app.post('/api/getClubs', (req, res) => {
 	FROM clubs
 	WHERE clubs.id = ${clubID}`;
 
-	console.log(sql);
+	//console.log(sql);
 
 	connection.query(sql, (error, results, fields) => {
 		if (error) {
@@ -154,7 +154,8 @@ app.post('/api/getClubAnnouncements', (req,res) => {
 
 	let sql = `SELECT a.title, a.body, a.time_posted 
 	from announcements as a, clubs as c 
-	where c.id = a.club_id and c.id = ${clubID}`;
+	where c.id = a.club_id and c.id = ${clubID}
+	order by time_posted desc;`;
 
 	//console.log(sql);
 	
@@ -165,13 +166,38 @@ app.post('/api/getClubAnnouncements', (req,res) => {
 		}
 		let string = JSON.stringify(results)
 		res.send({ express: string })
-		console.log(string)
+		//console.log(string)
 	});
 	connection.end();
 
 
 });
 
+app.post('/api/postAnnouncement', (req, res) => {
+    let connection = mysql.createConnection(config);
+    let data = req.body;
+
+    let sql = `INSERT into announcements (club_id, title, body, time_posted)
+	values(?,?,?,?)`
+    let announcement = [data.clubID, data.title, data.body, data.time_posted]
+
+    connection.query(sql, announcement, (error, results, fields) => {
+        if (error) {
+            connection.query(`ROLLBACK`, dataEmpty, (error, results, fields) => {
+                let string = JSON.stringify('Error')
+                res.send({ express: string });
+                connection.end();
+            });
+        } else {
+            connection.query(`COMMIT`, data, (error, results, fields) => {
+                let string = JSON.stringify('Success')
+                res.send({ express: string });
+                connection.end();
+            })
+        };
+    })
+
+});
 
 app.listen(port, () => console.log(`Listening on port ${port}`)); //for the dev version
 //app.listen(port, '129.97.25.211'); //for the deployed version, specify the IP address of the server
