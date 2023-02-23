@@ -16,7 +16,7 @@ export default function PrivateRoute({
         <Route path="/" exact component={Home} />
         <Route path="/club-details" exact component={ClubDetails} />
         <Route path = "/clubs/:clubID" exact component = {ClubDetails}/>
-        <Route path = "/club-main" exact component = {ClubMain}/>
+        <Route path = "/club-space/:clubID" exact component = {ClubMain}/>
       </Switch>
     </Router>
   );

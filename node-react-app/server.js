@@ -147,6 +147,30 @@ app.post('/api/getClubs', (req, res) => {
 	connection.end();
 });
 
+app.post('/api/getClubAnnouncements', (req,res) => {
+
+	let connection = mysql.createConnection(config);
+	let clubID = req.body.clubID;
+
+	let sql = `SELECT a.title, a.body, a.time_posted 
+	from announcements as a, clubs as c 
+	where c.id = a.club_id and c.id = ${clubID}`;
+
+	//console.log(sql);
+	
+
+	connection.query(sql, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message);
+		}
+		let string = JSON.stringify(results)
+		res.send({ express: string })
+		console.log(string)
+	});
+	connection.end();
+
+
+});
 
 
 app.listen(port, () => console.log(`Listening on port ${port}`)); //for the dev version
