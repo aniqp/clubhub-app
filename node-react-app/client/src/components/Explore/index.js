@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { Button, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Card, CardContent, Typography, FormControl, MenuItem, InputLabel, Select } from "@material-ui/core";
+import {TextField, FormControl, MenuItem, InputLabel, Select } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
-import Box from "@material-ui/core/Box";
 import ClubCard from "./ClubCard";
 import ReactPaginate from "react-paginate";
 
@@ -44,9 +43,9 @@ const ExplorePage = () => {
     const getClubs = () => {
       fetchClubs()
         .then(res => {
-          console.log("fetchClubs returned: ", res)
+          // console.log("fetchClubs returned: ", res)
           var parsed = JSON.parse(res.express);
-          console.log("fetchClubs: ", parsed);
+          // console.log("fetchClubs: ", parsed);
           setClubs(parsed);
           //console.log("clubs: ", clubs)
           return parsed;
@@ -66,7 +65,7 @@ const ExplorePage = () => {
         });
 
         const data = await response.json();
-        console.log(data);
+        // console.log(data);
         return data;
       } catch (error) {
         console.error(error);
