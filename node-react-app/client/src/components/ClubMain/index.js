@@ -7,6 +7,7 @@ import AnnouncementPost from './AnnouncementPost';
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
 import { createMuiTheme } from '@material-ui/core';
+import AnnouncementForm from '../AnnouncementForm.js';
 
 
 const theme = createMuiTheme({
@@ -125,6 +126,7 @@ const ClubMain = () => {
                 </Grid>
                 <Grid item xs={4} style={{padding:'0px'}}>
                     <SideBar value={toggle} handleToggle={handleToggle} />
+                    {toggle === '1' && <AnnouncementForm />}
                 </Grid>
             </Grid>
         </div>
