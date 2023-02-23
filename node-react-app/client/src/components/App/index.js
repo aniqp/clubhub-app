@@ -1,7 +1,7 @@
 import React, { useCallback, useState, useEffect } from 'react';
 
 import Home from '../Home';
-import ExplorePage from '../Explore/explorepage';
+import ExplorePage from '../Explore/index';
 import ClubDetails from '../ClubDetails'
 import Navbar from '../GlobHeader/navbar';
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";

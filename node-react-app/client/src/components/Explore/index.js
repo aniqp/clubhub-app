@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Button, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Card, CardContent, Typography, FormControl, MenuItem, InputLabel, Select } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
+import ClubCard from "./ClubCard";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -32,8 +33,9 @@ const useStyles = makeStyles((theme) => ({
 
 const ExplorePage = () => {
     const [clubs, setClubs] = useState([]);
-    // console.log("clubs: ", clubs)
-    // console.log("clubs[0]", clubs[0])
+    const [currentPage, setCurrentPage] = useState(1);
+    const [postsPerPage, setPostsPerPage] = useState(10);
+
     useEffect(() => {
       getClubs();
     }, []);
@@ -104,14 +106,6 @@ const ExplorePage = () => {
 
   );
 
-  const truncate = (input) => {
-    // console.log('input' + input);
-    if (input.length > 100) {
-       return input.substring(0, 200) + '...';
-    }
-    return input;
-  };
-
   const categoryFormat = (input) => {
     input = input.replace(/-/g, ' ');
     return input
@@ -160,16 +154,7 @@ const ExplorePage = () => {
       </Grid>
       <Grid container style={{ display:'flex', flexDirection:'column'}}>
         {filteredClubs.map((club) => (
-          <Card variant="outlined" style={{margin:'0 0 20px 0',padding:'10px', display:'flex', flexDirection:'row', justifyContent:'space-between'}}>
-            <Grid item xs={8}>
-              <Typography variant='h6' style={{padding:'0 0 10px 0'}}>{club.name}</Typography>
-              <Typography style={{fontSize:'0.8rem'}}>{truncate(club.description)}</Typography>
-            </Grid>
-            <Grid item xs={3} style={{display:'flex', flexDirection:'column', justifyContent:'space-around'}}>
-              <Button color='primary' variant='outlined'>Club Details</Button>
-              <Button color='secondary' variant='outlined'>Join Club</Button>
-            </Grid>
-          </Card>
+          <ClubCard club={club}/>
         ))}
       </Grid>
     </div>
