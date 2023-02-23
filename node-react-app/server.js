@@ -141,13 +141,36 @@ app.post('/api/getClubs', (req, res) => {
 		if (error) {
 			return console.error(error.message);
 		}
-		let string = JSON.stringify(results)
+		let string = JSON.stringify(results);
 		res.send({ express: string })
 	});
 	connection.end();
 });
 
 
+app.post('/api/getAllClubs', (req, res) => {
+	// Query all clubs from the clubs table
+	let connection = mysql.createConnection(config)
+	const query = `SELECT * FROM clubs`;
+	console.log(query)
+	connection.query(query, (error, results, fields) => {
+	  if (error) {
+		// Return an error if the query failed
+		res.status(500).json({ error: error.message });
+	  } else {
+		// Return the results as JSON
+		let string = JSON.stringify(results);
+		res.setHeader('Content-Type', 'application/json');
+		res.send({express: string});
+		//res.send( results);
+	  }
+	});
+	connection.end();
+  });
+
+  app.get('/api/testing', (req, res) => {
+	res.send('This is a test API endpoint');
+  });
 
 app.listen(port, () => console.log(`Listening on port ${port}`)); //for the dev version
 //app.listen(port, '129.97.25.211'); //for the deployed version, specify the IP address of the server
