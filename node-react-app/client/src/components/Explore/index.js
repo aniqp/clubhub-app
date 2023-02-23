@@ -4,6 +4,7 @@ import { Button, TextField, Table, TableBody, TableCell, TableContainer, TableHe
 import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
 import ClubCard from "./ClubCard";
+import ReactPaginate from "react-paginate";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -33,8 +34,8 @@ const useStyles = makeStyles((theme) => ({
 
 const ExplorePage = () => {
     const [clubs, setClubs] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [postsPerPage, setPostsPerPage] = useState(10);
+    const [currentPage, setCurrentPage] = useState(0);
+    const [clubsPerPage, setClubsPerPage] = useState(4);
 
     useEffect(() => {
       getClubs();
@@ -92,23 +93,28 @@ const ExplorePage = () => {
   ];
   const handleChange = (event) => {
     setCategoryFilter(event.target.value);
+    setCurrentPage(0);
   };
   const classes = useStyles();
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
+    setCurrentPage(0);
   };
 
   const filteredClubs = clubs.filter((club) =>
     club.name.toLowerCase().includes(searchTerm.toLowerCase()) && 
     (categoryFilter === 'All' || club.categories.includes(categoryFilter))
-
   );
 
-  const categoryFormat = (input) => {
-    input = input.replace(/-/g, ' ');
-    return input
+  // PAGINATION
+  const indexOfLastClub = (currentPage + 1) * clubsPerPage;
+  const indexOfFirstClub = indexOfLastClub - clubsPerPage;
+  const currentClubs = filteredClubs.slice(indexOfFirstClub, indexOfLastClub);
+  
+  const handlePageClick = (data) => {
+    setCurrentPage(data.selected);
   }
 
   return (
@@ -153,10 +159,25 @@ const ExplorePage = () => {
         </Grid>
       </Grid>
       <Grid container style={{ display:'flex', flexDirection:'column'}}>
-        {filteredClubs.map((club) => (
-          <ClubCard club={club}/>
-        ))}
+          <ClubCard clubs={currentClubs}/>
       </Grid>
+      <ReactPaginate
+            forcePage = {currentPage}
+            pageCount={Math.ceil(filteredClubs.length/clubsPerPage)} 
+            marginPagesDisplayed={3} 
+            pageRangeDisplayed={3} 
+            onPageChange={handlePageClick}
+            containerClassName={'pagination justify-content-center'}
+            pageClassName={'page-item'}
+            pageLinkClassName={'page-link'}
+            previousClassName={'page-item'}
+            previousLinkClassName={'page-link'}
+            nextClassName={'page-item'}
+            nextLinkClassName={'page-link'}
+            breakClassName={'page-item'}
+            breakLinkClassName={'page-link'}
+            activeClassName={'active'}
+             />
     </div>
   );
 };
