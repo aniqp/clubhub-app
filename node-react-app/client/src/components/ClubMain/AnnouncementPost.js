@@ -26,6 +26,7 @@ const useStyles = makeStyles({
       margin:'10px'
     },
     title:{
+        textAlign:'center',
         background:'white', 
         margin:'10px',
     },
