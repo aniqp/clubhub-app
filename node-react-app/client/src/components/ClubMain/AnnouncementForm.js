@@ -2,6 +2,7 @@ import React, { Component, useState } from 'react';
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import TextField from '@material-ui/core/TextField';
+import { Typography } from '@material-ui/core';
 
 const AnnouncementForm = (props) => {
 
@@ -25,18 +26,17 @@ const AnnouncementForm = (props) => {
     const handleEnteredBody = (event) => {
         setContent(event.target.value);
     }
+    
 
-    const handleSubmit = (e) => {
+    const handleSubmit = () => {
         callApiPostAnnouncement()
             .then(res => {
             var parsed = JSON.parse(res.express);     
         })
-        
+
         setTitle('');
         setContent('');
-
-        props.onChange();
-        
+        setTimeout(() => props.onSubmit(), 1000);
     }
 
     const callApiPostAnnouncement = async () => {
@@ -61,10 +61,11 @@ const AnnouncementForm = (props) => {
 
 
     return(
-        <Grid item style={{display:'flex', flexDirection:'column', padding:'25px 25px 20px 0'}}>
-            <TextField value={title} onChange={handleEnteredTitle} style={{padding:'10px 0'}} label="Title" variant="outlined"/>
+        <Grid item style={{border:'solid 2px #152532', margin:'30px 0 0 0',display:'flex', flexDirection:'column', padding:'25px 20px 20px 20px', textAlign:'center'}}>
+            <Typography>Post New Announcement</Typography>
+            <TextField value={title} onChange={handleEnteredTitle} style={{background:'#fff', padding:'10px 0'}} label="Title" variant="outlined"/>
             <TextField value={content} onChange={handleEnteredBody} style={{padding:'0 0 10px 0'}} label="Content" multiline rows={4} variant="outlined"/>
-            <Button onClick={handleSubmit} variant="outlined">Post Announcement</Button>
+            <Button onClick={handleSubmit} variant="outlined" style={{background:'#152532', color:'#fff'}}>Post Announcement</Button>
         </Grid>
     )
 }

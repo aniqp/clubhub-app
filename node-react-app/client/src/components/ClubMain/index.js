@@ -4,7 +4,7 @@ import Typography from "@material-ui/core/Typography";
 import { useParams } from 'react-router-dom';
 import SideBar from './Sidebar';
 import AnnouncementPost from './AnnouncementPost';
-import AnnouncementForm from '../AnnouncementForm.js';
+import AnnouncementForm from './AnnouncementForm.js';
 
 const classes = {
     root:{
@@ -34,7 +34,7 @@ const ClubMain = () => {
 
     React.useEffect(() => {
         getClubAnnouncements();
-    }, [clubAnnouncements]);
+    }, Object.values(clubAnnouncements));
 
 
     const getClubTitle = () => {
@@ -65,12 +65,12 @@ const ClubMain = () => {
     }
 
     const getClubAnnouncements = () => {
-        console.log('updating announcements!!!!')
-    
+        console.log('updating announcements');
         callApiGetClubAnnouncements()
             .then(res => {
                 var parsed = JSON.parse(res.express);
                 setClubAnnouncements(parsed);
+                console.log(clubAnnouncements);
             })
     }
 
@@ -91,7 +91,7 @@ const ClubMain = () => {
         if (response.status !== 200) throw Error(body.message);
         return body;
     }
-    console.log(clubAnnouncements);
+
     return (
         <div style={classes.root}>
             <Grid
@@ -105,8 +105,9 @@ const ClubMain = () => {
                     {toggle === '1' && <>
                         {(clubAnnouncements.length > 0) ? (<>
                             {Object.values(clubAnnouncements).map((announcement, index) => (
-                                <AnnouncementPost title={announcement.title} body={announcement.body}/>
-                        ))}
+                                <li key={announcement.id} style={{listStyle:'none'}}>
+                                    <AnnouncementPost name={clubTitle} title={announcement.title} body={announcement.body} timestamp={announcement.time_posted}/>
+                                </li>))}
                         </> ) : (<Typography variant={'h6'}><b>No Announcements</b></Typography>)
                     }</>}
                     {toggle === '4' &&
@@ -117,7 +118,7 @@ const ClubMain = () => {
                 </Grid>
                 <Grid item xs={4} style={{padding:'0px'}}>
                     <SideBar value={toggle} handleToggle={handleToggle} />
-                    {toggle === '1' && <AnnouncementForm clubID={clubID} onChange={getClubAnnouncements} />}
+                    {toggle === '1' && <AnnouncementForm clubID={clubID} onSubmit={getClubAnnouncements} />}
                 </Grid>
             </Grid>
         </div>
