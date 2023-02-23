@@ -4,11 +4,22 @@ import Typography from "@material-ui/core/Typography";
 import { useParams } from 'react-router-dom';
 import SideBar from './Sidebar';
 import AnnouncementPost from './AnnouncementPost';
+import Box from "@material-ui/core/Box";
+import Button from "@material-ui/core/Button";
+import { createMuiTheme } from '@material-ui/core';
+
+
+const theme = createMuiTheme({
+    typography: {
+        button:{
+            textTransform:'none'
+        }
+    }
+})
 
 const classes = {
     root:{
-        textAlign: "center",
-        margin:'20px 10px 0 10px'
+        margin:'20px 10px 0 10px',
     },
     
 }
@@ -20,6 +31,15 @@ const ClubMain = () => {
     const [clubTitle, setClubTitle] = React.useState();
     const [clubAnnouncements, setClubAnnouncements] = React.useState([]);
 
+    const [toggle, setToggle] = React.useState("1");
+    
+    const handleToggle = (event, newToggle) => {
+        if (newToggle !== null) {
+            setToggle(newToggle);
+        }
+    };
+
+    console.log(toggle);
     React.useEffect(() => {
         getClubAnnouncements();
         getClubTitle();
@@ -74,36 +94,37 @@ const ClubMain = () => {
                 clubID: clubID
             })
         });
-        //console.log('in')
 
         const body = await response.json();
         if (response.status !== 200) throw Error(body.message);
-        //console.log("Searched club: ", body);
         return body;
     }
 
-    console.log('in');
     return (
         <div style={classes.root}>
             <Grid
             container
             spacing={5}
             >
+                <Grid item xs={12} style={{background:'white', padding:'50px', borderBottom:'1px black solid'}}>
+                    <Typography variant="div" component="h1">{clubTitle}</Typography>
+                </Grid>
                 <Grid item xs={8}>
-                    <Typography variant="div" component="h1">
-                        {clubTitle} ANNOUNCEMENTS
-                    </Typography>
-                    {(clubAnnouncements.length > 0) ? (<>
-                        {Object.values(clubAnnouncements).map((announcement, index) => (
-                            <>
+                    {toggle === '1' && <>
+                        {(clubAnnouncements.length > 0) ? (<>
+                            {Object.values(clubAnnouncements).map((announcement, index) => (
                                 <AnnouncementPost title={announcement.title} body={announcement.body}/>
-                            </>
                         ))}
                         </> ) : (<Typography variant={'h6'}><b>No Announcements</b></Typography>)
+                    }</>}
+                    {toggle === '4' &&
+                        <Typography>
+                            Members
+                        </Typography>
                     } 
                 </Grid>
-                <Grid item xs={4}>
-                    <SideBar />
+                <Grid item xs={4} style={{padding:'0px'}}>
+                    <SideBar value={toggle} handleToggle={handleToggle} />
                 </Grid>
             </Grid>
         </div>

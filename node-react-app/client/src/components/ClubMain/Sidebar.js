@@ -6,13 +6,15 @@ import CardContent from "@material-ui/core/CardContent";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
-
+import "./Sidebar.css";
+import ToggleButton from '@material-ui/lab/ToggleButton';
+import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 
 const useStyles = makeStyles({
     root: {
       position: "sticky",
       top: "5rem",
-      borderRadius: '10px',
+      borderRadius: '0 10px 0 10px',
       display: 'flex',
       flexDirection: 'column',
       alignItems:'center',
@@ -20,28 +22,30 @@ const useStyles = makeStyles({
     },
   });
 
-
-export default function SideBar() {
-    const classes = useStyles();
-
+  export default function SideBar(props) {
+    
     return (
-        <Card className={classes.root} elevation={15}>
-        <CardActions>
-            <Button size="large" color="secondary">
-            Upcoming Events
-            </Button>
-        </CardActions>
-        <CardActions>
-            <Button size="large" color="secondary">
-                Photos
-            </Button>
-        </CardActions>
-        <CardActions>
-            <Button size="large" color="secondary">
-                Members
-            </Button>
-        </CardActions>
-        </Card>
+      <ToggleButtonGroup
+        value={props.value}
+        exclusive
+        onChange={props.handleToggle}
+        style={{display:'flex', flexDirection:'column'}}
+      >
+        <ToggleButton value="1">
+            Announcements
+        </ToggleButton>
+        <ToggleButton disabled value="2">
+          Upcoming Events
+        </ToggleButton>
+        <ToggleButton disabled value="3">
+            Polls
+        </ToggleButton>
+        <ToggleButton value="4">
+          Members
+        </ToggleButton>
+        <ToggleButton disabled value="5">
+          Photos
+        </ToggleButton>
+      </ToggleButtonGroup>
     );
-}
-  
+  }
