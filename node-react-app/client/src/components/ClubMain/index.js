@@ -109,7 +109,7 @@ const ClubMain = () => {
                 <Grid item xs={12} style={{background:'white', padding:'50px', borderBottom:'1px black solid'}}>
                     <Typography variant="div" component="h1">{clubTitle}</Typography>
                 </Grid>
-                <Grid item xs={8}>
+                <Grid item xs={8} style={{paddingTop:0}}>
                     {toggle === '1' && <>
                         {(clubAnnouncements.length > 0) ? (<>
                             {Object.values(clubAnnouncements).map((announcement, index) => (

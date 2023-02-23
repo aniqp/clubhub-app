@@ -1,11 +1,5 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import Card from "@material-ui/core/Card";
-import CardActions from "@material-ui/core/CardActions";
-import CardContent from "@material-ui/core/CardContent";
-import Button from "@material-ui/core/Button";
-import Typography from "@material-ui/core/Typography";
-import Grid from "@material-ui/core/Grid";
 import "./Sidebar.css";
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
@@ -24,26 +18,27 @@ const useStyles = makeStyles({
 
   export default function SideBar(props) {
     
-    return (
+    return(
       <ToggleButtonGroup
+        className="ToggleButtonGroup"
         value={props.value}
         exclusive
         onChange={props.handleToggle}
         style={{display:'flex', flexDirection:'column'}}
       >
-        <ToggleButton value="1">
+        <ToggleButton className='ToggleButton' value="1">
             Announcements
         </ToggleButton>
-        <ToggleButton disabled value="2">
+        <ToggleButton className='ToggleButton' disabled value="2">
           Upcoming Events
         </ToggleButton>
-        <ToggleButton disabled value="3">
+        <ToggleButton className='ToggleButton' disabled value="3">
             Polls
         </ToggleButton>
-        <ToggleButton value="4">
+        <ToggleButton className='ToggleButton' value="4">
           Members
         </ToggleButton>
-        <ToggleButton disabled value="5">
+        <ToggleButton className='ToggleButton' disabled value="5">
           Photos
         </ToggleButton>
       </ToggleButtonGroup>
