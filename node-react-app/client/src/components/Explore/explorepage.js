@@ -114,17 +114,17 @@ const ExplorePage = () => {
           onChange={handleChange}
         >
           <MenuItem value="All">All</MenuItem>
-          <MenuItem value="Academic">Academic</MenuItem>
-          <MenuItem value="Business and Entrepreneurial">Business and Entrepreneurial</MenuItem>
+          <MenuItem value="academic">Academic</MenuItem>
+          <MenuItem value="business-and-entrepreneurial">Business and Entrepreneurial</MenuItem>
           <MenuItem value="Charitable, Community Service, and International Development">Charitable, Community Service, and International Development</MenuItem>
-          <MenuItem value="Creative Arts, Dance, and Music">Creative Arts, Dance, and Music</MenuItem>
-          <MenuItem value="Cultural">Cultural</MenuItem>
-          <MenuItem value="Environmental and Sustainability">Environmental and Sustainability</MenuItem>
-          <MenuItem value="Games, Recreational, and Social">Games, Recreational, and Social</MenuItem>
-          <MenuItem value="Health Promotion">Health Promotion</MenuItem>
-          <MenuItem value="Media, Publications, and Web Development">Media, Publications, and Web Development</MenuItem>
-          <MenuItem value="Political and Social Awareness">Political and Social Awareness</MenuItem>
-          <MenuItem value="Religious and Spiritual">Religious and Spiritual</MenuItem>
+          <MenuItem value="creative-arts-dance-and-music">Creative Arts, Dance, and Music</MenuItem>
+          <MenuItem value="cultural">Cultural</MenuItem>
+          <MenuItem value="environmental-and-sustainability">Environmental and Sustainability</MenuItem>
+          <MenuItem value="games-recreational-and-social">Games, Recreational, and Social</MenuItem>
+          <MenuItem value="health-promotion">Health Promotion</MenuItem>
+          <MenuItem value="media-publications-and-web-development">Media, Publications, and Web Development</MenuItem>
+          <MenuItem value="political-and-social-awareness">Political and Social Awareness</MenuItem>
+          <MenuItem value="religious-and-spiritual">Religious and Spiritual</MenuItem>
           <MenuItem value="JYP">JYP</MenuItem>
           <MenuItem value="YG Entertainment">YG Entertainment</MenuItem>
         </Select>
