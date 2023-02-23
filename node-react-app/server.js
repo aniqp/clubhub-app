@@ -141,7 +141,7 @@ app.post('/api/getClubs', (req, res) => {
 		if (error) {
 			return console.error(error.message);
 		}
-		let string = result
+		let string = JSON.stringify(results);
 		res.send({ express: string })
 	});
 	connection.end();
