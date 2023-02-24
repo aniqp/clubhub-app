@@ -34,15 +34,8 @@ const opacityValue = 0.9;
 
 const theme = createTheme({
     palette: {
-        type: 'dark',
-        background: {
-            default: "#000000"
-        },
         primary: {
-            main: "#52f1ff",
-        },
-        secondary: {
-            main: "#b552f7",
+            main: "#fafafa",
         },
     },
 });
@@ -221,7 +214,7 @@ const Details = () => {
     }
 
     return (
-        <Box>
+        <Box >
             <Typography variant='h3' align="inherit">
                 {clubTitle}
             </Typography>
@@ -230,7 +223,8 @@ const Details = () => {
                 <Grid item xs={9}>
                     <Item>
                         <Card
-                            variant="outlined">
+                            variant="elevation"
+                            style={{ backgroundColor: 'light-grey' }}>
                             <CardHeader title="Description" />
                             <CardContent>
                                 <Typography variant='body2' color='textPrimary'>
@@ -243,7 +237,7 @@ const Details = () => {
                 <Grid container direction = "row" spacing = {2}>
                     <Grid item xs={3}>
                         <Item>
-                            <Card variant="outlined">
+                            <Card variant="elevation">
                                 <CardMedia
                                     sx={{ height: 140 }}
                                     image={require("../../images/bliss.png")}
@@ -262,7 +256,7 @@ const Details = () => {
                     <Grid item xs={3}>
                         <Item>
                             <Card
-                                variant="outlined" >
+                                variant="elevation" >
                                 <CardHeader title="Photo" />
                                 <CardContent>
                                     <Typography variant='body2' color='textPrimary'>
@@ -275,7 +269,7 @@ const Details = () => {
                     <Grid item xs={3}>
                         <Item>
                             <Card
-                                variant="outlined" >
+                                variant="elevation" >
                                 <CardHeader title="Photo" />
                                 <CardContent>
                                     <Typography variant='body2' color='textPrimary'>

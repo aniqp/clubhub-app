@@ -3,6 +3,9 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Button, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Card, CardContent, Typography, FormControl, MenuItem, InputLabel, Select } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
+import history from '../Navigation/history';
+import { withRouter } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -31,9 +34,18 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ExplorePage = () => {
+    
+    const history = useHistory();
     const [clubs, setClubs] = useState([]);
     // console.log("clubs: ", clubs)
     // console.log("clubs[0]", clubs[0])
+
+    useEffect(() => {
+      // Access the pathname property of the history object
+      const currentPath = history.location.pathname;
+      console.log(`Current path: ${currentPath}`);
+    }, [history]);
+    
     useEffect(() => {
       getClubs();
     }, []);
@@ -85,8 +97,6 @@ const ExplorePage = () => {
     "Media, Publications, and Web Development",
     "Political and Social Awareness",
     "Religious and Spiritual",
-    "JYP",
-    "YG Entertainment"
   ];
   const handleChange = (event) => {
     setCategoryFilter(event.target.value);
@@ -141,8 +151,6 @@ const ExplorePage = () => {
             <MenuItem value="media-publications-and-web-development">Media, Publications, and Web Development</MenuItem>
             <MenuItem value="political-and-social-awareness">Political and Social Awareness</MenuItem>
             <MenuItem value="religious-and-spiritual">Religious and Spiritual</MenuItem>
-            <MenuItem value="JYP">JYP</MenuItem>
-            <MenuItem value="YG Entertainment">YG Entertainment</MenuItem>
           </Select>
         </FormControl>
         </Grid>
@@ -160,20 +168,37 @@ const ExplorePage = () => {
       </Grid>
       <Grid container style={{ display:'flex', flexDirection:'column'}}>
         {filteredClubs.map((club) => (
-          <Card variant="outlined" style={{margin:'0 0 20px 0',padding:'10px', display:'flex', flexDirection:'row', justifyContent:'space-between'}}>
-            <Grid item xs={8}>
-              <Typography variant='h6' style={{padding:'0 0 10px 0'}}>{club.name}</Typography>
-              <Typography style={{fontSize:'0.8rem'}}>{truncate(club.description)}</Typography>
-            </Grid>
-            <Grid item xs={3} style={{display:'flex', flexDirection:'column', justifyContent:'space-around'}}>
-              <Button color='primary' variant='outlined'>Club Details</Button>
-              <Button color='secondary' variant='outlined'>Join Club</Button>
-            </Grid>
-          </Card>
+            <Clubs 
+              club = {club}
+              truncate = {truncate}
+              // history = {history}
+            />
         ))}
       </Grid>
     </div>
   );
 };
 
-export default ExplorePage;
+const Clubs = ({club, truncate}) => {
+
+  return (
+
+    <Card variant="outlined" style={{margin:'0 0 20px 0',padding:'10px', display:'flex', flexDirection:'row', justifyContent:'space-between'}}>
+    <Grid item xs={8}>
+      <Typography variant='h6' style={{padding:'0 0 10px 0'}}>{club.name}</Typography>
+      <Typography style={{fontSize:'0.8rem'}}>{truncate(club.description)}</Typography>
+    </Grid>
+    <Grid item xs={3} style={{display:'flex', flexDirection:'column', justifyContent:'space-around'}}>
+      <Button color='primary' variant='outlined'
+      onClick={() => history.push(`/clubs/${club.id}`)}
+      >Club Details</Button>
+      <Button color='secondary' variant='outlined'>Join Club</Button>
+    </Grid>
+  </Card>
+
+
+  )
+
+}
+
+export default withRouter(ExplorePage);
