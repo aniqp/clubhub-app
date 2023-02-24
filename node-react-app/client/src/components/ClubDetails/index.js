@@ -37,12 +37,12 @@ const useStyles = makeStyles((theme) => ({
       marginLeft: '100px'
     },
     title:{
-        textAlign:'center',
+        textAlign:'justify',
         borderRadius:'3px',
         marginTop: '50px',
-        backgroundColor: '#E1E1E1',
         maxWidth: 1150,
-        marginLeft: '-15px'
+        marginLeft: '-15px',
+        fontFamily: 'Arvo, serif'
     }
 
   }));
