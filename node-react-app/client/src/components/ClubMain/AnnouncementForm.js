@@ -4,11 +4,9 @@ import Button from "@material-ui/core/Button";
 import TextField from '@material-ui/core/TextField';
 import { Typography } from '@material-ui/core';
 
+const serverURL = "";
+
 const AnnouncementForm = (props) => {
-
-    
-
-    const serverURL = "";
     
     const [title, setTitle] = React.useState('');
     const [content, setContent] = React.useState('');
