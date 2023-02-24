@@ -234,7 +234,7 @@ const Details = () => {
                         </Card>
                     </Item>
                 </Grid>
-                <Grid container direction = "row" spacing = {2}>
+                <Grid container direction = "row" spacing = {1}>
                     <Grid item xs={3}>
                         <Item>
                             <Card variant="elevation">

@@ -4,7 +4,7 @@ import ClubDetails from "../ClubDetails";
 import ClubMain from "../ClubMain";
 import Home from '../Home';
 import history from './history';
-import ExplorePage from "../Explore/explorepage.js";
+import ExplorePage from "../Explore/index";
 
 export default function PrivateRoute({
   //authenticated,

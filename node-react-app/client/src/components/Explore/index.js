@@ -37,7 +37,6 @@ const useStyles = makeStyles((theme) => ({
 
 const ExplorePage = () => {
     
-    const history = useHistory();
     const [clubs, setClubs] = useState([]);
 
     // console.log("clubs: ", clubs)
@@ -187,4 +186,4 @@ const ExplorePage = () => {
   );
 };
 
-export default withRouter(ExplorePage);
+export default ExplorePage;
