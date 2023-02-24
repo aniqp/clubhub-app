@@ -5,6 +5,7 @@ import ExplorePage from '../Explore/index';
 import ClubDetails from '../ClubDetails'
 import Navbar from '../GlobHeader/navbar';
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import history from '../Navigation/history';
 
 import PrivateRoute from '../Navigation/PrivateRoute.js';
 import { useAuth, auth, UserContext, AuthHeaderContext } from '../Firebase';
@@ -28,17 +29,11 @@ const App = () => {
         <UserContext.Provider value={user ?? null}>
           <div>
             {/* <Navbar/>
-            
-            
+          
             <PrivateRoute exact path="/" component={Home} /> */}
-            <Router>
-              <Navbar />
-              <Switch>
-                <Route exact path="/" component={Home} />
-                <Route path="/explore" component={ExplorePage} />
-
-              </Switch>
-            </Router>
+          <Navbar/>
+                
+          <PrivateRoute exact path="/" component={Home} />
           </div>
         </UserContext.Provider>
       </AuthHeaderContext.Provider>

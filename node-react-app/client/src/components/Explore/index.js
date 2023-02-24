@@ -2,6 +2,10 @@ import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import {TextField, FormControl, MenuItem, InputLabel, Select } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
+
+import Box from "@material-ui/core/Box";
+import history from '../Navigation/history';
+
 import ClubCard from "./ClubCard";
 import ReactPaginate from "react-paginate";
 
@@ -32,7 +36,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ExplorePage = () => {
+    
+    const history = useHistory();
     const [clubs, setClubs] = useState([]);
+
+    // console.log("clubs: ", clubs)
+    // console.log("clubs[0]", clubs[0])
+  
     const [currentPage, setCurrentPage] = useState(0);
     const [clubsPerPage, setClubsPerPage] = useState(4);
 
@@ -87,8 +97,6 @@ const ExplorePage = () => {
     "Media, Publications, and Web Development",
     "Political and Social Awareness",
     "Religious and Spiritual",
-    "JYP",
-    "YG Entertainment"
   ];
   const handleChange = (event) => {
     setCategoryFilter(event.target.value);
@@ -140,8 +148,6 @@ const ExplorePage = () => {
             <MenuItem value="media-publications-and-web-development">Media, Publications, and Web Development</MenuItem>
             <MenuItem value="political-and-social-awareness">Political and Social Awareness</MenuItem>
             <MenuItem value="religious-and-spiritual">Religious and Spiritual</MenuItem>
-            <MenuItem value="JYP">JYP</MenuItem>
-            <MenuItem value="YG Entertainment">YG Entertainment</MenuItem>
           </Select>
         </FormControl>
         </Grid>
@@ -181,4 +187,4 @@ const ExplorePage = () => {
   );
 };
 
-export default ExplorePage;
+export default withRouter(ExplorePage);

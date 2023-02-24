@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Button,Card, Typography } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
+import history from '../Navigation/history';
 
 
 const ClubCard = (props) => {
@@ -24,7 +25,7 @@ const ClubCard = (props) => {
                             <Typography style={{fontSize:'0.8rem'}}>{truncate(club.description)}</Typography>
                         </Grid>
                         <Grid item xs={3} style={{display:'flex', flexDirection:'column', justifyContent:'space-around'}}>
-                            <Button color='primary' variant='outlined'>Club Details</Button>
+                            <Button onClick={() => history.push(`/clubs/${club.id}`)} color='primary' variant='outlined'>Club Details</Button>
                             <Button color='secondary' variant='outlined'>Join Club</Button>
                         </Grid>
                     </Card>
