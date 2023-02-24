@@ -3,7 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
-import { Button } from '@material-ui/core';
+import { Button, TextField } from '@material-ui/core';
 import profile from '../../images/profile-icon.png';
 import edit from '../../images/edit-icon.png';
 import del from '../../images/delete-icon.png';
@@ -46,14 +46,40 @@ const useStyles = makeStyles({
   });
 
 export default function AnnouncementPost(props) {
-    const admin = true;
+    const admin = false;
 
     const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
+    const [editModalOpen, setEditModelOpen] = React.useState(false);
 
     const classes = useStyles();
 
-    const handleEditClick = () => {
+    const handleEditClick = (title, body) => {
+        const data = {
+            title: title,
+            body: body
+        }
+        callApiEditAnnouncement(data);
+        setTimeout(() => props.onChange(), 1000);
+        setEditModelOpen(false);
+    }
 
+    const callApiEditAnnouncement = async (data) => {
+        const url = serverURL + '/api/editAnnouncement';
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                //authorization: `Bearer ${this.state.token}`
+            },
+            body: JSON.stringify({
+                id: props.id,
+                newTitle : data.title,
+                newBody: data.body,
+            })
+        });
+        const body = await response.json();
+        if (response.status !== 200) throw Error(body.message);
+        return body;
     }
 
     const handleDeleteClick = () => {
@@ -63,7 +89,7 @@ export default function AnnouncementPost(props) {
             })
         
         setTimeout(() => props.onChange(), 1000);
-
+        setDeleteModalOpen(false);
     }
     
     const callApiDeleteAnnouncement = async () => {
@@ -101,7 +127,8 @@ export default function AnnouncementPost(props) {
             </Box>
             {admin &&
             <Box style={{display:'flex', justifyContent:'end', margin:'0 8px 10px 0'}}>
-                <Button onClick={handleEditClick}><img src={edit} style={{height:'25px'}}></img></Button>
+                <Button onClick={() => setEditModelOpen(true)}><img src={edit} style={{height:'25px'}}></img></Button>
+                <EditModal title={props.title} body={props.body} open={editModalOpen} onClose={() => setEditModelOpen(false)} onSubmit={handleEditClick}/>
                 <Button onClick={() => setDeleteModalOpen(true)}><img src={del} style={{height:'25px'}}></img></Button>
                 <DeleteModal title={props.title} body={props.body} open={deleteModalOpen} onClose={() => setDeleteModalOpen(false)} onSubmit={handleDeleteClick} />
             </Box>}
@@ -109,28 +136,29 @@ export default function AnnouncementPost(props) {
     )
 }
 
+
+const MODAL_STYLES = {
+    position:'fixed',
+    top:'50%',
+    left:'50%',
+    transform:'translate(-50%, -50%)',
+    backgroundColor:'#fff',
+    padding:'20px',
+    zIndex:1000,
+    width:'40vw',
+}
+
+const OVERLAY_STYLES = {
+    position:'fixed', 
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor:'rgba(0,0,0,.7)',
+    zIndex:1000
+}
+
 const DeleteModal = ({title, body, open, onClose, onSubmit}) => {
-
-    const MODAL_STYLES = {
-        position:'fixed',
-        top:'50%',
-        left:'50%',
-        transform:'translate(-50%, -50%)',
-        backgroundColor:'#fff',
-        padding:'20px',
-        zIndex:1000,
-        width:'40vw',
-    }
-
-    const OVERLAY_STYLES = {
-        position:'fixed', 
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor:'rgba(0,0,0,.7)',
-        zIndex:1000
-    }
 
     const truncate = (input) => {
         if (input.length > 100) {
@@ -139,7 +167,6 @@ const DeleteModal = ({title, body, open, onClose, onSubmit}) => {
         return input;
     };
 
-    console.log(open);
     if (!open) return null
     
     return (
@@ -164,6 +191,65 @@ const DeleteModal = ({title, body, open, onClose, onSubmit}) => {
                     <Grid style={{display:'flex', flexDirection:'row', justifyContent:'center'}}>
                         <Button onClick={onClose} variant='outlined' style={{margin:'0 10px'}}>Cancel</Button>
                         <Button onClick={onSubmit} variant='outlined' style={{margin:'0 10px', border:'red 1px solid', background:'rgba(255, 0, 0, 0.13)'}}>Delete</Button>   
+                    </Grid>
+                </Grid>
+            </div>
+        </>
+    )
+}
+
+const EditModal = ({title, body, open, onClose, onSubmit}) => {
+    const [newTitle, setNewTitle] = React.useState(title);
+    const [newContent, setNewContent] = React.useState(body);
+
+    const handleEnteredTitle = (event) => {
+        setNewTitle(event.target.value);
+        console.log(newTitle);
+    }
+
+    const handleEnteredBody = (event) => {
+        setNewContent(event.target.value);
+        console.log(newContent);
+    }
+
+    if (!open) return null
+
+    return(
+        <>
+            <div style={OVERLAY_STYLES} />
+            <div style={MODAL_STYLES}>
+                <Grid container style={{display:'flex', flexDirection:'column'}}>
+                    <Grid item style={{display:'flex', justifyContent:'end'}}>
+                        <Button onClick={onClose}><img src={close} style={{height:'25px'}}></img></Button>
+                    </Grid>
+                    <Grid item style={{display:'flex', justifyContent:'center'}}>
+                        <b>Edit the following announcement:</b>
+                    </Grid>
+                    <Grid item style={{padding:'25px'}}>
+                        <Box>
+                            <TextField
+                                onChange={handleEnteredTitle}
+                                required
+                                label="Title"
+                                defaultValue={title}
+                                fullWidth
+                                multiline
+                            />
+                        </Box>
+                        <Box style={{padding:'15px 0 0 0'}}>
+                            <TextField
+                                onChange={handleEnteredBody}
+                                required
+                                label="Content"
+                                defaultValue={body}
+                                multiline
+                                fullWidth
+                            />
+                        </Box>
+                    </Grid>
+                    <Grid style={{display:'flex', flexDirection:'row', justifyContent:'center'}}>
+                        <Button onClick={onClose} variant='outlined' style={{margin:'0 10px'}}>Cancel</Button>
+                        <Button onClick={() => { onSubmit(newTitle, newContent)}} variant='outlined' style={{margin:'0 10px'}}>Edit</Button>   
                     </Grid>
                 </Grid>
             </div>

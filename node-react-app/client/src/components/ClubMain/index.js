@@ -15,6 +15,8 @@ const classes = {
 const serverURL = ""; 
 
 const ClubMain = () => {
+    const admin = false;
+    
     const { clubID } = useParams();
     const [clubTitle, setClubTitle] = React.useState();
     const [clubAnnouncements, setClubAnnouncements] = React.useState([]);
@@ -124,7 +126,7 @@ const ClubMain = () => {
                 </Grid>
                 <Grid item xs={4} style={{padding:'0px'}}>
                     <SideBar value={toggle} handleToggle={handleToggle} />
-                    {toggle === '1' && <AnnouncementForm clubID={clubID} onSubmit={getClubAnnouncements} />}
+                    {(toggle === '1' && admin) && <AnnouncementForm clubID={clubID} onSubmit={getClubAnnouncements} />}
                 </Grid>
             </Grid>
         </div>
