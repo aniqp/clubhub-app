@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { Button, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Card, CardContent, Typography, FormControl, MenuItem, InputLabel, Select } from "@material-ui/core";
+import {TextField, FormControl, MenuItem, InputLabel, Select } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
+
 import Box from "@material-ui/core/Box";
 import history from '../Navigation/history';
-import { withRouter } from 'react-router-dom';
-import { useHistory } from 'react-router-dom';
+
+import ClubCard from "./ClubCard";
+import ReactPaginate from "react-paginate";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -37,15 +39,13 @@ const ExplorePage = () => {
     
     const history = useHistory();
     const [clubs, setClubs] = useState([]);
+
     // console.log("clubs: ", clubs)
     // console.log("clubs[0]", clubs[0])
+  
+    const [currentPage, setCurrentPage] = useState(0);
+    const [clubsPerPage, setClubsPerPage] = useState(4);
 
-    useEffect(() => {
-      // Access the pathname property of the history object
-      const currentPath = history.location.pathname;
-      console.log(`Current path: ${currentPath}`);
-    }, [history]);
-    
     useEffect(() => {
       getClubs();
     }, []);
@@ -53,9 +53,9 @@ const ExplorePage = () => {
     const getClubs = () => {
       fetchClubs()
         .then(res => {
-          console.log("fetchClubs returned: ", res)
+          // console.log("fetchClubs returned: ", res)
           var parsed = JSON.parse(res.express);
-          console.log("fetchClubs: ", parsed);
+          // console.log("fetchClubs: ", parsed);
           setClubs(parsed);
           //console.log("clubs: ", clubs)
           return parsed;
@@ -75,7 +75,7 @@ const ExplorePage = () => {
         });
 
         const data = await response.json();
-        console.log(data);
+        // console.log(data);
         return data;
       } catch (error) {
         console.error(error);
@@ -100,31 +100,28 @@ const ExplorePage = () => {
   ];
   const handleChange = (event) => {
     setCategoryFilter(event.target.value);
+    setCurrentPage(0);
   };
   const classes = useStyles();
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
+    setCurrentPage(0);
   };
 
   const filteredClubs = clubs.filter((club) =>
     club.name.toLowerCase().includes(searchTerm.toLowerCase()) && 
     (categoryFilter === 'All' || club.categories.includes(categoryFilter))
-
   );
 
-  const truncate = (input) => {
-    // console.log('input' + input);
-    if (input.length > 100) {
-       return input.substring(0, 200) + '...';
-    }
-    return input;
-  };
-
-  const categoryFormat = (input) => {
-    input = input.replace(/-/g, ' ');
-    return input
+  // PAGINATION
+  const indexOfLastClub = (currentPage + 1) * clubsPerPage;
+  const indexOfFirstClub = indexOfLastClub - clubsPerPage;
+  const currentClubs = filteredClubs.slice(indexOfFirstClub, indexOfLastClub);
+  
+  const handlePageClick = (data) => {
+    setCurrentPage(data.selected);
   }
 
   return (
@@ -167,38 +164,27 @@ const ExplorePage = () => {
         </Grid>
       </Grid>
       <Grid container style={{ display:'flex', flexDirection:'column'}}>
-        {filteredClubs.map((club) => (
-            <Clubs 
-              club = {club}
-              truncate = {truncate}
-              // history = {history}
-            />
-        ))}
+          <ClubCard clubs={currentClubs}/>
       </Grid>
+      <ReactPaginate
+            forcePage = {currentPage}
+            pageCount={Math.ceil(filteredClubs.length/clubsPerPage)} 
+            marginPagesDisplayed={3} 
+            pageRangeDisplayed={3} 
+            onPageChange={handlePageClick}
+            containerClassName={'pagination justify-content-center'}
+            pageClassName={'page-item'}
+            pageLinkClassName={'page-link'}
+            previousClassName={'page-item'}
+            previousLinkClassName={'page-link'}
+            nextClassName={'page-item'}
+            nextLinkClassName={'page-link'}
+            breakClassName={'page-item'}
+            breakLinkClassName={'page-link'}
+            activeClassName={'active'}
+             />
     </div>
   );
 };
-
-const Clubs = ({club, truncate}) => {
-
-  return (
-
-    <Card variant="outlined" style={{margin:'0 0 20px 0',padding:'10px', display:'flex', flexDirection:'row', justifyContent:'space-between'}}>
-    <Grid item xs={8}>
-      <Typography variant='h6' style={{padding:'0 0 10px 0'}}>{club.name}</Typography>
-      <Typography style={{fontSize:'0.8rem'}}>{truncate(club.description)}</Typography>
-    </Grid>
-    <Grid item xs={3} style={{display:'flex', flexDirection:'column', justifyContent:'space-around'}}>
-      <Button color='primary' variant='outlined'
-      onClick={() => history.push(`/clubs/${club.id}`)}
-      >Club Details</Button>
-      <Button color='secondary' variant='outlined'>Join Club</Button>
-    </Grid>
-  </Card>
-
-
-  )
-
-}
 
 export default withRouter(ExplorePage);
