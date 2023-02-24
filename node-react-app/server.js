@@ -197,6 +197,8 @@ app.post('/api/postAnnouncement', (req, res) => {
         };
     })
 
+})
+
 app.post('/api/getAllClubs', (req, res) => {
 	// Query all clubs from the clubs table
 	let connection = mysql.createConnection(config)
