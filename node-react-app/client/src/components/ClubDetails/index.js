@@ -220,7 +220,7 @@ const Details = () => {
             </Typography>
             <br></br>
             <Grid container spacing={4} direction = "column">
-                <Grid item xs={9}>
+                <Grid item xs={9} style={{padding:'20px 0'}}>
                     <Item>
                         <Card
                             variant="elevation"
