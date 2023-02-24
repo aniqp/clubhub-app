@@ -32,9 +32,9 @@ const ClubMain = () => {
         getClubTitle();
     }, []);
 
-    React.useEffect(() => {
-        getClubAnnouncements();
-    }, Object.values(clubAnnouncements));
+    // React.useEffect(() => {
+    //     getClubAnnouncements();
+    // }, Object.values(clubAnnouncements));
 
 
     const getClubTitle = () => {
@@ -99,14 +99,20 @@ const ClubMain = () => {
             spacing={5}
             >
                 <Grid item xs={12} style={{background:'white', padding:'50px', borderBottom:'1px black solid'}}>
-                    <Typography variant="div" component="h1">{clubTitle}</Typography>
+                    <Typography variant='h5'>{clubTitle}</Typography>
                 </Grid>
                 <Grid item xs={8} style={{paddingTop:0}}>
                     {toggle === '1' && <>
                         {(clubAnnouncements.length > 0) ? (<>
                             {Object.values(clubAnnouncements).map((announcement, index) => (
                                 <li key={announcement.id} style={{listStyle:'none'}}>
-                                    <AnnouncementPost name={clubTitle} title={announcement.title} body={announcement.body} timestamp={announcement.time_posted}/>
+                                    <AnnouncementPost 
+                                        id={announcement.id} 
+                                        name={clubTitle} 
+                                        title={announcement.title} 
+                                        body={announcement.body} 
+                                        timestamp={announcement.time_posted}
+                                        onChange={getClubAnnouncements}/>
                                 </li>))}
                         </> ) : (<Typography variant={'h6'}><b>No Announcements</b></Typography>)
                     }</>}

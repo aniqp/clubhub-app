@@ -199,6 +199,21 @@ app.post('/api/postAnnouncement', (req, res) => {
 
 })
 
+app.post('/api/deleteAnnouncement', (req, res) => {
+    let connection = mysql.createConnection(config);
+    let announcementID = req.body.id;
+
+    let sql = `DELETE FROM announcements where id = ${announcementID}`
+
+    connection.query(sql, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message);
+		}
+	});
+	connection.end();
+
+})
+
 app.post('/api/getAllClubs', (req, res) => {
 	// Query all clubs from the clubs table
 	let connection = mysql.createConnection(config)
