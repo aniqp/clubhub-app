@@ -135,7 +135,30 @@ app.post('/api/getClubs', (req, res) => {
 	FROM clubs
 	WHERE clubs.id = ${clubID}`;
 
-	console.log(sql);
+	//console.log(sql);
+
+	connection.query(sql, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message);
+		}
+		let string = JSON.stringify(results)
+		res.send({ express: string })
+	});
+	connection.end();
+});
+
+app.post('/api/getClubAnnouncements', (req,res) => {
+
+	let connection = mysql.createConnection(config);
+	let clubID = req.body.clubID;
+
+	let sql = `SELECT a.title, a.body, a.time_posted, a.id 
+	from announcements as a, clubs as c 
+	where c.id = a.club_id and c.id = ${clubID}
+	order by time_posted desc;`;
+
+	//console.log(sql);
+	
 
 	connection.query(sql, (error, results, fields) => {
 		if (error) {
@@ -143,10 +166,36 @@ app.post('/api/getClubs', (req, res) => {
 		}
 		let string = JSON.stringify(results);
 		res.send({ express: string })
+		//console.log(string)
 	});
 	connection.end();
+
+
 });
 
+app.post('/api/postAnnouncement', (req, res) => {
+    let connection = mysql.createConnection(config);
+    let data = req.body;
+
+    let sql = `INSERT into announcements (club_id, title, body, time_posted)
+	values(?,?,?,?)`
+    let announcement = [data.clubID, data.title, data.body, data.time_posted]
+
+    connection.query(sql, announcement, (error, results, fields) => {
+        if (error) {
+            connection.query(`ROLLBACK`, dataEmpty, (error, results, fields) => {
+                let string = JSON.stringify('Error')
+                res.send({ express: string });
+                connection.end();
+            });
+        } else {
+            connection.query(`COMMIT`, data, (error, results, fields) => {
+                let string = JSON.stringify('Success')
+                res.send({ express: string });
+                connection.end();
+            })
+        };
+    })
 
 app.post('/api/getAllClubs', (req, res) => {
 	// Query all clubs from the clubs table
@@ -166,10 +215,6 @@ app.post('/api/getAllClubs', (req, res) => {
 	  }
 	});
 	connection.end();
-  });
-
-  app.get('/api/testing', (req, res) => {
-	res.send('This is a test API endpoint');
   });
 
 app.listen(port, () => console.log(`Listening on port ${port}`)); //for the dev version

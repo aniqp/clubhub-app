@@ -1,0 +1,16 @@
+.ToggleButtonGroup .ToggleButton {
+    border-radius: 0;
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
+    color: #000;
+}
+
+.ToggleButtonGroup .ToggleButton:hover {
+    background-color: rgba(0, 0, 0, 0.15);
+}
+
+.ToggleButtonGroup .ToggleButton.Mui-selected {
+    color: #000;
+    /* background-color: rgba(0, 0, 0, 0.3); */
+}
