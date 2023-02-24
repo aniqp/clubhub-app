@@ -10,6 +10,9 @@ import { SignIn } from '../SignIn';
 import { useUser } from '../Firebase';
 import { Hello } from '../Hello';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { makeStyles } from "@material-ui/core/styles";
+import MainImage from "../../images/hero-image-1.png"
+import SmallImage from "../../images/hero-image-2.png"
 
 
 //Dev mode
@@ -22,171 +25,85 @@ const serverURL = ""; //enable for dev mode
 //env | grep "PORT"
 //copy the number only and paste it in the serverURL in place of PORT, e.g.: const serverURL = "http://ov-research-4.uwaterloo.ca:3000";
 
-const fetch = require("node-fetch");
-
-const opacityValue = 0.9;
-
-const theme = createTheme({
-  palette: {
-    type: 'dark',
-    background: {
-      default: "#000000"
-    },
-    primary: {
-      main: "#52f1ff",
-    },
-    secondary: {
-      main: "#b552f7",
-    },
+const useStyles = makeStyles((theme) => ({
+  bigimage: {
+    position: 'absolute',
+    top: '90px',
+    left: '500px',
+    width: '440x',
+    height: '520px',
   },
-});
-
-const styles = theme => ({
-  root: {
-    body: {
-      backgroundColor: "#000000",
-      opacity: opacityValue,
-      overflow: "hidden",
-    },
-  },
-  mainMessage: {
-    opacity: opacityValue,
+  littleimage: {
+    width: '90px',
+    height: '90px',
+    position: 'absolute',
+    top: '460px',
+    left: '100px'
   },
 
-  mainMessageContainer: {
-    marginTop: "20vh",
-    marginLeft: theme.spacing(20),
-    [theme.breakpoints.down('xs')]: {
-      marginLeft: theme.spacing(4),
-    },
-  },
-  paper: {
-    overflow: "hidden",
-  },
-  message: {
-    opacity: opacityValue,
-    maxWidth: 250,
-    paddingBottom: theme.spacing(2),
+  toptitle: {
+    fontFamily: 'Arvo, serif',
+    position: 'absolute',
+    top: '150px',
+    left: '100px'
   },
 
-});
+  bottomtitle: {
+    fontFamily: 'Biryani, sans-serif',
+    letterSpacing: '0.05em',
+    color: '#050B8A',
+    fontWeight: 800,
+    position: 'absolute',
+    top: '200px',
+    left: '100px'
+  },
 
+  subheader: {
+    fontFamily: 'Arvo, serif',
+    position: 'absolute',
+    top: '300px',
+    left: '100px',
+    fontSize: '1.3em'
+  },
 
-class Home extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      userID: 1,
-      mode: 0
-    }
-  };
-
-  componentDidMount() {
-    //this.loadUserSettings();
+  lowersubheader: {
+    fontFamily: 'Biryani, sans-serif',
+    fontWeight: 200,
+    position: 'absolute',
+    top: '335px',
+    left: '100px',
+    maxWidth: '350px',
+    fontSize: '1.2em'
   }
 
+})
 
-  loadUserSettings() {
-    this.callApiLoadUserSettings()
-      .then(res => {
-        //console.log("loadUserSettings returned: ", res)
-        var parsed = JSON.parse(res.express);
-        console.log("loadUserSettings parsed: ", parsed[0].mode)
-        this.setState({ mode: parsed[0].mode });
-      });
-  }
-
-  callApiLoadUserSettings = async () => {
-    const url = serverURL + "/api/loadUserSettings";
-
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        //authorization: `Bearer ${this.state.token}`
-      },
-      body: JSON.stringify({
-        userID: this.state.userID
-      })
-    });
-    const body = await response.json();
-    if (response.status !== 200) throw Error(body.message);
-    console.log("User settings: ", body);
-    return body;
-  }
-
-  render() {
-    const { classes } = this.props;
+);
 
 
+const Home = () => {
+  const classes = useStyles()
+  return (
+    <div>
+      <img className = {classes.bigimage} src={MainImage} alt="" />
+      <img className = {classes.littleimage} src={SmallImage} alt="" />
+      <Typography variant = "h4" className = {classes.toptitle}> 
+        University of Waterloo
+      </Typography>
+      <Typography variant = "h2" className = {classes.bottomtitle}> 
+        CLUBHUB
+      </Typography>
+      <Typography variant = "h5" className = {classes.subheader}> 
+        Discover and join clubs
+      </Typography>
+      <Typography variant = "h6" className = {classes.lowersubheader}> 
+        Browse, join, and receive updates about the university's clubs. Find your perfect space!
+      </Typography>
+    </div>
 
-    const mainMessage = (
-      <Grid
-        container
-        spacing={0}
-        direction="column"
-        justify="flex-start"
-        alignItems="flex-start"
-        style={{ minHeight: '100vh' }}
-        className={classes.mainMessageContainer}
-      >
-        <Grid item>
-
-          <Typography
-            variant={"h3"}
-            className={classes.mainMessage}
-            align="flex-start"
-          >
-            {this.state.mode === 0 ? (
-              <React.Fragment>
-                Welcome to MSci342!
-              </React.Fragment>
-            ) : (
-              <React.Fragment>
-                Welcome back!
-              </React.Fragment>
-            )}
-          </Typography>
-
-        </Grid>
-      </Grid>
-    )
-
-
-    return (
-      //render the navbar
-      
-
-      <MuiThemeProvider theme={theme}>
-        <div className={classes.root}>
-        {/* <Router>
-          <Navbar />
-          <Switch>
-            <Route path='/' exact component={Home} />
-            <Route path='/signin' component={SignIn} />
-            <Route path='/hello' component={Hello} />
-        </Switch>
-        </Router> */}
-          
-          <CssBaseline />
-          <Paper
-            className={classes.paper}
-          >
-            <SignIn />
-            <Hello/>
-            <UserName />
-            {mainMessage}
-          </Paper>
-
-        </div>
-      </MuiThemeProvider>
-    );
-  }
+  )
 }
 
-Home.propTypes = {
-  classes: PropTypes.object.isRequired
-};
 
 const UserName = () => {
   const user = useUser()
@@ -203,4 +120,4 @@ const UserName = () => {
 }
 
 
-export default withStyles(styles)(Home);
+export default (Home);
