@@ -255,5 +255,19 @@ app.post('/api/getAllClubs', (req, res) => {
 	connection.end();
   });
 
+  app.post('/api/editClubDescription', (req, res) => {
+	//Query to update the description of a club given the clubID
+	let connection = mysql.createConnection(config);
+	const clubId = req.body.id;
+  	const newDescription = req.body.description;
+	const sql = `UPDATE clubs SET description = '${newDescription}' WHERE id = '${clubId}'`;
+	connection.query(sql, (err, result) => {
+		if (err) throw err;
+		console.log(`Updated description for club with ID ${clubId}`);
+		res.send(`Updated description for club with ID ${clubId}`);
+	});
+	connection.end();
+});
+
 app.listen(port, () => console.log(`Listening on port ${port}`)); //for the dev version
 //app.listen(port, '129.97.25.211'); //for the deployed version, specify the IP address of the server

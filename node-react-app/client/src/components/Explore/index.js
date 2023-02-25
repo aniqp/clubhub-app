@@ -81,20 +81,7 @@ const ExplorePage = () => {
     
 
   const [categoryFilter, setCategoryFilter] = useState("All");
-  const categories = [
-    "All",
-    "Academic",
-    "Business and Entrepreneurial",
-    "Charitable, Community Service, and International Development",
-    "Creative Arts, Dance, and Music",
-    "Cultural",
-    "Environmental and Sustainability",
-    "Games, Recreational, and Social",
-    "Health Promotion",
-    "Media, Publications, and Web Development",
-    "Political and Social Awareness",
-    "Religious and Spiritual",
-  ];
+  
   const handleChange = (event) => {
     setCategoryFilter(event.target.value);
     setCurrentPage(1);
@@ -136,7 +123,7 @@ const ExplorePage = () => {
             <MenuItem value="All">All</MenuItem>
             <MenuItem value="academic">Academic</MenuItem>
             <MenuItem value="business-and-entrepreneurial">Business and Entrepreneurial</MenuItem>
-            <MenuItem value="Charitable, Community Service, and International Development">Charitable, Community Service, and International Development</MenuItem>
+            <MenuItem value="charitable-community-service-international-development">Charitable, Community Service, and International Development</MenuItem>
             <MenuItem value="creative-arts-dance-and-music">Creative Arts, Dance, and Music</MenuItem>
             <MenuItem value="cultural">Cultural</MenuItem>
             <MenuItem value="environmental-and-sustainability">Environmental and Sustainability</MenuItem>
