@@ -3,6 +3,9 @@ import { makeStyles, Grid, TextField, FormControl, MenuItem, InputLabel, Select,
 import history from '../Navigation/history';
 import ClubCard from "./ClubCard";
 import { Pagination } from "@material-ui/lab";
+import { useUser } from '../Firebase/context';
+
+const serverURL = "";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -28,23 +31,15 @@ const useStyles = makeStyles((theme) => ({
     padding: "0.2rem 0.5rem",
     marginLeft: "0.5rem"
   },
-  test:{
-    color:'red'
-  }
 }));
 
 const ExplorePage = () => {
     
     const [clubs, setClubs] = useState([]);
 
-    // console.log("clubs: ", clubs)
-    // console.log("clubs[0]", clubs[0])
-  
-    const [currentPage, setCurrentPage] = useState(1);
-    const [clubsPerPage, setClubsPerPage] = useState(4);
-
     useEffect(() => {
       getClubs();
+      getMemberships();
     }, []);
     
     const getClubs = () => {
@@ -72,9 +67,9 @@ const ExplorePage = () => {
         });
 
         const data = await response.json();
-        // console.log(data);
         return data;
-      } catch (error) {
+      } 
+      catch (error) {
         console.error(error);
       }
     };
@@ -100,12 +95,60 @@ const ExplorePage = () => {
   );
 
   // PAGINATION
+  const [currentPage, setCurrentPage] = useState(1);
+  const [clubsPerPage, setClubsPerPage] = useState(4);
+
   const indexOfLastClub = (currentPage) * clubsPerPage;
   const indexOfFirstClub = indexOfLastClub - clubsPerPage;
   const currentClubs = filteredClubs.slice(indexOfFirstClub, indexOfLastClub);
   
   const handlePageClick = (event, value) => {
     setCurrentPage(value);
+  }
+
+  // CHECKING CLUB MEMBERSHIPS FOR USER
+  const [listOfClubs, setListOfClubs] = React.useState([]);
+  const user = useUser();
+  // console.log(user);
+
+  useEffect(() => {
+    // console.log('change of user')
+    getMemberships();
+  }, [user]);
+
+  const getMemberships = () => {
+    if (user){
+      let userID = user.uid;
+      callApiClubMembership(userID)
+        .then(res => {
+            var parsed = JSON.parse(res.express);
+            let memberships = []
+            for (let i = 0; i < parsed.length; i++){
+              memberships.push(parsed[i].club_id)
+            }
+            setListOfClubs(memberships);
+        })
+    } else {
+      setListOfClubs([]); 
+    }
+  }
+
+  
+  const callApiClubMembership = async (userID) => {
+    const url = serverURL + '/api/checkMembership';
+    const response = await fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            //authorization: `Bearer ${this.state.token}`
+        },
+        body: JSON.stringify({
+            userID: userID,
+        })
+    });
+    const body = await response.json();
+    if (response.status !== 200) throw Error(body.message);
+    return body;
   }
 
   return (
@@ -148,7 +191,11 @@ const ExplorePage = () => {
         </Grid>
       </Grid>
       <Grid container style={{ display:'flex', flexDirection:'column'}}>
-          <ClubCard clubs={currentClubs}/>
+        <ul style={{padding:'0'}}>
+            {currentClubs.map((club) => (
+              <ClubCard club={club} isMember={listOfClubs} onJoin={getMemberships}/>
+            ))}
+        </ul>
       </Grid>
       <Grid item style={{display:'flex', justifyContent:'center', marginBottom:'20px'}}>
         <Pagination variant="outlined" color="primary" shape='rounded' count={Math.ceil(filteredClubs.length/clubsPerPage)} page={currentPage} onChange={handlePageClick} />
