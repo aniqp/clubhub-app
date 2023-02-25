@@ -253,7 +253,29 @@ app.post('/api/getAllClubs', (req, res) => {
 	  }
 	});
 	connection.end();
-  });
+});	
+
+app.post('/api/checkMembership', (req,res) => {
+
+	let connection = mysql.createConnection(config);
+	// let clubID = req.body.clubID;
+	let userID = req.body.userID;
+
+	let sql = `select club_id from memberships where uid = '${userID}'`;
+	
+	connection.query(sql, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message);
+		}
+		let string = JSON.stringify(results);
+		res.send({ express: string })
+		//console.log(string)
+	});
+	connection.end();
+
+
+});
+
 
 app.listen(port, () => console.log(`Listening on port ${port}`)); //for the dev version
 //app.listen(port, '129.97.25.211'); //for the deployed version, specify the IP address of the server

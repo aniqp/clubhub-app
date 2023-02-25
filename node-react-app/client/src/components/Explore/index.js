@@ -3,6 +3,9 @@ import { makeStyles, Grid, TextField, FormControl, MenuItem, InputLabel, Select,
 import history from '../Navigation/history';
 import ClubCard from "./ClubCard";
 import { Pagination } from "@material-ui/lab";
+import { useUser } from '../Firebase/context';
+
+const serverURL = "";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -36,16 +39,20 @@ const useStyles = makeStyles((theme) => ({
 const ExplorePage = () => {
     
     const [clubs, setClubs] = useState([]);
-
-    // console.log("clubs: ", clubs)
-    // console.log("clubs[0]", clubs[0])
-  
     const [currentPage, setCurrentPage] = useState(1);
     const [clubsPerPage, setClubsPerPage] = useState(4);
+    const [listOfClubs, setListOfClubs] = React.useState([]);
+
+    const user = useUser();
 
     useEffect(() => {
       getClubs();
+      getMemberships(user);
     }, []);
+
+    useEffect(() => {
+      getMemberships();
+    }, [user, listOfClubs]);
     
     const getClubs = () => {
       fetchClubs()
@@ -121,6 +128,44 @@ const ExplorePage = () => {
     setCurrentPage(value);
   }
 
+
+  const getMemberships = () => {
+    console.log('INNNN')
+    if (user){
+      console.log('found user')
+      let userID = user.uid;
+      callApiClubMembership(userID)
+        .then(res => {
+            var parsed = JSON.parse(res.express);
+            let memberships = []
+            for (let i = 0; i < parsed.length; i++){
+              memberships.push(parsed[i].club_id)
+            }
+            setListOfClubs(memberships);
+        })
+    } else {
+      return false
+    }
+  }
+
+  
+  const callApiClubMembership = async (userID) => {
+    const url = serverURL + '/api/checkMembership';
+    const response = await fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            //authorization: `Bearer ${this.state.token}`
+        },
+        body: JSON.stringify({
+            userID: userID,
+        })
+    });
+    const body = await response.json();
+    if (response.status !== 200) throw Error(body.message);
+    return body;
+  }
+
   return (
     <div className={classes.root}>
       <Grid container style={{display:'flex', justifyContent:'space-between'}}>
@@ -161,7 +206,11 @@ const ExplorePage = () => {
         </Grid>
       </Grid>
       <Grid container style={{ display:'flex', flexDirection:'column'}}>
-          <ClubCard clubs={currentClubs}/>
+        <ul style={{padding:'0'}}>
+            {currentClubs.map((club) => (
+              <ClubCard club={club} isMember={listOfClubs}/>
+            ))}
+        </ul>
       </Grid>
       <Grid item style={{display:'flex', justifyContent:'center', marginBottom:'20px'}}>
         <Pagination variant="outlined" color="primary" shape='rounded' count={Math.ceil(filteredClubs.length/clubsPerPage)} page={currentPage} onChange={handlePageClick} />
