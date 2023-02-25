@@ -301,7 +301,69 @@ app.post('/api/getAllClubs', (req, res) => {
 	connection.end();
 });
 
+app.post('/api/checkMembership', (req,res) => {
 
+	let connection = mysql.createConnection(config);
+	// let clubID = req.body.clubID;
+	let userID = req.body.userID;
+
+	let sql = `select club_id from memberships where uid = '${userID}'`;
+	
+	connection.query(sql, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message);
+		}
+		let string = JSON.stringify(results);
+		res.send({ express: string })
+		//console.log(string)
+	});
+	connection.end();
+
+
+});
+
+app.post('/api/joinClub', (req,res) => {
+	let data = req.body;
+
+	let connection = mysql.createConnection(config);
+	let clubID = req.body.clubID;
+	let userID = req.body.userID;
+
+	let sql = `insert into memberships(uid, club_id, role)
+	values('${userID}', ${clubID}, 'user')`;
+	
+	connection.query(sql, (error, results, fields) => {
+        if (error) {
+            connection.query(`ROLLBACK`, dataEmpty, (error, results, fields) => {
+                let string = JSON.stringify('Error')
+                res.send({ express: string });
+                connection.end();
+            });
+        } else {
+            connection.query(`COMMIT`, data, (error, results, fields) => {
+                let string = JSON.stringify('Success')
+                res.send({ express: string });
+                connection.end();
+            })
+        };
+    })
+
+});
+
+
+  app.post('/api/editClubDescription', (req, res) => {
+	//Query to update the description of a club given the clubID
+	let connection = mysql.createConnection(config);
+	const clubId = req.body.id;
+  	const newDescription = req.body.description;
+	const sql = `UPDATE clubs SET description = '${newDescription}' WHERE id = '${clubId}'`;
+	connection.query(sql, (err, result) => {
+		if (err) throw err;
+		console.log(`Updated description for club with ID ${clubId}`);
+		res.send(`Updated description for club with ID ${clubId}`);
+	});
+	connection.end();
+});
 
 app.listen(port, () => console.log(`Listening on port ${port}`)); //for the dev version
 //app.listen(port, '129.97.25.211'); //for the deployed version, specify the IP address of the server
