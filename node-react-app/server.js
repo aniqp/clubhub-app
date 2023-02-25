@@ -220,7 +220,7 @@ app.post('/api/editAnnouncement', (req, res) => {
 	let newTitle = req.body.newTitle;
 	let newBody = req.body.newBody;
 
-	console.log(newTitle, newBody)
+	// console.log(newTitle, newBody)
 
     let sql = `UPDATE announcements
 	SET title = '${newTitle}', body = '${newBody}'
@@ -235,11 +235,57 @@ app.post('/api/editAnnouncement', (req, res) => {
 
 })
 
+app.post('/api/getClubMembers', (req,res) => {
+
+	let connection = mysql.createConnection(config);
+	let clubID = req.body.clubID;
+
+	let sql = `SELECT u.name, m.role 
+	FROM memberships as m, users as u 
+	WHERE m.club_id=${clubID} and m.uid = u.uid
+	order by role desc;`;
+
+	//console.log(sql);
+	
+
+	connection.query(sql, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message);
+		}
+		let string = JSON.stringify(results);
+		res.send({ express: string })
+		// console.log(string)
+	});
+	connection.end();
+
+});
+
+app.post('/api/getCurrentUserRole', (req,res) => {
+
+	let connection = mysql.createConnection(config);
+	let userID = req.body.userID;
+	let clubID = req.body.clubID;
+
+	let sql = `SELECT role FROM memberships WHERE club_id=${clubID} and uid = "${userID}"`;
+	
+
+	connection.query(sql, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message);
+		}
+		let string = JSON.stringify(results);
+		res.send({ express: string })
+		// console.log(string)
+	});
+	connection.end();
+
+});
+
 app.post('/api/getAllClubs', (req, res) => {
 	// Query all clubs from the clubs table
 	let connection = mysql.createConnection(config)
 	const query = `SELECT * FROM clubs`;
-	console.log(query)
+	// console.log(query)
 	connection.query(query, (error, results, fields) => {
 	  if (error) {
 		// Return an error if the query failed
@@ -253,7 +299,7 @@ app.post('/api/getAllClubs', (req, res) => {
 	  }
 	});
 	connection.end();
-});	
+});
 
 app.post('/api/checkMembership', (req,res) => {
 
