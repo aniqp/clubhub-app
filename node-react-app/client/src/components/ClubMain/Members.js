@@ -82,10 +82,11 @@ const Members = ({name, members}) => {
                 </Card>
             </Grid>
             <Grid item xs={7} style={{padding:'0 0 0 60px'}}>
+                {members.length > 0 && 
                 <Card className={classes.header}>
                     <Grid xs={6} item>Name</Grid>
                     <Grid xs={6} item>Role</Grid>
-                </Card>
+                </Card>}
                 {members.map((member) => (
                 <Card className={classes.card}>
                     <Grid xs={6} item>

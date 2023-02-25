@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect } from 'react';
 import { Grid, Typography } from "@material-ui/core";
 import { useParams } from 'react-router-dom';
 import SideBar from './Sidebar';
@@ -21,9 +21,68 @@ const serverURL = "";
 
 const ClubMain = () => {
     const classes = useStyles();
-    const admin = false;
+    const [admin, setAdmin] = React.useState(false);
+
     const user = useUser();
-    console.log(user)
+
+    React.useEffect(() => {
+        console.log('changing users')
+        if (user) {
+            console.log(user)
+            let userID = user.uid;
+            console.log(userID)
+            getUserRole(userID);
+        } else {
+            setAdmin(false);
+        }
+    }, [user]);
+
+    React.useEffect(() => {
+        if (user) {
+            console.log(user)
+            let userID = user.uid;
+            console.log(userID)
+            getUserRole(userID);
+        } else {
+            setAdmin(false);
+        }
+    }, []);
+
+    const getUserRole = (userID) => {
+        callApiGetUserRole(userID)
+            .then(res => {
+                console.log('hello')
+
+                var parsed = JSON.parse(res.express);
+                if (parsed.length >= 1){
+                    if (parsed[0].role === 'owner' || parsed[0].role === 'admin'){
+                        setAdmin(true);
+                    }
+                } else {
+                    setAdmin(false);
+                }
+                console.log(parsed);
+            })
+    }
+
+    const callApiGetUserRole = async (userID) => {
+        const url = serverURL + '/api/getCurrentUserRole';
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                //authorization: `Bearer ${this.state.token}`
+            },
+            body: JSON.stringify({
+                clubID: clubID,
+                userID: userID,
+            })
+        });
+
+        const body = await response.json();
+        if (response.status !== 200) throw Error(body.message);
+        return body;
+    }
     
     const { clubID } = useParams();
     const [clubTitle, setClubTitle] = React.useState();
@@ -146,10 +205,14 @@ const ClubMain = () => {
                                         title={announcement.title} 
                                         body={announcement.body} 
                                         timestamp={announcement.time_posted}
-                                        onChange={getClubAnnouncements}/>
+                                        onChange={getClubAnnouncements}
+                                        adminStatus={admin}/>
                                 </li>))}
-                        </> ) : (<Typography variant={'h6'}><b>No Announcements</b></Typography>)
-                    }</>}
+                        </> ) : (
+                        <Grid container style={{display:'flex', justifyContent:'center', padding:'30px 0'}}>
+                            <Typography variant={'h6'}><b>No Announcements</b></Typography>
+                        </Grid>
+                        )}</>}
                     {toggle === '4' &&
                         <Typography>
                             <Members name={clubTitle} members={members} />

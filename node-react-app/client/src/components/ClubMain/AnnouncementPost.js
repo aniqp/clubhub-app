@@ -46,7 +46,7 @@ const useStyles = makeStyles({
   });
 
 export default function AnnouncementPost(props) {
-    const admin = true;
+    const admin = props.adminStatus;
 
     const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
     const [editModalOpen, setEditModelOpen] = React.useState(false);
