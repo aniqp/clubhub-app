@@ -1,45 +1,60 @@
 //create basic navbar with material-ui
 import React from 'react';
-import { AppBar, Toolbar, CssBaseline, Typography, makeStyles, } from '@material-ui/core';
+import { Grid, AppBar, Toolbar, CssBaseline, Typography, makeStyles, } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 import { SignIn } from '../SignIn';
 import history from '../Navigation/history';
-import { withRouter } from 'react-router-dom'
+import { withRouter } from 'react-router-dom';
+import { useUser } from '../Firebase/context'
+
 
 const useStyles = makeStyles((theme) => ({
   navlinks: {
-    marginLeft: theme.spacing(10),
     display: "flex",
-  },
-  logo: {
-    flexGrow: "1",
-    cursor: "pointer",
+    
   },
   link: {
+    fontFamily: 'Biryani, sans-serif',
     textDecoration: "none",
+    fontWeight:'600',
     color: "white",
-    fontSize: "20px",
-    marginLeft: theme.spacing(20),
+    fontSize: "15px",
+    marginLeft:'10%',
     "&:hover": {
       color: "yellow",
       borderBottom: "1px solid white",
     },
+    "&.active": {
+      background:'red',
+      color: "yellow",
+      borderBottom: "1px solid white",
+    },
   },
+  logo: {
+    fontFamily: 'Biryani, sans-serif',
+    fontSize: '1.5rem',
+    color:'white',
+    fontWeight:'600',
+    borderBottom:'yellow 2px solid',
+  }, 
+  toolbar: {
+    display:'flex',
+    justifyContent:'space-between',
+  }
 }));
 const Navbar = () => {
   const classes = useStyles();
+  const user = useUser()
+
   function refreshPage() {
     window.location.reload(false);
   }
   return (
     <>
       <CssBaseline />
-      <AppBar position="fixed" color="primary">
-        <Toolbar>
-
-          <div className={classes.navlinks}>
-
-            <SignIn />
+      <AppBar position="fixed">
+        <Toolbar className={classes.toolbar}>
+          <Grid item xs={4} className={classes.navlinks}>
             <Link
               to = '/'
               onClick={() => history.push('/')}
@@ -48,18 +63,25 @@ const Navbar = () => {
               Home
             </Link>
             <Link
-              to = '/dashboard'
-              onClick={() => history.push('/dashboard')}
-              className={classes.link}>
-              Dashboard
-            </Link>
-            <Link
               to = '/explore'
               onClick={() => history.push('/explore')}
               className={classes.link}>
               Explore
             </Link>
-          </div>
+            {user &&
+            <Link
+              to = '/explore'
+              onClick={() => history.push('/explore')}
+              className={classes.link}>
+              My Clubs
+            </Link>}
+          </Grid>
+          <Grid xs={4} style={{display:'flex', justifyContent:'center'}}>
+            <Typography className={classes.logo}>CLUBHUB</Typography>
+          </Grid>
+          <Grid xs={4} style={{display:'flex', justifyContent:'end', paddingRight:'46px'}}>
+            <SignIn />
+          </Grid>
         </Toolbar>
       </AppBar>
     </>
