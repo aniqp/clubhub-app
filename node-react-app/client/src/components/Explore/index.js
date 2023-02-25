@@ -31,28 +31,16 @@ const useStyles = makeStyles((theme) => ({
     padding: "0.2rem 0.5rem",
     marginLeft: "0.5rem"
   },
-  test:{
-    color:'red'
-  }
 }));
 
 const ExplorePage = () => {
     
     const [clubs, setClubs] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [clubsPerPage, setClubsPerPage] = useState(4);
-    const [listOfClubs, setListOfClubs] = React.useState([]);
-
-    const user = useUser();
 
     useEffect(() => {
       getClubs();
-      getMemberships(user);
-    }, []);
-
-    useEffect(() => {
       getMemberships();
-    }, [user, listOfClubs]);
+    }, []);
     
     const getClubs = () => {
       fetchClubs()
@@ -79,9 +67,9 @@ const ExplorePage = () => {
         });
 
         const data = await response.json();
-        // console.log(data);
         return data;
-      } catch (error) {
+      } 
+      catch (error) {
         console.error(error);
       }
     };
@@ -120,6 +108,9 @@ const ExplorePage = () => {
   );
 
   // PAGINATION
+  const [currentPage, setCurrentPage] = useState(1);
+  const [clubsPerPage, setClubsPerPage] = useState(4);
+
   const indexOfLastClub = (currentPage) * clubsPerPage;
   const indexOfFirstClub = indexOfLastClub - clubsPerPage;
   const currentClubs = filteredClubs.slice(indexOfFirstClub, indexOfLastClub);
@@ -128,11 +119,18 @@ const ExplorePage = () => {
     setCurrentPage(value);
   }
 
+  // CHECKING CLUB MEMBERSHIPS FOR USER
+  const [listOfClubs, setListOfClubs] = React.useState([]);
+  const user = useUser();
+  // console.log(user);
+
+  useEffect(() => {
+    // console.log('change of user')
+    getMemberships();
+  }, [user]);
 
   const getMemberships = () => {
-    console.log('INNNN')
     if (user){
-      console.log('found user')
       let userID = user.uid;
       callApiClubMembership(userID)
         .then(res => {
@@ -144,7 +142,7 @@ const ExplorePage = () => {
             setListOfClubs(memberships);
         })
     } else {
-      return false
+      setListOfClubs([]); 
     }
   }
 
@@ -208,7 +206,7 @@ const ExplorePage = () => {
       <Grid container style={{ display:'flex', flexDirection:'column'}}>
         <ul style={{padding:'0'}}>
             {currentClubs.map((club) => (
-              <ClubCard club={club} isMember={listOfClubs}/>
+              <ClubCard club={club} isMember={listOfClubs} onJoin={getMemberships}/>
             ))}
         </ul>
       </Grid>

@@ -3,8 +3,10 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Button,Card, Typography } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import history from '../Navigation/history';
+import { getAuth } from 'firebase/auth'
 import { useUser } from '../Firebase/context';
-
+import { useSignInWithGoogle, useSignOut } from 'react-firebase-hooks/auth';
+import { useAuthHeader } from '../Firebase/context';
 
 const serverURL = "";
 
@@ -32,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-const ClubCard = ({club, isMember}) => {
+const ClubCard = ({club, isMember, onJoin}) => {
     const classes = useStyles(); 
     const user = useUser();
 
@@ -43,17 +45,54 @@ const ClubCard = ({club, isMember}) => {
         return input;
     };
 
+    // Non-users will be redirected to sign in when trying to join a club 
+    const [auth] = useState(getAuth())
+    const [signInWithGoogle] = useSignInWithGoogle(auth)
+    const authHeader = useAuthHeader()
+    const [unfufilledJoin, setUnFulfilledJoin] = React.useState('');
+
+    const logIn = async (clubID) => {
+        const result = await signInWithGoogle();
+        if (!result) {
+            console.log('Login failed')
+            return
+        }
+
+
+        const request = {
+            method: 'PUT',
+            headers: {
+                ...authHeader(),
+            }
+        }
+        const response = await fetch(serverURL.concat('api/login'), request)
+        
+    }
+
     const handleJoinClub = (clubID) => {
         if (user) {
             const userID = user.uid;
+            console.log('in');
+            setUnFulfilledJoin('');
             callApiJoinClub(userID, clubID)
             .then(res => {
                 console.log('club join successful')
+                onJoin();
             })
         } else {
-            return;
+            console.log('not signed in')
+            logIn(clubID);
+            setUnFulfilledJoin(clubID);
+
         }
     }
+    useEffect(() => {
+        console.log('change in user: ' + user);
+        console.log('unfulfilled join: ' + unfufilledJoin);
+        if (unfufilledJoin){
+            handleJoinClub(unfufilledJoin);
+        }
+    },[user])
 
     const callApiJoinClub = async (userID, clubID) => {
         const url = serverURL + '/api/joinClub';
