@@ -1,13 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import {TextField, FormControl, MenuItem, InputLabel, Select } from "@material-ui/core";
-import Grid from "@material-ui/core/Grid";
-
-import Box from "@material-ui/core/Box";
+import { makeStyles, Grid, TextField, FormControl, MenuItem, InputLabel, Select, Box, Typography } from "@material-ui/core";
 import history from '../Navigation/history';
-
 import ClubCard from "./ClubCard";
-import ReactPaginate from "react-paginate";
+import { Pagination } from "@material-ui/lab";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -33,6 +28,9 @@ const useStyles = makeStyles((theme) => ({
     padding: "0.2rem 0.5rem",
     marginLeft: "0.5rem"
   },
+  test:{
+    color:'red'
+  }
 }));
 
 const ExplorePage = () => {
@@ -42,7 +40,7 @@ const ExplorePage = () => {
     // console.log("clubs: ", clubs)
     // console.log("clubs[0]", clubs[0])
   
-    const [currentPage, setCurrentPage] = useState(0);
+    const [currentPage, setCurrentPage] = useState(1);
     const [clubsPerPage, setClubsPerPage] = useState(4);
 
     useEffect(() => {
@@ -99,14 +97,14 @@ const ExplorePage = () => {
   ];
   const handleChange = (event) => {
     setCategoryFilter(event.target.value);
-    setCurrentPage(0);
+    setCurrentPage(1);
   };
   const classes = useStyles();
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
-    setCurrentPage(0);
+    setCurrentPage(1);
   };
 
   const filteredClubs = clubs.filter((club) =>
@@ -115,12 +113,12 @@ const ExplorePage = () => {
   );
 
   // PAGINATION
-  const indexOfLastClub = (currentPage + 1) * clubsPerPage;
+  const indexOfLastClub = (currentPage) * clubsPerPage;
   const indexOfFirstClub = indexOfLastClub - clubsPerPage;
   const currentClubs = filteredClubs.slice(indexOfFirstClub, indexOfLastClub);
   
-  const handlePageClick = (data) => {
-    setCurrentPage(data.selected);
+  const handlePageClick = (event, value) => {
+    setCurrentPage(value);
   }
 
   return (
@@ -165,25 +163,15 @@ const ExplorePage = () => {
       <Grid container style={{ display:'flex', flexDirection:'column'}}>
           <ClubCard clubs={currentClubs}/>
       </Grid>
-      <ReactPaginate
-            forcePage = {currentPage}
-            pageCount={Math.ceil(filteredClubs.length/clubsPerPage)} 
-            marginPagesDisplayed={3} 
-            pageRangeDisplayed={3} 
-            onPageChange={handlePageClick}
-            containerClassName={'pagination justify-content-center'}
-            pageClassName={'page-item'}
-            pageLinkClassName={'page-link'}
-            previousClassName={'page-item'}
-            previousLinkClassName={'page-link'}
-            nextClassName={'page-item'}
-            nextLinkClassName={'page-link'}
-            breakClassName={'page-item'}
-            breakLinkClassName={'page-link'}
-            activeClassName={'active'}
-             />
+      <Grid item style={{display:'flex', justifyContent:'center', marginBottom:'20px'}}>
+        <Pagination variant="outlined" color="primary" shape='rounded' count={Math.ceil(filteredClubs.length/clubsPerPage)} page={currentPage} onChange={handlePageClick} />
+      </Grid>
     </div>
   );
 };
+
+
+
+
 
 export default ExplorePage;
