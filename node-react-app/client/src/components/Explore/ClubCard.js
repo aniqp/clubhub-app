@@ -34,6 +34,7 @@ const useStyles = makeStyles((theme) => ({
 
 const ClubCard = ({club, isMember}) => {
     const classes = useStyles(); 
+    const user = useUser();
 
     const truncate = (input) => {
         if (input.length > 100) {
@@ -41,6 +42,36 @@ const ClubCard = ({club, isMember}) => {
         }
         return input;
     };
+
+    const handleJoinClub = (clubID) => {
+        if (user) {
+            const userID = user.uid;
+            callApiJoinClub(userID, clubID)
+            .then(res => {
+                console.log('club join successful')
+            })
+        } else {
+            return;
+        }
+    }
+
+    const callApiJoinClub = async (userID, clubID) => {
+        const url = serverURL + '/api/joinClub';
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                //authorization: `Bearer ${this.state.token}`
+            },
+            body: JSON.stringify({
+                userID: userID,
+                clubID: clubID,
+            })
+        });
+        const body = await response.json();
+        if (response.status !== 200) throw Error(body.message);
+        return body;
+    }
 
     return(
         <li key={club.id} className={classes.li}>
@@ -54,7 +85,7 @@ const ClubCard = ({club, isMember}) => {
                     {isMember.includes(club.id) ? (                           
                         <Button disabled className={classes.btn} color='secondary' variant='outlined'>Join Club</Button>
                     ) : (                            
-                        <Button className={classes.btn} color='secondary' variant='outlined'>Join Club</Button>
+                        <Button onClick={() => {handleJoinClub(club.id)}} className={classes.btn} color='secondary' variant='outlined'>Join Club</Button>
                     )}
                 </Grid>
             </Card>

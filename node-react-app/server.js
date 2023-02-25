@@ -276,6 +276,34 @@ app.post('/api/checkMembership', (req,res) => {
 
 });
 
+app.post('/api/joinClub', (req,res) => {
+	let data = req.body;
+
+	let connection = mysql.createConnection(config);
+	let clubID = req.body.clubID;
+	let userID = req.body.userID;
+
+	let sql = `insert into memberships(uid, club_id, role)
+	values('${userID}', ${clubID}, 'user')`;
+	
+	connection.query(sql, (error, results, fields) => {
+        if (error) {
+            connection.query(`ROLLBACK`, dataEmpty, (error, results, fields) => {
+                let string = JSON.stringify('Error')
+                res.send({ express: string });
+                connection.end();
+            });
+        } else {
+            connection.query(`COMMIT`, data, (error, results, fields) => {
+                let string = JSON.stringify('Success')
+                res.send({ express: string });
+                connection.end();
+            })
+        };
+    })
+
+});
+
 
 app.listen(port, () => console.log(`Listening on port ${port}`)); //for the dev version
 //app.listen(port, '129.97.25.211'); //for the deployed version, specify the IP address of the server
