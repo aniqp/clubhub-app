@@ -14,7 +14,7 @@ const serverURL = "";
 const useStyles = makeStyles({
     root: {
       padding:'8px',
-      background:'#9DB4C0',
+      background:'rgba(115, 115, 115, 0.38)',
       borderRadius:'8px',
       margin:'25px 70px',
       maxWidth: '90%',
@@ -46,7 +46,7 @@ const useStyles = makeStyles({
   });
 
 export default function AnnouncementPost(props) {
-    const admin = false;
+    const admin = true;
 
     const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
     const [editModalOpen, setEditModelOpen] = React.useState(false);
@@ -109,16 +109,56 @@ export default function AnnouncementPost(props) {
         return body;
     }
 
+    // CONVERT 24HR to 12HR TIMESTAMP
+    function convertTime(str) {
+        let result = '';
+        let hour1 = Number(str[0] - '0');
+        let hour2 = Number(str[1] - '0');
+        let hh;
+        if (hour2) {
+            hh = hour1 * 10 + hour2;
+        } else {
+            hh = 0
+        }
+        let meridien;
+
+        if (hh < 12) {
+            meridien = 'AM';
+        } else {
+            meridien = 'PM';
+        }
+        hh %= 12;
+
+        if (hh == 0) {
+            console.log('hh = 0')
+            result += '12';
+
+            for (let i = 2; i < 5; i++){
+                result+=str[i]
+            }
+        } else {
+            result += hh;
+            for (let i = 2; i < 5; i++){
+                result+=str[i]
+            } 
+        }
+        result += ' ' + meridien;
+        return result;
+
+    }
 
     return(
         <Grid item className={classes.root}>
-            <Box style={{display:'flex', padding:'5px 0px 5px 10px'}}>
-                <img src={profile} style={{height:'50px'}}></img>
-                <Box style={{padding:'3px 0 0 10px'}}>
-                    <Typography>{props.name}</Typography>
-                    <Typography>{props.timestamp.slice(0, 15)}</Typography> 
-                </Box>
-            </Box>
+            <Grid item style={{display:'flex', padding:'5px 0px 5px 10px'}}>
+                <Grid item xs={6} style={{display:'flex', flexDirection:'row', padding:'5px 0'}}>
+                    <img src={profile} style={{height:'50px'}}></img>
+                    <Typography style={{display:'flex', alignItems:'center', padding:'0 10px 0 10px'}}>{props.name}</Typography>
+                </Grid>
+                <Grid item xs={6} style={{display:'flex', flexDirection:'column', alignItems:'end', padding:'5px 10px 5px 0'}}>
+                    <Typography>{props.timestamp.slice(0, 10)}</Typography> 
+                    <Typography>{convertTime(props.timestamp.slice(10, 15))}</Typography> 
+                </Grid>
+            </Grid>
             <Box className={classes.title}>
                 <Typography className={classes.titleFont}>{props.title}</Typography>
             </Box>
