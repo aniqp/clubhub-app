@@ -13,10 +13,11 @@ import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
 import Box from "@material-ui/core/Box";
-import { CardHeader } from '@material-ui/core';
+import { Button, CardHeader, IconButton } from '@material-ui/core';
 import Item from '@material-ui/core/Grid';
 import { useParams } from 'react-router-dom';
 import { makeStyles } from "@material-ui/core/styles";
+import  MyButton from "./clubModal"
 
 
 //Dev mode
@@ -101,7 +102,12 @@ const ClubDetails = () => {
                         <Card
                             variant="elevation"
                             style={{ backgroundColor: 'light-grey' }}>
-                            <CardHeader title="Description" />
+                            <CardHeader title="Description" 
+                                 action={
+                                    
+                                    <MyButton clubid= {clubID} ></MyButton>
+                                    
+                                 }/>
                             <CardContent>
                                 <Typography variant='p' color='textPrimary'>
                                     {clubDescription}
