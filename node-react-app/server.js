@@ -1,6 +1,5 @@
 let mysql = require('mysql');
 let config = require('./config.js');
-const fetch = require('node-fetch');
 const express = require("express");
 const path = require("path");
 const bodyParser = require("body-parser");

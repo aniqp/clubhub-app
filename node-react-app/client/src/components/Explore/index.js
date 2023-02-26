@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { makeStyles, Grid, TextField, FormControl, MenuItem, InputLabel, Select, Box, Typography } from "@material-ui/core";
-import history from '../Navigation/history';
+import { makeStyles, Grid, TextField, FormControl, MenuItem, InputLabel, Select } from "@material-ui/core";
 import ClubCard from "./ClubCard";
 import { Pagination } from "@material-ui/lab";
 import { useUser } from '../Firebase/context';

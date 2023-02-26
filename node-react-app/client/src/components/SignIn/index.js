@@ -1,5 +1,4 @@
-import { Button, makeStyles, Typography } from '@material-ui/core'
-import { mergeClasses } from '@material-ui/styles'
+import { Button, makeStyles } from '@material-ui/core'
 import { getAuth } from 'firebase/auth'
 import React, { useState } from 'react'
 import { useSignInWithGoogle, useSignOut } from 'react-firebase-hooks/auth'

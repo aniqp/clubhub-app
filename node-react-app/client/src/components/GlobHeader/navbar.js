@@ -4,8 +4,7 @@ import { Grid, AppBar, Toolbar, CssBaseline, Typography, makeStyles, } from '@ma
 import { Link } from 'react-router-dom';
 import { SignIn } from '../SignIn';
 import history from '../Navigation/history';
-import { withRouter } from 'react-router-dom';
-import { useUser } from '../Firebase/context'
+import { useUser } from '../Firebase/context';
 
 
 const useStyles = makeStyles((theme) => ({

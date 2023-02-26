@@ -1,4 +1,4 @@
-import React, { Component, useEffect } from 'react';
+import React from 'react';
 import { Grid, Typography } from "@material-ui/core";
 import { useParams } from 'react-router-dom';
 import SideBar from './Sidebar';
