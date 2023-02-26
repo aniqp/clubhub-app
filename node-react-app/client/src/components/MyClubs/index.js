@@ -11,28 +11,18 @@ const useStyles = makeStyles((theme) => ({
   root: {
     maxWidth: 800,
     margin: "0 auto",
-  },
-  search: {
-    marginBottom: theme.spacing(2),
-    paddingHorizontal: "100px",
     alignItems: "center",
+    justifycontent: "center",
+    marginTop: '30px'
+  },
+  title: {
+    fontFamily: 'Arvo, serif'
   },
   card: {
     border: "1px solid #ddd",
     borderRadius: 5,
     boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
     padding: 16,
-  },
-  category: {
-    backgroundColor: "red",
-    color: "white",
-    display: "inline-block",
-    borderRadius: "3px",
-    padding: "0.2rem 0.5rem",
-    marginLeft: "0.5rem"
-  },
-  test: {
-    color: 'red'
   }
 }));
 
@@ -46,16 +36,12 @@ const MyClubs = () => {
   useEffect(() => {
     if (user) {
       console.log('User ID:', user.uid);
+      getMyClubs();
     }
     else {
       console.log('Failed')
     }
   }, [user]);
-
-  useEffect(() => {
-    getMyClubs();
-    console.log('myClubs state: ' + myClubs)
-  }, [])
 
   useEffect(() => {
     if (myClubs) {
@@ -98,8 +84,9 @@ const callApiGetMyClubs = async () => {
   return (
     <div className={classes.root}>
       <Grid container style={{ display: 'flex', flexDirection: 'column' }}>
-        <p>{myClubs[0]}</p>
-        {/* <MyClubCard clubs = {myClubs} /> */}
+      <Typography className = {classes.title} variant = "h4"> My Clubs </Typography>
+      <br></br>
+        <MyClubCard clubs = {myClubs} />
       </Grid>
     </div>
   );
