@@ -1,16 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { Button, Card, Typography } from "@material-ui/core";
+import { Button,Card, Typography } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import history from '../Navigation/history';
 
-import { getAuth } from 'firebase/auth';
-import { useUser } from '../Firebase/context';
-import { useSignInWithGoogle } from 'react-firebase-hooks/auth';
-import { useAuthHeader } from '../Firebase/context';
-import { serverURL } from '../../constants/config'
-
-const ClubCard = (props) => {
+const MyClubCard = (props) => {
 
     const truncate = (input) => {
         if (input.length > 100) {
@@ -29,9 +23,8 @@ const ClubCard = (props) => {
                             <Typography variant='h6' style={{padding:'0 0 10px 0'}}>{club.name}</Typography>
                             <Typography style={{fontSize:'0.8rem'}}>{truncate(club.description)}</Typography>
                         </Grid>
-                        <Grid item xs={3} style={{display:'flex', flexDirection:'column', justifyContent:'space-around'}}>
-                            <Button onClick={() => history.push(`/clubs/${club.id}`)} color='primary' variant='outlined' >Club Details</Button>
-                            <Button color = 'secondary' variant='outlined'>Join Club</Button>
+                        <Grid item xs={3} style={{display:'flex', flexDirection:'column', justifyContent:'flex-end', alignItems: 'flexEnd'}}>
+                            <Button onClick={() => history.push(`/clubboard/${club.id}`)} color='primary' variant='outlined' >View Board</Button>
                         </Grid>
                     </Card>
                 </li>
@@ -41,4 +34,4 @@ const ClubCard = (props) => {
     
 }
 
-export default ClubCard;
+export default MyClubCard;

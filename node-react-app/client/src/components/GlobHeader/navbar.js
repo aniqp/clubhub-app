@@ -69,8 +69,8 @@ const Navbar = () => {
             </Link>
             {user &&
             <Link
-              to = '/explore'
-              onClick={() => history.push('/explore')}
+              to = '/myclubs'
+              onClick={() => history.push('/myclubs')}
               className={classes.link}>
               My Clubs
             </Link>}
