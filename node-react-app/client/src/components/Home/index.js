@@ -96,19 +96,4 @@ const Home = () => {
 }
 
 
-const UserName = () => {
-  const user = useUser()
-  return (<>
-    <div>{user ? (
-      <>
-        <p>{user.displayName}</p>
-        <p>{user.email}</p>
-        <p>{user.uid}</p>
-      </>
-    ) : 'No user'}</div>
-  </>
-  )
-}
-
-
 export default (Home);
