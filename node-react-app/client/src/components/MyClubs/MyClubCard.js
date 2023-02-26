@@ -24,7 +24,7 @@ const MyClubCard = (props) => {
                             <Typography style={{fontSize:'0.8rem'}}>{truncate(club.description)}</Typography>
                         </Grid>
                         <Grid item xs={3} style={{display:'flex', flexDirection:'column', justifyContent:'flex-end', alignItems: 'flexEnd'}}>
-                            <Button onClick={() => history.push(`/clubboard/${club.id}`)} color='primary' variant='outlined' >View Board</Button>
+                            <Button style = {{border: '1.5px solid'}} onClick={() => history.push(`/clubboard/${club.id}`)} color='primary' variant='outlined' >View Board</Button>
                         </Grid>
                     </Card>
                 </li>
