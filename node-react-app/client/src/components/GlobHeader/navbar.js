@@ -76,9 +76,12 @@ const Navbar = () => {
               My Clubs
             </Link>}
           </Grid>
-          <Grid xs={4} style={{display:'flex', justifyContent:'center'}}>
+          <Link
+            to='/'
+            onClick={() => history.push('/')}
+            className={classes.link}>
             <Typography className={classes.logo}>CLUBHUB</Typography>
-          </Grid>
+            </Link>
           <Grid xs={4} style={{display:'flex', justifyContent:'end', paddingRight:'46px'}}>
             <SignIn />
           </Grid>
