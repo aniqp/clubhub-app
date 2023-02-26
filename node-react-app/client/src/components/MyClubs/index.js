@@ -26,13 +26,18 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const MyClubs = () => {
+const MyClubs = ({loadMyClubs}) => {
 
   const user = useUser();
 
   const [myClubs, setMyClubs] = useState([])
 
   const classes = useStyles();
+
+  useEffect(() => {
+    loadMyClubs();
+  }, [loadMyClubs])
+
   useEffect(() => {
     if (user) {
       console.log('User ID:', user.uid);
