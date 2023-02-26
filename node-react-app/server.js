@@ -379,6 +379,11 @@ app.post('/api/getMyClubs', (req,res) => {
 	const data = userID
 
 	connection.query(sql, data, (error, results, fields) => {
+
+	AND memberships.uid = '${userID}'`;
+	
+	connection.query(sql, (error, results, fields) => {
+
 		if (error) {
 			return console.error(error.message);
 		}
