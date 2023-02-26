@@ -3,8 +3,11 @@
   "version": "1.0.0",
   "scripts": {
     "client": "cd client && yarn start",
+    "build": "cd client && yarn build",
     "server": "nodemon server.js",
-    "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\""
+    "serve": "node server.js",
+    "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\"",
+    "deploy": "yarn build && yarn serve"
   },
   "dependencies": {
     "dotenv": "^8.1.0",
