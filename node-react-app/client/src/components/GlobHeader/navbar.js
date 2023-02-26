@@ -78,7 +78,8 @@ const Navbar = () => {
           <Link
             to='/'
             onClick={() => history.push('/')}
-            className={classes.link}>
+            className={classes.link}
+            style={{margin:'0'}}>
             <Typography className={classes.logo}>CLUBHUB</Typography>
             </Link>
           <Grid xs={4} style={{display:'flex', justifyContent:'end', paddingRight:'46px'}}>
