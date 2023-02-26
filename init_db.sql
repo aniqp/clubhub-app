@@ -22,7 +22,7 @@ CREATE TABLE `memberships` (
 	`uid` VARCHAR(255) NOT NULL,
 	`club_id` INT NOT NULL,
 	`role` ENUM("pending", "user", "admin", "owner"),
-	`title` VARCHAR(255) NOT NULL,
+	`title` VARCHAR(255),
 	PRIMARY KEY (`uid`,`club_id`),
 	FOREIGN KEY (`uid`) REFERENCES users(uid),
 	FOREIGN KEY (`club_id`) REFERENCES clubs(id)

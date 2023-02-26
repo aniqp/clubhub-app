@@ -4,8 +4,7 @@ import { Grid, AppBar, Toolbar, CssBaseline, Typography, makeStyles, } from '@ma
 import { Link } from 'react-router-dom';
 import { SignIn } from '../SignIn';
 import history from '../Navigation/history';
-import { withRouter } from 'react-router-dom';
-import { useUser } from '../Firebase/context'
+import { useUser } from '../Firebase/context';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -76,9 +75,13 @@ const Navbar = () => {
               My Clubs
             </Link>}
           </Grid>
-          <Grid xs={4} style={{display:'flex', justifyContent:'center'}}>
+          <Link
+            to='/'
+            onClick={() => history.push('/')}
+            className={classes.link}
+            style={{margin:'0'}}>
             <Typography className={classes.logo}>CLUBHUB</Typography>
-          </Grid>
+            </Link>
           <Grid xs={4} style={{display:'flex', justifyContent:'end', paddingRight:'46px'}}>
             <SignIn />
           </Grid>

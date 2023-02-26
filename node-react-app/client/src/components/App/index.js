@@ -1,11 +1,8 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 
 import Home from '../Home';
-import ExplorePage from '../Explore/index';
-import ClubDetails from '../ClubDetails'
 import Navbar from '../GlobHeader/navbar';
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import history from '../Navigation/history';
+import { BrowserRouter as Router } from "react-router-dom";
 
 import PrivateRoute from '../Navigation/PrivateRoute.js';
 import { useAuth, auth, UserContext, AuthHeaderContext } from '../Firebase';

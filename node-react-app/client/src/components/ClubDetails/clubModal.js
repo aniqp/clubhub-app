@@ -1,6 +1,7 @@
 import React from 'react';
 import Modal from 'react-modal';
 import { Button } from '@material-ui/core';
+import { serverURL } from '../../constants/config'
 
 const customStyles = {
   content: {
@@ -67,7 +68,7 @@ class MyButton extends React.Component {
     handleSubmit = (inputValue) => {
       // handle the submit action here, for example by updating the component state
       console.log("this mf input ", inputValue)
-      const serverURL = "";
+
       const callApiGetClubs = async () => {
         const url = serverURL + '/api/editClubDescription';
         const response = await fetch(url, {
