@@ -1,9 +1,9 @@
-import React, { Component, useState } from 'react';
-import { Grid, Button, TextField, Card } from "@material-ui/core";
+import React from 'react';
+import { Grid, Card } from "@material-ui/core";
 import { Typography } from '@material-ui/core';
 import { makeStyles } from "@material-ui/core/styles";
 import profile from '../../images/profile-icon.png';
-import membersIcon from '../../images/members.png'
+import membersIcon from '../../images/members.png';
 
 const useStyles = makeStyles((theme) => ({
     root:{

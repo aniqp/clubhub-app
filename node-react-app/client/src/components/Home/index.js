@@ -1,29 +1,9 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import CssBaseline from "@material-ui/core/CssBaseline";
-import { MuiThemeProvider, createTheme } from "@material-ui/core/styles";
-import Grid from "@material-ui/core/Grid";
+import React from 'react';
 import Typography from "@material-ui/core/Typography";
-import Paper from "@material-ui/core/Paper";
-import { SignIn } from '../SignIn';
-import { useUser } from '../Firebase';
-import { Hello } from '../Hello';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import { makeStyles } from "@material-ui/core/styles";
-import MainImage from "../../images/hero-image-1.png"
-import SmallImage from "../../images/hero-image-2.png"
+import MainImage from "../../images/hero-image-1.png";
+import SmallImage from "../../images/hero-image-2.png";
 
-
-//Dev mode
-const serverURL = ""; //enable for dev mode
-
-//Deployment mode instructions
-//const serverURL = "http://ov-research-4.uwaterloo.ca:PORT"; //enable for deployed mode; Change PORT to the port number given to you;
-//To find your port number: 
-//ssh to ov-research-4.uwaterloo.ca and run the following command: 
-//env | grep "PORT"
-//copy the number only and paste it in the serverURL in place of PORT, e.g.: const serverURL = "http://ov-research-4.uwaterloo.ca:3000";
 
 const useStyles = makeStyles((theme) => ({
   bigimage: {
@@ -101,21 +81,6 @@ const Home = () => {
       </Typography>
     </div>
 
-  )
-}
-
-
-const UserName = () => {
-  const user = useUser()
-  return (<>
-    <div>{user ? (
-      <>
-        <p>{user.displayName}</p>
-        <p>{user.email}</p>
-        <p>{user.uid}</p>
-      </>
-    ) : 'No user'}</div>
-  </>
   )
 }
 

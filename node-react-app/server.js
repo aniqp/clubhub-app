@@ -1,6 +1,5 @@
 let mysql = require('mysql');
 let config = require('./config.js');
-const fetch = require('node-fetch');
 const express = require("express");
 const path = require("path");
 const bodyParser = require("body-parser");
@@ -103,41 +102,25 @@ app.put('/api/login', (req, res) => {
 }
 )
 
-
-app.post('/api/loadUserSettings', (req, res) => {
-
-	let connection = mysql.createConnection(config);
-	let userID = req.body.userID;
-
-	let sql = `SELECT mode FROM user WHERE userID = ?`;
-	console.log(sql);
-	let data = [userID];
-	console.log(data);
-
-	connection.query(sql, data, (error, results, fields) => {
-		if (error) {
-			return console.error(error.message);
-		}
-
-		let string = JSON.stringify(results);
-		//let obj = JSON.parse(string);
-		res.send({ express: string });
-	});
-	connection.end();
-});
-
 app.post('/api/getClubs', (req, res) => {
 
 	let connection = mysql.createConnection(config)
 	let clubID = req.body.clubID
 
-	let sql = `SELECT name, description
+	// let sql = `SELECT name, description
+	// FROM clubs
+	// WHERE clubs.id = ${clubID}`;
+	
+	const sql = `SELECT name, description
 	FROM clubs
-	WHERE clubs.id = ${clubID}`;
+	WHERE clubs.id = ?`;
+
+	const data = [clubID]
+
 
 	//console.log(sql);
 
-	connection.query(sql, (error, results, fields) => {
+	connection.query(sql, data, (error, results, fields) => {
 		if (error) {
 			return console.error(error.message);
 		}
@@ -152,15 +135,17 @@ app.post('/api/getClubAnnouncements', (req,res) => {
 	let connection = mysql.createConnection(config);
 	let clubID = req.body.clubID;
 
-	let sql = `SELECT a.title, a.body, a.time_posted, a.id 
+	const sql = `SELECT a.title, a.body, a.time_posted, a.id 
 	from announcements as a, clubs as c 
-	where c.id = a.club_id and c.id = ${clubID}
+	where c.id = a.club_id and c.id = ?
 	order by time_posted desc;`;
+
+	const data = [clubID]
 
 	//console.log(sql);
 	
 
-	connection.query(sql, (error, results, fields) => {
+	connection.query(sql, data, (error, results, fields) => {
 		if (error) {
 			return console.error(error.message);
 		}
@@ -203,9 +188,11 @@ app.post('/api/deleteAnnouncement', (req, res) => {
     let connection = mysql.createConnection(config);
     let announcementID = req.body.id;
 
-    let sql = `DELETE FROM announcements where id = ${announcementID}`
+    let sql = `DELETE FROM announcements where id = ?`
 
-    connection.query(sql, (error, results, fields) => {
+	const data = [announcementID]
+
+    connection.query(sql, data, (error, results, fields) => {
 		if (error) {
 			return console.error(error.message);
 		}
@@ -223,10 +210,12 @@ app.post('/api/editAnnouncement', (req, res) => {
 	// console.log(newTitle, newBody)
 
     let sql = `UPDATE announcements
-	SET title = '${newTitle}', body = '${newBody}'
-	WHERE id = ${announcementID}`
+	SET title = ?, body = ?
+	WHERE id = ?`
 
-    connection.query(sql, (error, results, fields) => {
+	const data = [newTitle, newBody, announcementID]
+
+    connection.query(sql, data, (error, results, fields) => {
 		if (error) {
 			return console.error(error.message);
 		}
@@ -242,13 +231,15 @@ app.post('/api/getClubMembers', (req,res) => {
 
 	let sql = `SELECT u.name, m.role 
 	FROM memberships as m, users as u 
-	WHERE m.club_id=${clubID} and m.uid = u.uid
+	WHERE m.club_id= ? and m.uid = u.uid
 	order by role desc;`;
+
+	const data = [clubID]
 
 	//console.log(sql);
 	
 
-	connection.query(sql, (error, results, fields) => {
+	connection.query(sql, data, (error, results, fields) => {
 		if (error) {
 			return console.error(error.message);
 		}
@@ -266,10 +257,11 @@ app.post('/api/getCurrentUserRole', (req,res) => {
 	let userID = req.body.userID;
 	let clubID = req.body.clubID;
 
-	let sql = `SELECT role FROM memberships WHERE club_id=${clubID} and uid = "${userID}"`;
-	
+	let sql = `SELECT role FROM memberships WHERE club_id= ? and uid = ?`;
 
-	connection.query(sql, (error, results, fields) => {
+	const data = [clubID, userID];
+
+	connection.query(sql, data, (error, results, fields) => {
 		if (error) {
 			return console.error(error.message);
 		}
@@ -307,9 +299,11 @@ app.post('/api/checkMembership', (req,res) => {
 	// let clubID = req.body.clubID;
 	let userID = req.body.userID;
 
-	let sql = `select club_id from memberships where uid = '${userID}'`;
+	let sql = `select club_id from memberships where uid = ?`;
+
+	const data = [userID];
 	
-	connection.query(sql, (error, results, fields) => {
+	connection.query(sql, data, (error, results, fields) => {
 		if (error) {
 			return console.error(error.message);
 		}
@@ -330,9 +324,11 @@ app.post('/api/joinClub', (req,res) => {
 	let userID = req.body.userID;
 
 	let sql = `insert into memberships(uid, club_id, role)
-	values('${userID}', ${clubID}, 'user')`;
+	values(?, ?, 'user')`;
+
+	const values = [userID, clubID];
 	
-	connection.query(sql, (error, results, fields) => {
+	connection.query(sql, values, (error, results, fields) => {
         if (error) {
             connection.query(`ROLLBACK`, dataEmpty, (error, results, fields) => {
                 let string = JSON.stringify('Error')
@@ -357,8 +353,11 @@ app.post('/api/joinClub', (req,res) => {
 	const clubId = req.body.id;
   	const newDescription = req.body.description;
 
-	const sql = `UPDATE clubs SET description = '${newDescription}' WHERE id = '${clubId}'`;
-	connection.query(sql, (err, result) => {
+	const sql = `UPDATE clubs SET description = ? WHERE id = ?`;
+
+	const data = [newDescription, clubId];
+
+	connection.query(sql, data, (err, result) => {
 		if (err) throw err;
 		// console.log(`Updated description for club with ID ${clubId}`);
 		// res.send("Updated description for club with ID ${clubId}");

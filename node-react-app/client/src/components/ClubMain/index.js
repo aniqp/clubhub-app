@@ -1,4 +1,4 @@
-import React, { Component, useEffect } from 'react';
+import React from 'react';
 import { Grid, Typography } from "@material-ui/core";
 import { useParams } from 'react-router-dom';
 import SideBar from './Sidebar';
@@ -7,7 +7,7 @@ import AnnouncementForm from './AnnouncementForm.js';
 import Members from './Members';
 import { makeStyles } from "@material-ui/core/styles";
 import { useUser } from '../Firebase';
-
+import { serverURL } from '../../constants/config'
 
 
 const useStyles = makeStyles((theme) => ({
@@ -16,8 +16,6 @@ const useStyles = makeStyles((theme) => ({
     },
 
 }));
-
-const serverURL = ""; 
 
 const ClubMain = () => {
     const classes = useStyles();
