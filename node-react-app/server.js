@@ -356,11 +356,12 @@ app.post('/api/joinClub', (req,res) => {
 	let connection = mysql.createConnection(config);
 	const clubId = req.body.id;
   	const newDescription = req.body.description;
+
 	const sql = `UPDATE clubs SET description = '${newDescription}' WHERE id = '${clubId}'`;
 	connection.query(sql, (err, result) => {
 		if (err) throw err;
-		console.log(`Updated description for club with ID ${clubId}`);
-		res.send(`Updated description for club with ID ${clubId}`);
+		// console.log(`Updated description for club with ID ${clubId}`);
+		// res.send("Updated description for club with ID ${clubId}");
 	});
 	connection.end();
 });
