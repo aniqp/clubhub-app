@@ -102,29 +102,6 @@ app.put('/api/login', (req, res) => {
 }
 )
 
-
-app.post('/api/loadUserSettings', (req, res) => {
-
-	let connection = mysql.createConnection(config);
-	let userID = req.body.userID;
-
-	let sql = `SELECT mode FROM user WHERE userID = ?`;
-	console.log(sql);
-	let data = [userID];
-	console.log(data);
-
-	connection.query(sql, data, (error, results, fields) => {
-		if (error) {
-			return console.error(error.message);
-		}
-
-		let string = JSON.stringify(results);
-		//let obj = JSON.parse(string);
-		res.send({ express: string });
-	});
-	connection.end();
-});
-
 app.post('/api/getClubs', (req, res) => {
 
 	let connection = mysql.createConnection(config)
