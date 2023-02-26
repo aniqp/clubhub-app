@@ -3,8 +3,6 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import MainImage from "../../images/hero-image-1.png";
 import SmallImage from "../../images/hero-image-2.png";
-import loadHome from "./home.spec"
-
 
 const useStyles = makeStyles((theme) => ({
   bigimage: {
@@ -63,11 +61,6 @@ const useStyles = makeStyles((theme) => ({
 
 
 const Home = () => {
-
-  useEffect(() => {
-    loadHome();
-    }, [loadHome]);
-
   const classes = useStyles()
   return (
     <div>
