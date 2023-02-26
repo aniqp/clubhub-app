@@ -4,8 +4,7 @@ import { Button,Card, Typography } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import history from '../Navigation/history';
 
-
-const ClubCard = (props) => {
+const MyClubCard = (props) => {
 
     const truncate = (input) => {
         if (input.length > 100) {
@@ -36,4 +35,4 @@ const ClubCard = (props) => {
     
 }
 
-export default ClubCard;
+export default MyClubCard;

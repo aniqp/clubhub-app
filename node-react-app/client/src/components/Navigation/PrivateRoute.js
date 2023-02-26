@@ -5,6 +5,7 @@ import ClubMain from "../ClubMain";
 import Home from '../Home';
 import history from './history';
 import ExplorePage from "../Explore/index";
+import MyClubs from "../MyClubs"
 
 export default function PrivateRoute({
   //authenticated,
@@ -18,6 +19,7 @@ export default function PrivateRoute({
         <Route path="/explore" component={ExplorePage} />
         <Route path = "/clubs/:clubID" exact component = {ClubDetails}/>
         <Route path = "/clubboard/:clubID" exact component = {ClubMain}/>
+        <Route path = "/myclubs" exact component = {MyClubs}/>
       </Switch>
     </Router>
   );
