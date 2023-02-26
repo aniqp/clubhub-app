@@ -7,8 +7,7 @@ import { getAuth } from 'firebase/auth';
 import { useUser } from '../Firebase/context';
 import { useSignInWithGoogle } from 'react-firebase-hooks/auth';
 import { useAuthHeader } from '../Firebase/context';
-
-const serverURL = "";
+import { serverURL } from '../../constants/config'
 
 const useStyles = makeStyles((theme) => ({
     li:{

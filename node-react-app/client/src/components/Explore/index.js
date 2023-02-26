@@ -3,8 +3,7 @@ import { makeStyles, Grid, TextField, FormControl, MenuItem, InputLabel, Select 
 import ClubCard from "./ClubCard";
 import { Pagination } from "@material-ui/lab";
 import { useUser } from '../Firebase/context';
-
-const serverURL = "";
+import { serverURL } from '../../constants/config'
 
 const useStyles = makeStyles((theme) => ({
   root: {

@@ -7,7 +7,7 @@ import AnnouncementForm from './AnnouncementForm.js';
 import Members from './Members';
 import { makeStyles } from "@material-ui/core/styles";
 import { useUser } from '../Firebase';
-
+import { serverURL } from '../../constants/config'
 
 
 const useStyles = makeStyles((theme) => ({
@@ -16,8 +16,6 @@ const useStyles = makeStyles((theme) => ({
     },
 
 }));
-
-const serverURL = ""; 
 
 const ClubMain = () => {
     const classes = useStyles();

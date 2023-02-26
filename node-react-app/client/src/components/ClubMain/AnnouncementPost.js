@@ -8,8 +8,7 @@ import profile from '../../images/profile-icon.png';
 import edit from '../../images/edit-icon.png';
 import del from '../../images/delete-icon.png';
 import close from '../../images/close-icon.png';
-
-const serverURL = "";
+import { serverURL } from '../../constants/config'
 
 const useStyles = makeStyles({
     root: {

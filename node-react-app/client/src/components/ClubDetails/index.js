@@ -12,18 +12,8 @@ import { useParams } from 'react-router-dom';
 import { makeStyles } from "@material-ui/core/styles";
 import close from '../../images/close-icon.png';
 import { TextField } from '@material-ui/core';
+import { serverURL } from '../../constants/config'
 
-
-
-//Dev mode
-const serverURL = ""; //enable for dev mode
-
-//Deployment mode instructions
-//const serverURL = "http://ov-research-4.uwaterloo.ca:PORT"; //enable for deployed mode; Change PORT to the port number given to you;
-//To find your port number: 
-//ssh to ov-research-4.uwaterloo.ca and run the following command: 
-//env | grep "PORT"
-//copy the number only and paste it in the serverURL in place of PORT, e.g.: const serverURL = "http://ov-research-4.uwaterloo.ca:3000";
 
 const useStyles = makeStyles((theme) => ({
     root: {
