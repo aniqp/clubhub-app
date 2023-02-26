@@ -1,18 +1,9 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import CssBaseline from "@material-ui/core/CssBaseline";
-import { MuiThemeProvider, createTheme } from "@material-ui/core/styles";
-import Grid from "@material-ui/core/Grid";
+import React from 'react';
 import Typography from "@material-ui/core/Typography";
-import Paper from "@material-ui/core/Paper";
-import { SignIn } from '../SignIn';
 import { useUser } from '../Firebase';
-import { Hello } from '../Hello';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import { makeStyles } from "@material-ui/core/styles";
-import MainImage from "../../images/hero-image-1.png"
-import SmallImage from "../../images/hero-image-2.png"
+import MainImage from "../../images/hero-image-1.png";
+import SmallImage from "../../images/hero-image-2.png";
 
 
 //Dev mode
