@@ -18,6 +18,9 @@ import Item from '@material-ui/core/Grid';
 import { useParams } from 'react-router-dom';
 import { makeStyles } from "@material-ui/core/styles";
 import  MyButton from "./clubModal"
+import close from '../../images/close-icon.png';
+import { TextField } from '@material-ui/core';
+
 
 
 //Dev mode
@@ -54,12 +57,67 @@ const ClubDetails = () => {
     const classes = useStyles();
     const [clubTitle, setClubTitle] = React.useState()
     const [clubDescription, setClubDescription] = React.useState("")
-
+    const [editModalOpen, setEditModelOpen] = React.useState(false);
     const { clubID } = useParams();
+    const user = useUser();
+    const [admin, setAdmin] = React.useState(false);
+
 
     React.useEffect(() => {
         getClubs();
+        if (user) {
+            let userID = user.uid;
+            getUserRole(userID);
+        } else {
+            setAdmin(false);
+        }
     }, []);
+
+    React.useEffect(() => {
+        console.log('changing users')
+        if (user) {
+            let userID = user.uid;
+            getUserRole(userID);
+        } else {
+            setAdmin(false);
+        }
+    }, [user]);
+
+    const getUserRole = (userID) => {
+        callApiGetUserRole(userID)
+            .then(res => {
+                console.log('hello')
+
+                var parsed = JSON.parse(res.express);
+                if (parsed.length >= 1){
+                    if (parsed[0].role === 'owner' || parsed[0].role === 'admin'){
+                        setAdmin(true);
+                    }
+                } else {
+                    setAdmin(false);
+                }
+                console.log(parsed);
+            })
+    }
+
+    const callApiGetUserRole = async (userID) => {
+        const url = serverURL + '/api/getCurrentUserRole';
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                //authorization: `Bearer ${this.state.token}`
+            },
+            body: JSON.stringify({
+                clubID: clubID,
+                userID: userID,
+            })
+        });
+
+        const body = await response.json();
+        if (response.status !== 200) throw Error(body.message);
+        return body;
+    }
 
     const getClubs = () => {
         callApiGetClubs()
@@ -90,6 +148,30 @@ const ClubDetails = () => {
         return body;
     }
 
+    const handleEditClick = (description) => {
+        callApiEditDescription(description);
+       setTimeout(() => getClubs(), 1000);
+        setEditModelOpen(false);
+    }
+
+    const callApiEditDescription = async (description) => {
+        const url = serverURL + '/api/editClubDescription';
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                //authorization: `Bearer ${this.state.token}`
+            },
+            body: JSON.stringify({
+                id: clubID,
+                description: description
+            })
+        });
+        const body = await response.json();
+        if (response.status !== 200) throw Error(body.message);
+        return body;
+    }
+
     return (
         <Grid className = {classes.root}>
             <Typography className = {classes.title} variant='h4' align="center">
@@ -103,11 +185,12 @@ const ClubDetails = () => {
                             variant="elevation"
                             style={{ backgroundColor: 'light-grey' }}>
                             <CardHeader title="Description" 
-                                 action={
-                                    
-                                    <MyButton clubid= {clubID} ></MyButton>
-                                    
-                                 }/>
+                                 action={<>
+                                 {admin && <>
+                                    <Button fullWidth style={{color:'#fff', background:'#3f51b5'}} onClick={() => setEditModelOpen(true)}>Edit Description</Button>
+                                    <EditModal name={clubTitle} description={clubDescription} open={editModalOpen} onClose={() => setEditModelOpen(false)} onSubmit={handleEditClick}/>                                    
+                                 </>}
+                                 </>}/>
                             <CardContent>
                                 <Typography variant='p' color='textPrimary'>
                                     {clubDescription}
@@ -169,3 +252,67 @@ const ClubDetails = () => {
 
 
 export default ClubDetails;
+
+const MODAL_STYLES = {
+    position:'fixed',
+    top:'50%',
+    left:'50%',
+    transform:'translate(-50%, -50%)',
+    backgroundColor:'#fff',
+    padding:'20px',
+    zIndex:1000,
+    width:'40vw',
+}
+
+const OVERLAY_STYLES = {
+    position:'fixed', 
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor:'rgba(0,0,0,.7)',
+    zIndex:1000
+}
+
+const EditModal = ({description, open, onClose, onSubmit, name}) => {
+    const [newDescription, setNewDescription] = React.useState(description);
+
+    const handleEnteredDescription = (event) => {
+        setNewDescription(event.target.value);
+    }
+
+    if (!open) return null
+
+    return(
+        <>
+            <div style={OVERLAY_STYLES} />
+            <div style={MODAL_STYLES}>
+                <Grid container style={{display:'flex', flexDirection:'column'}}>
+                    <Grid item style={{display:'flex', justifyContent:'end'}}>
+                        <Button onClick={onClose}><img src={close} style={{height:'25px'}}></img></Button>
+                    </Grid>
+                    <Grid item style={{display:'flex', justifyContent:'center'}}>
+                        <b>Edit {name}'s club description:</b>
+                    </Grid>
+                    <Grid item style={{padding:'25px'}}>
+                        <Box style={{padding:'15px 0 0 0'}}>
+                            <TextField
+                                onChange={handleEnteredDescription}
+                                required
+                                label="Description"
+                                defaultValue={description}
+                                multiline
+                                fullWidth
+                            />
+                        </Box>
+                    </Grid>
+                    <Grid style={{display:'flex', flexDirection:'row', justifyContent:'center'}}>
+                        <Button onClick={onClose} variant='outlined' style={{margin:'0 10px'}}>Cancel</Button>
+                        <Button onClick={() => { onSubmit(newDescription)}} variant='outlined' style={{margin:'0 10px'}}>Edit</Button>   
+                    </Grid>
+                </Grid>
+            </div>
+        </>
+    )
+
+}
