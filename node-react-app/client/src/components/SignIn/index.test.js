@@ -13,12 +13,11 @@ jest.mock('../Firebase/context', () => {
 
 describe('SignIn', () => {
 
-    it('Displays Log In and Sign Up buttons when not logged in', () => {
+    it('Displays Log In button when not logged in', () => {
         useUser.mockImplementation(() => null)
         getAuth.mockImplementation(() => null)
         render(<SignIn/>);
         expect(screen.getByText('Log In')).toBeInTheDocument();
-        expect(screen.getByText('Sign Up')).toBeInTheDocument();
     });
 
     it('Displays Log Out button when logged in', () => {

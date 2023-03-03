@@ -12,7 +12,8 @@ import { serverURL } from '../../constants/config'
 
 const useStyles = makeStyles((theme) => ({
     clubTitle:{
-        fontWeight:'600'
+        fontWeight:'600',
+        fontFamily: 'Arvo, serif',
     },
 
 }));
