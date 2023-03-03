@@ -12,7 +12,9 @@ import { useParams } from 'react-router-dom';
 import { makeStyles } from "@material-ui/core/styles";
 import close from '../../images/close-icon.png';
 import { TextField } from '@material-ui/core';
-import { serverURL } from '../../constants/config'
+import { serverURL } from '../../constants/config';
+import Alert from '@material-ui/lab/Alert';
+
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -42,6 +44,10 @@ const ClubDetails = () => {
     const { clubID } = useParams();
     const user = useUser();
     const [admin, setAdmin] = React.useState(false);
+
+    //Success Message for Edited Descriptions
+    const [isEdited, setIsEdited] = React.useState(false);
+
 
     React.useEffect(() => {
         getClubs();
@@ -130,8 +136,10 @@ const ClubDetails = () => {
 
     const handleEditClick = (description) => {
         callApiEditDescription(description);
-       setTimeout(() => getClubs(), 1000);
+        setTimeout(() => getClubs(), 1000);
         setEditModelOpen(false);
+        setIsEdited(true);
+        setTimeout(()=> setIsEdited(false), 7000);
     }
 
     const callApiEditDescription = async (description) => {
@@ -160,6 +168,8 @@ const ClubDetails = () => {
             <br></br>
             <Grid container spacing={4} direction = "column">
                 <Grid item xs={9} style={{padding:'20px 0'}}>
+                    {isEdited && <Box  style={{ margin:'0 0 20px 0'}}><Alert style={{margin:'10px 0 10px 0'}} onClose={() => {setIsEdited(false)}} severity="success">
+                    The club description was edited successfully!</Alert></Box>}
                     <Item>
                         <Card
                             variant="elevation"
@@ -261,6 +271,15 @@ const EditModal = ({description, open, onClose, onSubmit, name}) => {
         setNewDescription(event.target.value);
     }
 
+    const handleDescriptionSubmission = () => {
+
+        if (newDescription === ""){
+            setNewDescription("No club description provided");
+        }
+
+        onSubmit(newDescription);
+    }
+
     if (!open) return null
 
     return(
@@ -288,7 +307,7 @@ const EditModal = ({description, open, onClose, onSubmit, name}) => {
                     </Grid>
                     <Grid style={{display:'flex', flexDirection:'row', justifyContent:'center'}}>
                         <Button onClick={onClose} variant='outlined' style={{margin:'0 10px'}}>Cancel</Button>
-                        <Button onClick={() => { onSubmit(newDescription)}} variant='outlined' style={{margin:'0 10px'}}>Edit</Button>   
+                        <Button onClick={handleDescriptionSubmission} variant='outlined' style={{margin:'0 10px'}}>Edit</Button>   
                     </Grid>
                 </Grid>
             </div>
