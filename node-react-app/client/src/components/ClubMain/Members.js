@@ -107,14 +107,6 @@ const Members = ({name, members}) => {
                 </Card>
                   ))}
             </Grid>
-            {/* <Grid item className={classes.memberCount}>
-                <Typography>{name} has</Typography>
-                &nbsp;
-                <Typography color='secondary' className={classes.headerFont}>{members.length} members</Typography> 
-            </Grid> */}
-            
-            
-          
         </Grid>
 
     )
