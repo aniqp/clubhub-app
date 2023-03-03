@@ -330,7 +330,7 @@ app.post('/api/joinClub', (req,res) => {
 	
 	connection.query(sql, values, (error, results, fields) => {
         if (error) {
-            connection.query(`ROLLBACK`, dataEmpty, (error, results, fields) => {
+            connection.query(`ROLLBACK`, (error, results, fields) => {
                 let string = JSON.stringify('Error')
                 res.send({ express: string });
                 connection.end();
