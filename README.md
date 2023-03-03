@@ -1,31 +1,10 @@
-# MSCI 342 Project
-## UW Club Hub app
-A hub for the student clubs at the University of Waterloo.
+# MSCI 342: UW Club Hub App
 
-Find clubs, join clubs, view announcements, keep up to date!
+**App Description:** A hub for the student clubs at the University of Waterloo. Find clubs, join clubs, view announcements, keep up to date!
 
-Home <br/>
-<img height="360px" src="https://user-images.githubusercontent.com/90345689/222816727-60b42b67-648f-4964-881e-d160bbbe3831.png"/>
+*Designed and developed by: Aniq Premji, Fraser Morrison, Larissa Troper, Ryan Hu*
 
-Explore  - Search for clubs and sort by category<br/>
-<img height="360px" src="https://user-images.githubusercontent.com/90345689/222816744-f74be72c-259f-4a98-a69a-8081207a6a4f.png"/>
-
-Club Details Page - View club info <br/>
-<img height="360px" src="https://user-images.githubusercontent.com/90345689/222817004-75965233-b2fc-475d-9b54-3f28bf15c12e.png"/>
-
-My Clubs - View clubs your joined clubs <br/>
-<img height="360px" src="https://user-images.githubusercontent.com/90345689/222816792-e4e84b70-54d6-4b1b-a0ac-e975a5306562.png"/>
-
-Club Member Board - View club announcements and other club info  <br/>
-<img height="360px" src="https://user-images.githubusercontent.com/90345689/222816754-29bfed6e-47a2-4665-ac33-2c23f9136d44.png"/>
-
-
-
-
-## Installation
-
-**Service account key for Firebase app needs to be in node-react-app/serviceAccountKey**
-
+## Installation Instructions
 
 To clone this repository run 
 `git clone https://github.com/aniqp/msci-342-project`
@@ -38,20 +17,49 @@ cd client
 npm i --force --legacy-peer-deps
 ```
 
-before running:
+Before running:
 
-Set the MySQL info in node-react-app/config.js
+* Set the MySQL info in node-react-app/config.js
 
-Set the serverURL in node-react-app/client/src/constants/config.js
+* Set the serverURL in node-react-app/client/src/constants/config.js
 
-Set firebase config info in node-react-app/client/src/components/Firebase/firebase.js
+* Set firebase config info in node-react-app/client/src/components/Firebase/firebase.js
 
 **Service account key for Firebase app needs to be in node-react-app/serviceAccountKey**
 
-To run, from *node-rect-app* directory run
+To start the application, run the following command in the *node-react-app* directory:
 
-dev mode:
+* Dev mode:
 `npm run dev`
 
-deployment: 
+* Deployment: 
 `npm start`
+<br />
+
+## Sprint 1 - Product Demo
+### Breakdown of Pages in App with Screenshots:
+
+
+App Pages | Description/Functionality
+------------- | -------------
+Landing page | Users are directed upon first rendering of the application.
+Explore page | Users can access the list of all available clubs at University of Waterloo, join clubs, and access a club’s Detailed Club page
+Detailed Club page | Users can access a club’s full description and photos
+My Clubs page | Users can access the list of all clubs they are a member in and club members can access a club’s Club Board page
+Club Board page | Club members can view a club’s announcement posts and information regarding other club members. Additionally, Club admins and club owner can post, edit or delete announcements for their club
+
+  <br />
+  <br />
+  <br />
+  
+App Pages | Screenshot of Page
+------------- | -------------
+Landing page | <img width="1440" alt="Screen Shot 2023-03-03 at 3 31 28 PM" src="https://user-images.githubusercontent.com/72565412/222830761-9e907ab7-4da5-4705-88f9-d4d1373310d5.png">
+Explore page | <img width="1440" alt="Screen Shot 2023-03-03 at 3 35 33 PM" src="https://user-images.githubusercontent.com/72565412/222830804-027f1aa6-4352-4fc8-8fb5-ea089a98a48f.png">
+Detailed Club page | <img width="1440" alt="Screen Shot 2023-03-03 at 4 16 08 PM" src="https://user-images.githubusercontent.com/72565412/222830907-f9631457-c425-4218-8a1e-44f2d9d10f87.png">
+My Clubs page | <img width="1440" alt="Screen Shot 2023-03-03 at 3 35 43 PM" src="https://user-images.githubusercontent.com/72565412/222830926-8205c45e-5ab7-4260-b3bc-c495ca2dd043.png">
+Club Board page  <br /> (**POV:Admin/Club Owner**) | <img width="1440" alt="Screen Shot 2023-03-03 at 3 35 58 PM" src="https://user-images.githubusercontent.com/72565412/222830985-b05f1a96-1cf0-4f06-b95e-24e2cafbe144.png">
+Club Board page  <br /> (**POV: Club Member**) | <img width="1440" alt="Screen Shot 2023-03-03 at 3 36 31 PM" src="https://user-images.githubusercontent.com/72565412/222831018-7905809d-b111-4937-ab8c-aa2bb3883a7b.png">
+
+
+
