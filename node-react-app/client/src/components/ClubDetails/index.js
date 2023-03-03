@@ -14,7 +14,6 @@ import close from '../../images/close-icon.png';
 import { TextField } from '@material-ui/core';
 import { serverURL } from '../../constants/config'
 
-
 const useStyles = makeStyles((theme) => ({
     root: {
       maxWidth: 1500,
@@ -43,7 +42,6 @@ const ClubDetails = () => {
     const { clubID } = useParams();
     const user = useUser();
     const [admin, setAdmin] = React.useState(false);
-
 
     React.useEffect(() => {
         getClubs();

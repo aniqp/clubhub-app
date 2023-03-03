@@ -26,17 +26,13 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const MyClubs = ({loadMyClubs}) => {
+const MyClubs = () => {
 
   const user = useUser();
 
   const [myClubs, setMyClubs] = useState([])
 
   const classes = useStyles();
-
-  useEffect(() => {
-    loadMyClubs();
-  }, [loadMyClubs])
 
   useEffect(() => {
     if (user) {
