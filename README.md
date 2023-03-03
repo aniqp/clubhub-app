@@ -25,7 +25,7 @@ Before running:
 
 * Set firebase config info in node-react-app/client/src/components/Firebase/firebase.js
 
-**Service account key for Firebase app needs to be in node-react-app/serviceAccountKey**
+**IMPORTANT: Service account key for Firebase app needs to be in the node-react-app directory**
 
 To start the application, run the following command in the *node-react-app* directory:
 
