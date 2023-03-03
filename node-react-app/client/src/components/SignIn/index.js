@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
         fontFamily: 'Biryani, sans-serif',
         color:'#fff',
         fontWeight:'600',
-        padding:'0 25px'
+        padding:'5px 25px'
 
     },
     login:{
@@ -22,21 +22,6 @@ const useStyles = makeStyles((theme) => ({
         "&:hover": {
             background: "rgba(74, 96, 217, 0.6)",
         },
-
-    },
-
-    signIn:{
-        color:'white',
-        background:'#f50057',
-        border:'none',
-        textTransform:'none',
-        marginLeft:'20px',
-        fontFamily: 'Biryani, sans-serif',
-        fontWeight:'600',
-        "&:hover":{
-            background:'rgb(252, 35, 113)'
-        }
-
 
     },
     icon:{
@@ -73,9 +58,6 @@ export const SignIn = () => {
     (<>
         <Button variant='outlined' className={[classes.log, classes.login]} onClick={logIn}>
             Log In
-        </Button>
-        <Button variant='outlined' className={classes.signIn} onClick={logIn}>
-           Sign Up
         </Button>
     </>
     ):
