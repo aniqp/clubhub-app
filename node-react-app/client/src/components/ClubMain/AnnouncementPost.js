@@ -151,18 +151,18 @@ export default function AnnouncementPost(props) {
             <Grid item style={{display:'flex', padding:'5px 0px 5px 10px'}}>
                 <Grid item xs={6} style={{display:'flex', flexDirection:'row', padding:'5px 0'}}>
                     <img src={profile} style={{height:'50px'}}></img>
-                    <Typography style={{display:'flex', alignItems:'center', padding:'0 10px 0 10px'}}>{props.name}</Typography>
+                    <Typography data-testid={`name-${props.id}`} style={{display:'flex', alignItems:'center', padding:'0 10px 0 10px'}}>{props.name}</Typography>
                 </Grid>
                 <Grid item xs={6} style={{display:'flex', flexDirection:'column', alignItems:'end', padding:'5px 10px 5px 0'}}>
                     <Typography>{props.timestamp.slice(0, 10)}</Typography> 
-                    <Typography>{convertTime(props.timestamp.slice(10, 15))}</Typography> 
+                    <Typography data-testid={`timestamp-${props.id}`}>{convertTime(props.timestamp.slice(10, 15))}</Typography> 
                 </Grid>
             </Grid>
             <Box className={classes.title}>
-                <Typography className={classes.titleFont}>{props.title}</Typography>
+                <Typography data-testid={`title-${props.id}`} className={classes.titleFont}>{props.title}</Typography>
             </Box>
             <Box className={classes.content}>
-                <Typography className={classes.contentFont}>{props.body}</Typography>
+                <Typography data-testid={`body-${props.id}`} className={classes.contentFont}>{props.body}</Typography>
             </Box>
             {admin &&
             <Box style={{display:'flex', justifyContent:'end', margin:'0 8px 10px 0'}}>
