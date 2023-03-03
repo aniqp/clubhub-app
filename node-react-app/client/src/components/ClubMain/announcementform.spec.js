@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import AnnouncementForm from './AnnouncementForm';
-describe('MyClubs', () => {
-    it('loads the title MyClubs', () => {
+describe('AnnouncementForm', () => {
+    it('loads the "Post new announcement" message in the announcement form', () => {
         render(<AnnouncementForm />);
         expect(screen.queryByText('Post New Announcement')).toBeTruthy();
     });
