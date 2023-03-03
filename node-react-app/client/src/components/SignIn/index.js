@@ -1,10 +1,10 @@
-import { Button, makeStyles } from '@material-ui/core'
+import { Button, makeStyles, Typography, Tooltip, Zoom } from '@material-ui/core'
 import { getAuth } from 'firebase/auth'
 import React, { useState } from 'react'
 import { useSignInWithGoogle, useSignOut } from 'react-firebase-hooks/auth'
 import { serverURL } from '../../constants/config'
 import { useAuthHeader, useUser } from '../Firebase/context'
-import profile from '../../images/login-profile.png'
+import profile from '../../images/login-profile.png';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
     },
     icon:{
         height:'30px'
-    }
+    },
 
 }));
 
@@ -53,7 +53,7 @@ export const SignIn = () => {
         }
         const response = await fetch(serverURL.concat('api/login'), request)
     }
-
+    console.log('user:' + user);
     return !user ? 
     (<>
         <Button variant='outlined' className={[classes.log, classes.login]} onClick={logIn}>
@@ -62,9 +62,18 @@ export const SignIn = () => {
     </>
     ):
     (<>
-        <Button onClick={() => alert('User Profile: Coming in Sprint 2!')}>
-            <img src={profile} className={classes.icon}></img>
-        </Button>
+        <Tooltip 
+            title={
+                <React.Fragment>
+                <Typography color="inherit">Logged in as:&nbsp;<b>{user.displayName}</b></Typography>
+                </React.Fragment>}
+            TransitionComponent={Zoom}
+            TransitionProps={{ timeout: 200 }}
+            >
+            <Button onClick={() => alert('User Profile: Coming in Sprint 2!')}>
+                <img src={profile} className={classes.icon}></img>
+            </Button>
+        </Tooltip>
         <Button className={classes.log} onClick={logOut}>
             Log Out
         </Button>
