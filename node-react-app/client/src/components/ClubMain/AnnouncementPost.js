@@ -8,7 +8,9 @@ import profile from '../../images/profile-icon.png';
 import edit from '../../images/edit-icon.png';
 import del from '../../images/delete-icon.png';
 import close from '../../images/close-icon.png';
-import { serverURL } from '../../constants/config'
+import { serverURL } from '../../constants/config';
+import Alert from '@material-ui/lab/Alert';
+
 
 const useStyles = makeStyles({
     root: {
@@ -49,10 +51,16 @@ export default function AnnouncementPost(props) {
 
     const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
     const [editModalOpen, setEditModelOpen] = React.useState(false);
+    
+    //Success Messages
+    const [isDeleted, setIsDeleted] = React.useState(false);
+    const [isEdited, setIsEdited] = React.useState(false);
+
 
     const classes = useStyles();
 
     const handleEditClick = (title, body) => {
+        
         const data = {
             title: title,
             body: body
@@ -60,6 +68,9 @@ export default function AnnouncementPost(props) {
         callApiEditAnnouncement(data);
         setTimeout(() => props.onChange(), 1000);
         setEditModelOpen(false);
+        setIsEdited(true);
+        setTimeout(()=> setIsEdited(false), 7000)
+        
     }
 
     const callApiEditAnnouncement = async (data) => {
@@ -148,6 +159,9 @@ export default function AnnouncementPost(props) {
 
     return(
         <Grid item className={classes.root}>
+            {isEdited && <Alert onClose={() => {setIsEdited(false)}} severity="success" style={{ margin:'10px 0 0 0'}}>
+            This announcement was edited successfully!
+            </Alert>}
             <Grid item style={{display:'flex', padding:'5px 0px 5px 10px'}}>
                 <Grid item xs={6} style={{display:'flex', flexDirection:'row', padding:'5px 0'}}>
                     <img src={profile} style={{height:'50px'}}></img>
@@ -243,12 +257,36 @@ const EditModal = ({title, body, open, onClose, onSubmit}) => {
 
     const handleEnteredTitle = (event) => {
         setNewTitle(event.target.value);
-        console.log(newTitle);
+        // console.log(newTitle);
+        setIsTitleMissing(false);
     }
 
     const handleEnteredBody = (event) => {
         setNewContent(event.target.value);
-        console.log(newContent);
+        // console.log(newContent);
+        setIsContentMissing(false);
+    }
+
+    // Error Messages
+    const [isTitleMissing, setIsTitleMissing] = React.useState(false);
+    const [isContentMissing, setIsContentMissing] = React.useState(false);
+
+    const handeEditSubmission = () => {
+        let caughtError = false;
+
+        if (newTitle === "") {
+            setIsTitleMissing(true);
+            caughtError = true;
+        }
+
+        if (newContent === "") {
+            setIsContentMissing(true);
+            caughtError = true;
+        }
+
+        if (!caughtError){
+            onSubmit(newTitle, newContent);
+        }
     }
 
     if (!open) return null
@@ -266,6 +304,11 @@ const EditModal = ({title, body, open, onClose, onSubmit}) => {
                     </Grid>
                     <Grid item style={{padding:'25px'}}>
                         <Box>
+                        {isTitleMissing && (
+                        <Typography style={{ color: "rgb(255,0,0)", padding:'5px 0 0 0'}} variant={"body2"}>
+                        Please enter an announcement title
+                        </Typography>
+                        )}
                             <TextField
                                 onChange={handleEnteredTitle}
                                 required
@@ -276,6 +319,11 @@ const EditModal = ({title, body, open, onClose, onSubmit}) => {
                             />
                         </Box>
                         <Box style={{padding:'15px 0 0 0'}}>
+                            {isContentMissing && (
+                            <Typography style={{ color: "rgb(255,0,0)", padding:'5px 0 0 0'}} variant={"body2"}>
+                            Please enter content for the announcement
+                            </Typography>
+                            )}
                             <TextField
                                 onChange={handleEnteredBody}
                                 required
@@ -288,7 +336,7 @@ const EditModal = ({title, body, open, onClose, onSubmit}) => {
                     </Grid>
                     <Grid style={{display:'flex', flexDirection:'row', justifyContent:'center'}}>
                         <Button onClick={onClose} variant='outlined' style={{margin:'0 10px'}}>Cancel</Button>
-                        <Button onClick={() => { onSubmit(newTitle, newContent)}} variant='outlined' style={{margin:'0 10px'}}>Edit</Button>   
+                        <Button onClick={handeEditSubmission} variant='outlined' style={{margin:'0 10px'}}>Edit</Button>   
                     </Grid>
                 </Grid>
             </div>

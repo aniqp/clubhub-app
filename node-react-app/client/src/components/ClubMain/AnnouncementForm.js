@@ -121,8 +121,8 @@ const AnnouncementForm = (props) => {
                 rows={4} 
                 variant="outlined"/>
             <Button onClick={handleSubmit} variant="outlined" style={{background:'#152532', color:'#fff'}}>Post Announcement</Button>
-            {isSubmitSuccess && <Alert variant="outlined" severity="success" style={{ margin:'10px 0 0 0'}}>
-            This is a success alert — check it out!
+            {isSubmitSuccess && <Alert onClose={() => {setIsSubmitSuccess(false)}} variant="outlined" severity="success" style={{ margin:'10px 0 0 0'}}>
+            Success: Announcement post was created!
             </Alert>}
         </Grid>
     )
