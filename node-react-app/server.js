@@ -371,7 +371,7 @@ app.post('/api/getMyClubs', (req,res) => {
 	// let clubID = req.body.clubID;
 	let userID = req.body.userID;
 
-	let sql = `SELECT clubs.id, clubs.name, clubs.description FROM clubs
+	let sql = `SELECT clubs.id, clubs.name, clubs.description, clubs.categories FROM clubs
 	JOIN memberships ON
 	clubs.id = memberships.club_id
 	AND memberships.uid = ?`;
