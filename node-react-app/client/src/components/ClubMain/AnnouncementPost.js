@@ -6,7 +6,8 @@ import edit from '../../images/edit-icon.png';
 import del from '../../images/delete-icon.png';
 import close from '../../images/close-icon.png';
 import { serverURL } from '../../constants/config';
-
+import { toast } from 'react-toastify'; 
+import "react-toastify/dist/ReactToastify.css";
 
 const useStyles = makeStyles({
     root: {
@@ -53,29 +54,34 @@ const useStyles = makeStyles({
   });
 
 export default function AnnouncementPost(props) {
+    const classes = useStyles();
     const admin = props.adminStatus;
-    console.log('admin: ', admin)
 
     const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
     const [editModalOpen, setEditModelOpen] = React.useState(false);
     
-    //Success Messages
-    const [isDeleted, setIsDeleted] = React.useState(false);
-    const [isEdited, setIsEdited] = React.useState(false);
-
-
-    const classes = useStyles();
+    toast.configure();
+    const notify = () => {
+        console.log('in')
+        toast.success("Success: Announcement post was edited.", {
+            position: toast.POSITION.TOP_RIGHT,
+            autoClose: true
+        });
+    }
 
     const handleEditClick = (title, body) => {
-        
         const data = {
             title: title,
             body: body
         }
-        callApiEditAnnouncement(data);
-        setTimeout(() => props.onChange(), 1000);
-        setEditModelOpen(false);
-        setIsEdited(true);        
+        callApiEditAnnouncement(data)
+            .then(res => {
+                console.log('response')
+                var parsed = JSON.parse(res.express);
+                props.onSubmit();
+                notify();
+            })  
+        setEditModelOpen(false);    
     }
 
     const callApiEditAnnouncement = async (data) => {
@@ -101,9 +107,8 @@ export default function AnnouncementPost(props) {
         callApiDeleteAnnouncement()
             .then(res => {
                 var parsed = JSON.parse(res.express);
+                props.onSubmit();
             })
-        
-        setTimeout(() => props.onChange(), 1000);
         setDeleteModalOpen(false);
     }
     
@@ -145,7 +150,6 @@ export default function AnnouncementPost(props) {
         hh %= 12;
 
         if (hh == 0) {
-            console.log('hh = 0')
             result += '12';
 
             for (let i = 2; i < 5; i++){
@@ -159,19 +163,15 @@ export default function AnnouncementPost(props) {
         }
         result += ' ' + meridien;
         return result;
-
     }
-    // console.log('in')
-    return(<>
-            {isEdited && <Alert className={classes.alert} onClose={() => {setIsEdited(false)}} severity="success">
-            This announcement was edited successfully!
-            </Alert>}        
-            <Card className={classes.card} sx={{ maxWidth: 500 }}>
+
+    return(    
+        <Card className={classes.card} sx={{ maxWidth: 500 }}>
             <CardHeader 
             avatar={<img src={profile} style={{height:'50px'}}></img>}
             title={<b>{props.title}</b>}
             subheader={props.timestamp.slice(0, 10) + '' + convertTime(props.timestamp.slice(10, 15))} />
-            <CardContent>
+            <CardContent>   
                 <Typography variant="body2" color="text.secondary">
                 {props.body}
                 </Typography>
@@ -184,7 +184,7 @@ export default function AnnouncementPost(props) {
                 <DeleteModal title={props.title} body={props.body} open={deleteModalOpen} onClose={() => setDeleteModalOpen(false)} onSubmit={handleDeleteClick} />
             </CardActions>}
         </Card>
-        </>)
+    )
 }
 
 
@@ -255,13 +255,11 @@ const EditModal = ({title, body, open, onClose, onSubmit}) => {
 
     const handleEnteredTitle = (event) => {
         setNewTitle(event.target.value);
-        // console.log(newTitle);
         setIsTitleMissing(false);
     }
 
     const handleEnteredBody = (event) => {
         setNewContent(event.target.value);
-        // console.log(newContent);
         setIsContentMissing(false);
     }
 

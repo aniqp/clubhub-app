@@ -196,6 +196,8 @@ app.post('/api/deleteAnnouncement', (req, res) => {
 		if (error) {
 			return console.error(error.message);
 		}
+		let string = JSON.stringify(results)
+		res.send({ express: string });
 	});
 	connection.end();
 
@@ -219,6 +221,9 @@ app.post('/api/editAnnouncement', (req, res) => {
 		if (error) {
 			return console.error(error.message);
 		}
+		let string = JSON.stringify(results);
+		res.send({ express: string })
+		console.log(string)
 	});
 	connection.end();
 

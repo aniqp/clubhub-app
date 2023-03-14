@@ -42,7 +42,6 @@ const ClubBoard = () => {
     const [toggle, setToggle] = React.useState("1");
     const [clubAnnouncements, setClubAnnouncements] = React.useState([]);
     const [members, setMembers] = React.useState([]);
-    const [updateAnnouncements, setUpdateAnnouncements] = React.useState('false');
 
     React.useEffect(() => {
         if (user) {
@@ -59,10 +58,6 @@ const ClubBoard = () => {
         getClubTitle();
         getClubMembers();
     }, []);
-
-    React.useEffect(() => {
-        getClubAnnouncements();
-    }, [updateAnnouncements]);
 
     const getUserRole = (userID) => {
         callApiGetUserRole(userID)
@@ -136,7 +131,6 @@ const ClubBoard = () => {
             .then(res => {
                 var parsed = JSON.parse(res.express);
                 setClubAnnouncements(parsed);
-                setUpdateAnnouncements(false);
             })
     }
 
@@ -203,7 +197,7 @@ const ClubBoard = () => {
                                     title={announcement.title} 
                                     body={announcement.body} 
                                     timestamp={announcement.time_posted}
-                                    onChange={()=> setUpdateAnnouncements(true)}
+                                    onSubmit={getClubAnnouncements}
                                     adminStatus={admin}/>
                             </li>
                         ))}
