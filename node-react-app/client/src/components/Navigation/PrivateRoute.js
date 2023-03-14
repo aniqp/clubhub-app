@@ -1,11 +1,13 @@
 import React from "react";
 import { Router, Switch, Route } from "react-router-dom";
 import ClubDetails from "../ClubDetails";
-import ClubMain from "../ClubMain";
 import Home from '../Home';
 import history from './history';
 import ExplorePage from "../Explore/index";
 import MyClubs from "../MyClubs";
+import Members from "../ClubMain/Members";
+import Announcements from "../ClubMain/Announcements";
+import ClubBoard from "../ClubMain/ClubBoard";
 
 export default function PrivateRoute({
   //authenticated,
@@ -18,7 +20,7 @@ export default function PrivateRoute({
         <Route path="/" exact component={Home} />
         <Route path="/explore" component={ExplorePage} />
         <Route path = "/clubs/:clubID" exact component = {ClubDetails}/>
-        <Route path = "/clubboard/:clubID" exact component = {ClubMain}/>
+        <Route path = "/clubboard/:clubID" exact component = {ClubBoard}/>
         <Route path = "/myclubs" exact component = {MyClubs}/>
       </Switch>
     </Router>

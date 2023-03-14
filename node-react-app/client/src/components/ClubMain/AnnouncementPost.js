@@ -1,23 +1,20 @@
 import React from 'react';
-import { makeStyles } from "@material-ui/core/styles";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
-import Box from "@material-ui/core/Box";
-import { Button, TextField } from '@material-ui/core';
+import { makeStyles, Grid, Typography, Box, Button, TextField, Card, CardHeader, CardContent, CardActions } from "@material-ui/core";
+import Alert from '@material-ui/lab/Alert';
 import profile from '../../images/profile-icon.png';
 import edit from '../../images/edit-icon.png';
 import del from '../../images/delete-icon.png';
 import close from '../../images/close-icon.png';
 import { serverURL } from '../../constants/config';
-import Alert from '@material-ui/lab/Alert';
-
+import { toast } from 'react-toastify'; 
+import "react-toastify/dist/ReactToastify.css";
 
 const useStyles = makeStyles({
     root: {
       padding:'8px',
       background:'rgba(115, 115, 115, 0.38)',
       borderRadius:'8px',
-      margin:'25px 70px',
+      margin:'20px 70px',
       maxWidth: '90%',
     },
     title:{
@@ -42,35 +39,49 @@ const useStyles = makeStyles({
     },
     contentFont:{
         fontSize:'0.9rem',
+    },
+    card:{
+        margin:'20px 50px'
+    }, 
+    cardActions:{
+        display:'flex',
+        justifyContent:'end'
+    },
+    alert:{
+        margin:'20px 50px'
     }
 
   });
 
 export default function AnnouncementPost(props) {
+    const classes = useStyles();
     const admin = props.adminStatus;
 
     const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
     const [editModalOpen, setEditModelOpen] = React.useState(false);
     
-    //Success Messages
-    const [isDeleted, setIsDeleted] = React.useState(false);
-    const [isEdited, setIsEdited] = React.useState(false);
-
-
-    const classes = useStyles();
+    toast.configure();
+    const notify = () => {
+        console.log('in')
+        toast.success("Success: Announcement post was edited.", {
+            position: toast.POSITION.TOP_RIGHT,
+            autoClose: true
+        });
+    }
 
     const handleEditClick = (title, body) => {
-        
         const data = {
             title: title,
             body: body
         }
-        callApiEditAnnouncement(data);
-        setTimeout(() => props.onChange(), 1000);
-        setEditModelOpen(false);
-        setIsEdited(true);
-        setTimeout(()=> setIsEdited(false), 7000)
-        
+        callApiEditAnnouncement(data)
+            .then(res => {
+                console.log('response')
+                var parsed = JSON.parse(res.express);
+                props.onSubmit();
+                notify();
+            })  
+        setEditModelOpen(false);    
     }
 
     const callApiEditAnnouncement = async (data) => {
@@ -96,9 +107,8 @@ export default function AnnouncementPost(props) {
         callApiDeleteAnnouncement()
             .then(res => {
                 var parsed = JSON.parse(res.express);
+                props.onSubmit();
             })
-        
-        setTimeout(() => props.onChange(), 1000);
         setDeleteModalOpen(false);
     }
     
@@ -140,7 +150,6 @@ export default function AnnouncementPost(props) {
         hh %= 12;
 
         if (hh == 0) {
-            console.log('hh = 0')
             result += '12';
 
             for (let i = 2; i < 5; i++){
@@ -154,38 +163,27 @@ export default function AnnouncementPost(props) {
         }
         result += ' ' + meridien;
         return result;
-
     }
 
-    return(
-        <Grid item className={classes.root}>
-            {isEdited && <Alert onClose={() => {setIsEdited(false)}} severity="success" style={{ margin:'10px 0 0 0'}}>
-            This announcement was edited successfully!
-            </Alert>}
-            <Grid item style={{display:'flex', padding:'5px 0px 5px 10px'}}>
-                <Grid item xs={6} style={{display:'flex', flexDirection:'row', padding:'5px 0'}}>
-                    <img src={profile} style={{height:'50px'}}></img>
-                    <Typography data-testid={`name-${props.id}`} style={{display:'flex', alignItems:'center', padding:'0 10px 0 10px'}}>{props.name}</Typography>
-                </Grid>
-                <Grid item xs={6} style={{display:'flex', flexDirection:'column', alignItems:'end', padding:'5px 10px 5px 0'}}>
-                    <Typography>{props.timestamp.slice(0, 10)}</Typography> 
-                    <Typography data-testid={`timestamp-${props.id}`}>{convertTime(props.timestamp.slice(10, 15))}</Typography> 
-                </Grid>
-            </Grid>
-            <Box className={classes.title}>
-                <Typography data-testid={`title-${props.id}`} className={classes.titleFont}>{props.title}</Typography>
-            </Box>
-            <Box className={classes.content}>
-                <Typography data-testid={`body-${props.id}`} className={classes.contentFont}>{props.body}</Typography>
-            </Box>
-            {admin &&
-            <Box style={{display:'flex', justifyContent:'end', margin:'0 8px 10px 0'}}>
+    return(    
+        <Card className={classes.card} sx={{ maxWidth: 500 }}>
+            <CardHeader 
+            avatar={<img src={profile} style={{height:'50px'}}></img>}
+            title={<b>{props.title}</b>}
+            subheader={props.timestamp.slice(0, 10) + '' + convertTime(props.timestamp.slice(10, 15))} />
+            <CardContent>   
+                <Typography variant="body2" color="text.secondary">
+                {props.body}
+                </Typography>
+            </CardContent>
+            {admin && 
+            <CardActions className={classes.cardActions} disableSpacing>
                 <Button onClick={() => setEditModelOpen(true)}><img src={edit} style={{height:'25px'}}></img></Button>
                 <EditModal title={props.title} body={props.body} open={editModalOpen} onClose={() => setEditModelOpen(false)} onSubmit={handleEditClick}/>
                 <Button onClick={() => setDeleteModalOpen(true)}><img src={del} style={{height:'25px'}}></img></Button>
                 <DeleteModal title={props.title} body={props.body} open={deleteModalOpen} onClose={() => setDeleteModalOpen(false)} onSubmit={handleDeleteClick} />
-            </Box>}
-        </Grid>
+            </CardActions>}
+        </Card>
     )
 }
 
@@ -257,13 +255,11 @@ const EditModal = ({title, body, open, onClose, onSubmit}) => {
 
     const handleEnteredTitle = (event) => {
         setNewTitle(event.target.value);
-        // console.log(newTitle);
         setIsTitleMissing(false);
     }
 
     const handleEnteredBody = (event) => {
         setNewContent(event.target.value);
-        // console.log(newContent);
         setIsContentMissing(false);
     }
 

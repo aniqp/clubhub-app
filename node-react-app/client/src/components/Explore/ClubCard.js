@@ -71,7 +71,6 @@ const ClubCard = ({club, isMember, onJoin}) => {
     const handleJoinClub = (clubID) => {
         if (user) {
             const userID = user.uid;
-            console.log('in');
             setUnFulfilledJoin('');
             callApiJoinClub(userID, clubID)
             .then(res => {
