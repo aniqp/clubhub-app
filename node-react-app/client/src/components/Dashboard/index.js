@@ -3,6 +3,7 @@ import { makeStyles, Grid, TextField, FormControl, MenuItem, InputLabel, Select,
 import history from '../Navigation/history';
 import { Pagination } from "@material-ui/lab";
 import { useUser } from '../Firebase/context';
+import AnnouncementPost from "../ClubMain/AnnouncementPost"
 
 const serverURL = ""
 
@@ -27,6 +28,12 @@ const useStyles = makeStyles((theme) => ({
 
 const Dashboard = () => {
 
+  const [announcements, setAnnouncements] = React.useState([])
+
+  React.useEffect(() => {
+    getAnnouncements();
+  }, []);
+
   const user = useUser();
 
   const classes = useStyles();
@@ -43,35 +50,47 @@ const Dashboard = () => {
 
   const getAnnouncements = () => {
     callApiGetAnnouncements()
-        .then(res => {
-            console.log("callApiGetClubs returned: ", res)
-            var parsed = JSON.parse(res.express);
-            console.log("callApiGetClubs: ", parsed);
-        })
+      .then(res => {
+        console.log("callApiGetClubs returned: ", res)
+        var parsed = JSON.parse(res.express);
+        console.log("callApiGetClubs: ", parsed);
+        setAnnouncements(parsed)
+      })
   }
 
-const callApiGetAnnouncements = async () => {
+  const callApiGetAnnouncements = async () => {
     const url = serverURL + '/api/getAnnouncements';
     const userID = user.uid
     const response = await fetch(url, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            //authorization: `Bearer ${this.state.token}`
-        },
-        body: JSON.stringify({
-            userID: userID
-        })
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        //authorization: `Bearer ${this.state.token}`
+      },
+      body: JSON.stringify({
+        userID: userID
+      })
     });
     const body = await response.json();
     if (response.status !== 200) throw Error(body.message);
     console.log("Searched club: ", body);
     return body;
-}
+  }
 
   return (
     <div className={classes.root}>
-      <h6>test</h6>
+      {announcements.map((announcement, index) =>
+        <li key={announcement.id} style={{ listStyle: 'none' }}>
+          <AnnouncementPost
+            id={announcement.id}
+            name={announcement.name}
+            title={announcement.title}
+            body={announcement.body}
+            timestamp={announcement.time_posted}
+            onSubmit={""}
+            adminStatus={false} />
+        </li>
+      )}
     </div>
   );
 };
