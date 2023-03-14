@@ -389,5 +389,29 @@ app.post('/api/getMyClubs', (req,res) => {
 	connection.end();
 });
 
+app.post('/api/getAnnouncements', (req,res) => {
+
+	let connection = mysql.createConnection(config);
+	// let clubID = req.body.clubID;
+	let userID = req.body.userID;
+
+	let sql = `SELECT clubs.name, a.title, a.body, a.time_posted from announcements a
+	INNER JOIN memberships on memberships.club_id = a.club_id
+	INNER JOIN clubs on clubs.id = memberships.club_id
+	WHERE memberships.uid = ?`;
+
+	const data = userID
+
+	connection.query(sql, data, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message);
+		}
+		let string = JSON.stringify(results);
+		res.send({ express: string })
+		//console.log(string)
+	});
+	connection.end();
+});
+
 app.listen(port, () => console.log(`Listening on port ${port}`)); //for the dev version
 //app.listen(port, '129.97.25.211'); //for the deployed version, specify the IP address of the server
