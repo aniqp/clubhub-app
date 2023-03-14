@@ -1,33 +1,50 @@
 import React from 'react';
-import { Grid, Typography } from "@material-ui/core";
+import { makeStyles, Grid, Typography, TextField, InputAdornment } from "@material-ui/core";
 import { useParams } from 'react-router-dom';
-import SideBar from './Sidebar';
-import AnnouncementPost from './AnnouncementPost';
-import AnnouncementForm from './AnnouncementForm.js';
+import ClubBoardHeader from './ClubBoardHeader';
+import { serverURL } from '../../constants/config';
 import Members from './Members';
-import { makeStyles } from "@material-ui/core/styles";
+import AnnouncementPost from './AnnouncementPost';
+import AnnouncementForm from './AnnouncementForm';
+import search from '../../images/search-icon.png';
 import { useUser } from '../Firebase';
-import { serverURL } from '../../constants/config'
 
 
 const useStyles = makeStyles((theme) => ({
-    clubTitle:{
-        fontWeight:'600',
-        fontFamily: 'Arvo, serif',
+    root:{
+        background:'#e7ecef',
+        minHeight:'100vh'
     },
-
+    textField: {
+        width: '80%',
+        marginLeft: 'auto',
+        marginRight: 'auto',            
+        marginTop: 0,
+        fontWeight: 500
+    },
+    input: {
+        background: 'white'
+    },
+    search:{
+        height:'20px'
+    }
 }));
 
-const ClubMain = () => {
+const ClubBoard = () => {
     const classes = useStyles();
+
+    // Initialize user and admin status
+    const user = useUser();
     const [admin, setAdmin] = React.useState(false);
 
-    const user = useUser();
+    const { clubID } = useParams();
+    const [clubTitle, setClubTitle] = React.useState();
+    const [toggle, setToggle] = React.useState("1");
+    const [clubAnnouncements, setClubAnnouncements] = React.useState([]);
+    const [members, setMembers] = React.useState([]);
 
     React.useEffect(() => {
-        console.log('changing users')
         if (user) {
-            console.log(user)
             let userID = user.uid;
             console.log(userID)
             getUserRole(userID);
@@ -37,21 +54,14 @@ const ClubMain = () => {
     }, [user]);
 
     React.useEffect(() => {
-        if (user) {
-            console.log(user)
-            let userID = user.uid;
-            console.log(userID)
-            getUserRole(userID);
-        } else {
-            setAdmin(false);
-        }
+        getClubAnnouncements();
+        getClubTitle();
+        getClubMembers();
     }, []);
 
     const getUserRole = (userID) => {
         callApiGetUserRole(userID)
             .then(res => {
-                console.log('hello')
-
                 var parsed = JSON.parse(res.express);
                 if (parsed.length >= 1){
                     if (parsed[0].role === 'owner' || parsed[0].role === 'admin'){
@@ -82,25 +92,6 @@ const ClubMain = () => {
         if (response.status !== 200) throw Error(body.message);
         return body;
     }
-    
-    const { clubID } = useParams();
-    const [clubTitle, setClubTitle] = React.useState();
-    const [clubAnnouncements, setClubAnnouncements] = React.useState([]);
-    const [members, setMembers] = React.useState([]);
-
-    const [toggle, setToggle] = React.useState("1");
-    
-    const handleToggle = (event, newToggle) => {
-        if (newToggle !== null) {
-            setToggle(newToggle);
-        }
-    };
-
-    React.useEffect(() => {
-        getClubAnnouncements();
-        getClubTitle();
-        getClubMembers();
-    }, []);
 
     const getClubTitle = () => {
         callApiGetClubs()
@@ -127,14 +118,19 @@ const ClubMain = () => {
         return body;
     }
 
-    // FETCH CLUB ANNOUNCEMENTS
+    const handleToggle = (event, newToggle) => {
+        if (newToggle !== null) {
+            setToggle(newToggle);
+        }
+    };
+
+    // CLUB ANNOUNCEMENTS
     const getClubAnnouncements = () => {
         console.log('updating announcements');
         callApiGetClubAnnouncements()
             .then(res => {
                 var parsed = JSON.parse(res.express);
                 setClubAnnouncements(parsed);
-                // console.log(clubAnnouncements);
             })
     }
 
@@ -156,7 +152,7 @@ const ClubMain = () => {
         return body;
     }
 
-    // FETCH CLUB MEMBERS
+    // CLUB MEMBERS
     const getClubMembers = () => {
         console.log('getting members');
         callApiGetClubMembers()
@@ -184,46 +180,59 @@ const ClubMain = () => {
         if (response.status !== 200) throw Error(body.message);
         return body;
     }
+    
 
-    return (
-        <Grid
-            container
-            className={classes.root}
-            >
-                <Grid item xs={12} style={{background:'rgba(18, 28, 38, 0.05)', padding:'60px'}}>
-                    <Typography className={classes.clubTitle} variant='h5'>{clubTitle}</Typography>
-                </Grid>
-                <Grid item xs={8} style={{paddingTop:0}}>
-                    {toggle === '1' && <>
-                        {(clubAnnouncements.length > 0) ? (<>
-                            {Object.values(clubAnnouncements).map((announcement, index) => (
-                                <li key={announcement.id} style={{listStyle:'none'}}>
-                                    <AnnouncementPost 
-                                        id={announcement.id} 
-                                        name={clubTitle} 
-                                        title={announcement.title} 
-                                        body={announcement.body} 
-                                        timestamp={announcement.time_posted}
-                                        onChange={getClubAnnouncements}
-                                        adminStatus={admin}/>
-                                </li>))}
-                        </> ) : (
+    return(<>
+        <Grid className={classes.root} sx={{height:'100%'}}>
+            <ClubBoardHeader clubTitle={clubTitle} toggle={toggle} handleToggle={handleToggle}/>
+            {toggle === '1' && 
+                <Grid container>
+                    <Grid xs={8}>
+                        {admin && <AnnouncementForm clubID={clubID} onSubmit={getClubAnnouncements} user={user.displayName} />}
+                        {Object.values(clubAnnouncements).map((announcement, index) => (
+                            <li key={announcement.id} style={{listStyle:'none'}}>
+                                <AnnouncementPost 
+                                    id={announcement.id} 
+                                    name={clubTitle} 
+                                    title={announcement.title} 
+                                    body={announcement.body} 
+                                    timestamp={announcement.time_posted}
+                                    onSubmit={getClubAnnouncements}
+                                    adminStatus={admin}/>
+                            </li>
+                        ))}
+                    </Grid>
+                    {clubAnnouncements.length > 0 &&
+                    <Grid xs={4} style={{padding:'25px 0 0 0'}}>
+                        <TextField 
+                            className={classes.textField} 
+                            id="outlined-basic" 
+                            label="Search for Announcement" 
+                            variant="filled"
+                            color="success" 
+                            InputProps={{
+                                startAdornment: (
+                                <InputAdornment position="start">
+                                    <img className={classes.search} src={search} />
+                                </InputAdornment>),
+                                className: classes.input}} />
+                    </Grid>}
+                    {clubAnnouncements.length == 0 && 
                         <Grid container style={{display:'flex', justifyContent:'center', padding:'30px 0'}}>
                             <Typography variant={'h6'}><b>No Announcements</b></Typography>
                         </Grid>
-                        )}</>}
-                    {toggle === '4' &&
-                        <Typography>
-                            <Members name={clubTitle} members={members} />
-                        </Typography>
-                    } 
-                </Grid>
-                <Grid item xs={4} style={{padding:'0px'}}>
-                    <SideBar value={toggle} handleToggle={handleToggle} />
-                    {(toggle === '1' && admin) && <AnnouncementForm clubID={clubID} onSubmit={getClubAnnouncements} />}
-                </Grid>
-            </Grid>
-    )
+                    }
+                </Grid>}
+            {toggle == '2' && <>Temp</>}
+            {toggle == '3' && <>Temp</>}
+            {toggle === '4' && 
+                <Typography>
+                    <Members name={clubTitle} members={members} />
+                </Typography>}
+            {toggle == '5' && <>Temp</>}
+        </Grid>
+    </>)
+
 }
 
-export default ClubMain;
+export default ClubBoard;
