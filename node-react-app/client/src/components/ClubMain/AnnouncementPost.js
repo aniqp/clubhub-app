@@ -161,7 +161,7 @@ export default function AnnouncementPost(props) {
         return result;
 
     }
-
+    // console.log('in')
     return(<>
             {isEdited && <Alert className={classes.alert} onClose={() => {setIsEdited(false)}} severity="success">
             This announcement was edited successfully!
@@ -169,7 +169,7 @@ export default function AnnouncementPost(props) {
             <Card className={classes.card} sx={{ maxWidth: 500 }}>
             <CardHeader 
             avatar={<img src={profile} style={{height:'50px'}}></img>}
-            title={props.title}
+            title={<b>{props.title}</b>}
             subheader={props.timestamp.slice(0, 10) + '' + convertTime(props.timestamp.slice(10, 15))} />
             <CardContent>
                 <Typography variant="body2" color="text.secondary">

@@ -120,6 +120,7 @@ const ClubBoardHeader = ({ clubTitle, toggle, handleToggle }) => {
                 </ToggleButton>
             </StyledToggleButtonGroup>
         </Grid>
+        
    </>)
 
 }

@@ -42,6 +42,7 @@ const ClubBoard = () => {
     const [toggle, setToggle] = React.useState("1");
     const [clubAnnouncements, setClubAnnouncements] = React.useState([]);
     const [members, setMembers] = React.useState([]);
+    const [updateAnnouncements, setUpdateAnnouncements] = React.useState('false');
 
     React.useEffect(() => {
         if (user) {
@@ -58,6 +59,10 @@ const ClubBoard = () => {
         getClubTitle();
         getClubMembers();
     }, []);
+
+    React.useEffect(() => {
+        getClubAnnouncements();
+    }, [updateAnnouncements]);
 
     const getUserRole = (userID) => {
         callApiGetUserRole(userID)
@@ -131,7 +136,7 @@ const ClubBoard = () => {
             .then(res => {
                 var parsed = JSON.parse(res.express);
                 setClubAnnouncements(parsed);
-                // console.log(clubAnnouncements);
+                setUpdateAnnouncements(false);
             })
     }
 
@@ -181,7 +186,7 @@ const ClubBoard = () => {
         if (response.status !== 200) throw Error(body.message);
         return body;
     }
-
+    
 
     return(<>
         <Grid className={classes.root} sx={{height:'100%'}}>
@@ -189,7 +194,7 @@ const ClubBoard = () => {
             {toggle === '1' && 
                 <Grid container>
                     <Grid xs={8}>
-                        {admin && <AnnouncementForm clubID={clubID} onSubmit={getClubAnnouncements} />}
+                        {admin && <AnnouncementForm clubID={clubID} onSubmit={getClubAnnouncements} user={user.displayName} />}
                         {Object.values(clubAnnouncements).map((announcement, index) => (
                             <li key={announcement.id} style={{listStyle:'none'}}>
                                 <AnnouncementPost 
@@ -198,7 +203,7 @@ const ClubBoard = () => {
                                     title={announcement.title} 
                                     body={announcement.body} 
                                     timestamp={announcement.time_posted}
-                                    onChange={getClubAnnouncements}
+                                    onChange={()=> setUpdateAnnouncements(true)}
                                     adminStatus={admin}/>
                             </li>
                         ))}
