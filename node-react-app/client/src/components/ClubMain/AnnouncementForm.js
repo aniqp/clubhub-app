@@ -1,17 +1,11 @@
-import React, { useEffect } from 'react';
-import { makeStyles, IconButton, RadioGroup, Radio, FormControlLabel, Card, CardHeader, CardContent, Avatar, FormControl, InputLabel, OutlinedInput } from "@material-ui/core";
-import Grid from "@material-ui/core/Grid";
-import Button from "@material-ui/core/Button";
-import TextField from '@material-ui/core/TextField';
-import Box from '@material-ui/core/Box';
-import { Typography } from '@material-ui/core';
+import React from 'react';
+import { makeStyles, Grid, Button, Typography, RadioGroup, Radio, FormControlLabel, Card } from "@material-ui/core";
 import { serverURL } from '../../constants/config';
-import Alert from '@material-ui/lab/Alert';
 import profile from '../../images/profile-icon.png';
 import close from '../../images/close-icon.png';
 import publicIcon from '../../images/public-icon.png';
 import privateIcon from '../../images/private-icon.png';
-import { ToastContainer, toast } from 'react-toastify'; 
+import { toast } from 'react-toastify'; 
 import "react-toastify/dist/ReactToastify.css";
 
 const useStyles = makeStyles({
@@ -67,7 +61,6 @@ const useStyles = makeStyles({
     subheader:{
         fontWeight:'600',
         paddingBottom:'10px'
-        // color:'#354497'
     },
     divider:{
         margin:'25px 0 5px 0',
@@ -85,9 +78,9 @@ const useStyles = makeStyles({
 
 const AnnouncementForm = (props) => {
     const classes = useStyles();
-    const [isSubmitSuccess, setIsSubmitSuccess] = React.useState(false);
+    const [postModalOpen, setPostModalOpen] = React.useState(false);
+
     toast.configure();
-    
     const notify = () => {
         toast.success("Success: Announcement posted!", {
             position: toast.POSITION.TOP_RIGHT,
@@ -97,7 +90,6 @@ const AnnouncementForm = (props) => {
 
     const timestamp = () => {
         let today = new Date();
-
         const leadingZero = (n) => {
             if (n.toString.length == 1){
                 n = '0' + n;
@@ -105,27 +97,21 @@ const AnnouncementForm = (props) => {
             }
             return;
         }
-
         let date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate()+' '+leadingZero(today.getHours())+':'+leadingZero(today.getMinutes())+':'+today.getSeconds();
-        
         return date;
     }
 
     const handleSubmit = (data) => {
-
         callApiPostAnnouncement(data)
         .then(res => {
             var parsed = JSON.parse(res.express);  
             props.onSubmit();
             notify();   
         })
-        
-
     }
     
     const callApiPostAnnouncement = async (data) => {
         const url = serverURL + "/api/postAnnouncement";
-    
         const response = await fetch(url, {
           method: "POST",
           headers: {
@@ -139,28 +125,22 @@ const AnnouncementForm = (props) => {
             time_posted: timestamp(),
           }),
         });
-
         const body = await response.json();
         if (response.status !== 200) throw Error(body.message);
         return body;
     };
 
-    const [postModalOpen, setPostModalOpen] = React.useState(false);
-
-
     return(
-        <>
-            <Card className={classes.card} sx={{ maxWidth: 500 }}>
-                <Grid xs={1}>
-                    <img className={classes.profile} src={profile} />
-                </Grid>
-                <Grid xs={11}>
-                    <Button className={classes.btn} onClick={()=> setPostModalOpen(true)} open={postModalOpen} onClose={()=> setPostModalOpen(false)}>Share an Announcement...</Button>
-                    <PostModal classes={classes} user={props.user} open={postModalOpen} onClose={() => setPostModalOpen(false)} onSubmit={handleSubmit} />
-                </Grid>
+        <Card className={classes.card} sx={{ maxWidth: 500 }}>
+            <Grid xs={1}>
+                <img className={classes.profile} src={profile} />
+            </Grid>
+            <Grid xs={11}>
+                <Button className={classes.btn} onClick={()=> setPostModalOpen(true)} open={postModalOpen} onClose={()=> setPostModalOpen(false)}>Share an Announcement...</Button>
+                <PostModal classes={classes} user={props.user} open={postModalOpen} onClose={() => setPostModalOpen(false)} onSubmit={handleSubmit} />
+            </Grid>
 
-            </Card>
-        </>
+        </Card>
     )
 }
 
