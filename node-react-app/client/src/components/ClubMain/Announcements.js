@@ -1,7 +1,6 @@
 import React from 'react';
 import { Grid, Typography, AppBar, Toolbar,  } from "@material-ui/core";
 import { useParams } from 'react-router-dom';
-import SideBar from './Sidebar';
 import AnnouncementPost from './AnnouncementPost';
 import AnnouncementForm from './AnnouncementForm.js';
 import { makeStyles } from "@material-ui/core/styles";

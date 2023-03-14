@@ -13,7 +13,7 @@ const useStyles = makeStyles({
         margin:'20px 50px',
         display:'flex',
         padding:'18px',
-        alignItems:'center'
+        alignItems:'center',
 
     }, 
     input:{

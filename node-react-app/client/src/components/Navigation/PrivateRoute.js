@@ -1,7 +1,6 @@
 import React from "react";
 import { Router, Switch, Route } from "react-router-dom";
 import ClubDetails from "../ClubDetails";
-import ClubMain from "../ClubMain";
 import Home from '../Home';
 import history from './history';
 import ExplorePage from "../Explore/index";
