@@ -5,7 +5,7 @@ import profile from '../../images/profile-icon.png';
 import edit from '../../images/edit-icon.png';
 import del from '../../images/delete-icon.png';
 import close from '../../images/close-icon.png';
-import lock from '../../images/close-icon.png';
+import lock from '../../images/lock-icon.png';
 import { serverURL } from '../../constants/config';
 import { toast } from 'react-toastify'; 
 import { Link } from 'react-router-dom';

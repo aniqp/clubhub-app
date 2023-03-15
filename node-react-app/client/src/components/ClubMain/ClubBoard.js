@@ -190,6 +190,7 @@ const ClubBoard = () => {
         if (response.status !== 200) throw Error(body.message);
         return body;
     }
+    
 
     return(<>
         <Grid className={classes.root} sx={{height:'100%'}}>
