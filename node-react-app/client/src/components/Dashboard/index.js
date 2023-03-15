@@ -4,6 +4,7 @@ import history from '../Navigation/history';
 import { Pagination } from "@material-ui/lab";
 import { useUser } from '../Firebase/context';
 import AnnouncementPost from "../ClubMain/AnnouncementPost"
+import { fontWeight } from "@mui/system";
 
 const serverURL = ""
 
@@ -16,7 +17,15 @@ const useStyles = makeStyles((theme) => ({
     marginTop: '30px'
   },
   title: {
-    fontFamily: 'Arvo, serif'
+    fontFamily: 'Biryani, sans-serif',
+    fontWeight: 600,
+    marginTop: '60px'
+  },
+  title2: {
+    fontFamily: 'Biryani, sans-serif',
+    fontWeight: 600,
+    marginTop: '40px',
+    textDecoration: 'underline'
   },
   card: {
     border: "1px solid #ddd",
@@ -30,9 +39,7 @@ const Dashboard = () => {
 
   const [announcements, setAnnouncements] = React.useState([])
 
-  React.useEffect(() => {
-    getAnnouncements();
-  }, []);
+  const onDashboard = true;
 
   const user = useUser();
 
@@ -54,6 +61,14 @@ const Dashboard = () => {
         console.log("callApiGetClubs returned: ", res)
         var parsed = JSON.parse(res.express);
         console.log("callApiGetClubs: ", parsed);
+        parsed.sort(function (a, b) {
+          var timeA = a.time_posted.toLowerCase(), timeB = b.time_posted.toLowerCase()
+          if (timeA > timeB) //sort string ascending
+            return -1
+          if (timeA < timeB)
+            return 1
+          return 0 //default return value (no sorting)
+        })
         setAnnouncements(parsed)
       })
   }
@@ -79,18 +94,26 @@ const Dashboard = () => {
 
   return (
     <div className={classes.root}>
-      {announcements.map((announcement, index) =>
-        <li key={announcement.id} style={{ listStyle: 'none' }}>
-          <AnnouncementPost
-            id={announcement.id}
-            name={announcement.name}
-            title={announcement.title}
-            body={announcement.body}
-            timestamp={announcement.time_posted}
-            onSubmit={""}
-            adminStatus={false} />
-        </li>
-      )}
+      <Typography className={classes.title} variant="h4" align="center">
+        Your clubs, at a glance
+      </Typography>
+      <Typography className = {classes.title2} variant = "h5" align = "center">
+        Recent Announcements
+      </Typography>
+        {announcements.map((announcement, index) =>
+          <li key={announcement.id} style={{ listStyle: 'none'}}>
+            <AnnouncementPost
+              id={announcement.id}
+              name={announcement.name}
+              title={announcement.title}
+              body={announcement.body}
+              timestamp={announcement.time_posted}
+              adminStatus={false}
+              onDashboard={onDashboard}
+              club_id={announcement.club_id}
+            />
+          </li>
+        )}
     </div>
   );
 };

@@ -22,7 +22,7 @@ const App = () => {
   useEffect(() => {
     const link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = "https://fonts.googleapis.com/css2?family=Arvo&family=Biryani:wght@200;800&display=swap";
+    link.href = "https://fonts.googleapis.com/css2?family=Arvo&family=Biryani:wght@200;600;700;800&display=swap";
     document.head.appendChild(link);
   }, []);
 
