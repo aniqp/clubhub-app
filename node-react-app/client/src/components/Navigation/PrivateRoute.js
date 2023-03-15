@@ -10,7 +10,8 @@ import Members from "../ClubMain/Members";
 import Announcements from "../ClubMain/Announcements";
 import ClubBoard from "../ClubMain/ClubBoard";
 import { useUser } from '../Firebase/context'
-import CircularProgress from "@material-ui/core/CircularProgress"
+import CircularProgress from "@material-ui/core/CircularProgress";
+import EventForm from "../ClubMain/EventForm";
 
 export default function PrivateRoute() {
   const user = useUser()
@@ -36,6 +37,7 @@ export default function PrivateRoute() {
         <Route path="/explore" component={ExplorePage} />
         <Route path = "/clubs/:clubID" exact component = {ClubDetails}/>
         <Route path = "/clubboard/:clubID" exact component = {ClubBoard}/>
+        <Route path = "/clubboard/:clubID/eventform" exact component = {EventForm}/>
         <Route path = "/myclubs" exact component = {MyClubs}/>
       </Switch>
     </Router>

@@ -6,6 +6,7 @@ import { serverURL } from '../../constants/config';
 import Members from './Members';
 import AnnouncementPost from './AnnouncementPost';
 import AnnouncementForm from './AnnouncementForm';
+import Events from './Events';
 import search from '../../images/search-icon.png';
 import { useUser } from '../Firebase';
 
@@ -38,7 +39,7 @@ const ClubBoard = () => {
 
     const { clubID } = useParams();
     const [clubTitle, setClubTitle] = React.useState();
-    const [toggle, setToggle] = React.useState("1");
+    const [toggle, setToggle] = React.useState("2");
     const [clubAnnouncements, setClubAnnouncements] = React.useState([]);
     const [members, setMembers] = React.useState([]);
     
@@ -236,7 +237,7 @@ const ClubBoard = () => {
                         </Grid>
                     }
                 </Grid>}
-            {toggle == '2' && <>Temp</>}
+            {toggle == '2' && <Events />}
             {toggle == '3' && <>Temp</>}
             {toggle === '4' && 
                 <Typography>
