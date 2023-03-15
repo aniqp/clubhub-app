@@ -42,6 +42,17 @@ const ClubBoard = () => {
     const [toggle, setToggle] = React.useState("1");
     const [clubAnnouncements, setClubAnnouncements] = React.useState([]);
     const [members, setMembers] = React.useState([]);
+    
+
+    const [searchTerm, setSearchTerm] = React.useState('');
+    
+    const handleSearchTerm = (e) => {
+        setSearchTerm(e.target.value);
+    }
+
+    const filteredAnnouncements = clubAnnouncements.filter((announcement) =>
+        announcement.body.toLowerCase().includes(searchTerm.toLowerCase())
+    )
 
     React.useEffect(() => {
         if (user) {
@@ -180,7 +191,7 @@ const ClubBoard = () => {
         if (response.status !== 200) throw Error(body.message);
         return body;
     }
-    
+
 
     return(<>
         <Grid className={classes.root} sx={{height:'100%'}}>
@@ -189,7 +200,7 @@ const ClubBoard = () => {
                 <Grid container>
                     <Grid xs={8}>
                         {admin && <AnnouncementForm clubID={clubID} onSubmit={getClubAnnouncements} />}
-                        {Object.values(clubAnnouncements).map((announcement, index) => (
+                        {Object.values(filteredAnnouncements).map((announcement, index) => (
                             <li key={announcement.id} style={{listStyle:'none'}}>
                                 <AnnouncementPost 
                                     id={announcement.id} 
@@ -210,7 +221,9 @@ const ClubBoard = () => {
                             id="outlined-basic" 
                             label="Search for Announcement" 
                             variant="filled"
-                            color="success" 
+                            color="success"
+                            value={searchTerm}
+                            onChange={handleSearchTerm} 
                             InputProps={{
                                 startAdornment: (
                                 <InputAdornment position="start">
