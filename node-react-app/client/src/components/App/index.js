@@ -37,7 +37,7 @@ const App = () => {
             <PrivateRoute exact path="/" component={Home} /> */}
           <Navbar/>
 
-          <PrivateRoute exact path="/" component={Home} />
+          <PrivateRoute exact path="/" />
           </div>
         </UserContext.Provider>
       </AuthHeaderContext.Provider>
