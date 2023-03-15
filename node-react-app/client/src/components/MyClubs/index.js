@@ -87,7 +87,7 @@ const callApiGetMyClubs = async () => {
       <Grid container style={{ display: 'flex', flexDirection: 'column' }}>
       <Typography className = {classes.title} variant = "h4"> My Clubs </Typography>
       <br></br>
-        <MyClubCard clubs = {myClubs} />
+        <MyClubCard clubs = {myClubs} onChange={getMyClubs} />
       </Grid>
     </div>
   );
