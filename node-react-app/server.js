@@ -369,7 +369,6 @@ app.post('/api/joinClub', (req,res) => {
 	});
 	connection.end();
 });
-
 app.post('/api/getMyClubs', (req,res) => {
 
 	let connection = mysql.createConnection(config);
@@ -415,6 +414,15 @@ app.post('/api/getAnnouncements', (req,res) => {
 		let string = JSON.stringify(results);
 		res.send({ express: string })
 		//console.log(string)
+
+app.post('/api/leaveClub', (req,res) => {
+	let connection = mysql.createConnection(config);
+	let clubID = req.body.clubId;
+	let userID = req.body.userId;
+	let sql = `DELETE FROM memberships WHERE uid = ? AND club_id = ?`;
+	const data = [userID, clubID];
+	connection.query(sql, data, (error, results, fields) => {
+		if (error) throw error;
 	});
 	connection.end();
 });
