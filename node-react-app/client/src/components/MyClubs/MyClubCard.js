@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { Button, Card, Typography, CardActions, CardContent, CardMedia } from "@material-ui/core";
+import { Box, Button, Card, Typography, CardActions, CardContent, CardMedia } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import history from '../Navigation/history';
 import academic from '../../images/club-images/academic.jpg'
@@ -18,6 +18,9 @@ import { useUser } from '../Firebase/context';
 import { toast } from 'react-toastify'; 
 import "react-toastify/dist/ReactToastify.css";
 import { serverURL } from '../../constants/config';
+import close from '../../images/close-icon.png';
+import caution from '../../images/caution-icon.png';
+
 
 const MyClubCard = (props) => {
 
@@ -84,6 +87,7 @@ const MyClubCard = (props) => {
         
         callApiLeaveClub(data)
         .then(res => {
+            setLeaveClubsModalOpen(false);
             props.onChange();
             notify(clubName);
         })
@@ -106,7 +110,10 @@ const MyClubCard = (props) => {
         if (response.status !== 200) throw Error(body.message);
         return body;
     }
-        
+
+    const [admin, setAdmin] = React.useState(false);
+    const [leaveClubsModalOpen, setLeaveClubsModalOpen] = React.useState(false);
+    
 
     return (
         <Grid container spacing={2}>
@@ -122,10 +129,10 @@ const MyClubCard = (props) => {
                                 <Typography variant='h6' style={{ padding: '0 0 10px 0' }}>{club.name}</Typography>
                                 <Typography style={{ fontSize: '0.8rem' }}>{truncate(club.description)}</Typography>
                             </CardContent>
-                            <CardActions>
+                            <CardActions style={{display:'flex', justifyContent:'space-between'}}>
                                 <Button style={{ border: '1.5px solid' }} onClick={() => history.push(`/clubboard/${club.id}`)} color='primary' variant='outlined' >View Board</Button>
-                                
-                                <Button style={{ border: '1.5px solid' }} onClick={() => handleClick(club.id, user.uid, club.name)} color='primary' variant='outlined' >Leave Club</Button>
+                                <Button style={{ border: '1.5px solid' }} onClick={() => setLeaveClubsModalOpen(true)} color='secondary' variant='outlined'>Leave Club</Button>
+                                <LeaveClubModal clubName={club.name} open={leaveClubsModalOpen} onClose={() => setLeaveClubsModalOpen(false)} onSubmit={()=> handleClick(club.id, user.uid, club.name)}/>
                             </CardActions>
                         </Card>
                     </Grid>
@@ -136,3 +143,54 @@ const MyClubCard = (props) => {
 }
 
 export default MyClubCard;
+
+const MODAL_STYLES = {
+    position:'fixed',
+    top:'50%',
+    left:'50%',
+    transform:'translate(-50%, -50%)',
+    backgroundColor:'#fff',
+    zIndex:1000,
+    width:'30vw',
+    borderRadius:'8px'
+}
+
+const OVERLAY_STYLES = {
+    position:'fixed', 
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    margin: 0,
+    backgroundColor:'rgba(0,0,0,.4)',
+    zIndex:1000
+}
+
+const LeaveClubModal = ({ open, onClose, onSubmit, clubName }) => {
+    if (!open) return null
+
+    return(
+        <>
+            <div style={OVERLAY_STYLES} />
+            <div style={MODAL_STYLES}>
+                <Grid container style={{display:'flex', flexDirection:'column'}}>
+                    <Grid item style={{display:'flex', justifyContent:'end', paddingTop:'5px'}}>
+                        <Button onClick={onClose}><img src={close} style={{height:'25px'}}></img></Button>
+                    </Grid>
+                    <Grid item style={{display:'flex', justifyContent:'center'}}>
+                        <img src={caution} style={{height:'70px', marginLeft:'15px'}} />
+                        <Box>
+                            <Typography style={{margin:'10px 20px 5px 20px', fontWeight:'600', letterSpacing:'0.02em'}}>Leave Club</Typography>
+                            <Typography style={{margin:'0 20px 20px 20px'}}>Are you sure you want to leave {clubName}?</Typography>
+                        </Box> 
+                    </Grid>
+                    <Grid style={{display:'flex', flexDirection:'row', justifyContent:'center', padding:'10px 10px 15px 10px'}}>
+                        <Button fullWidth onClick={onClose} variant='outlined' style={{margin:'0 10px'}}>Cancel</Button>
+                        <Button fullWidth onClick={onSubmit} variant='outlined' style={{margin:'0 10px', background:'#F01C39', color:'white'}}>Leave</Button>   
+                    </Grid>
+                </Grid>
+            </div>
+        </>
+    )
+
+}
