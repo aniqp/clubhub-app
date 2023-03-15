@@ -41,6 +41,17 @@ const ClubBoard = () => {
     const [toggle, setToggle] = React.useState("1");
     const [clubAnnouncements, setClubAnnouncements] = React.useState([]);
     const [members, setMembers] = React.useState([]);
+    
+
+    const [searchTerm, setSearchTerm] = React.useState('');
+    
+    const handleSearchTerm = (e) => {
+        setSearchTerm(e.target.value);
+    }
+
+    const filteredAnnouncements = clubAnnouncements.filter((announcement) =>
+        announcement.body.toLowerCase().includes(searchTerm.toLowerCase())
+    )
 
     React.useEffect(() => {
         if (user) {
@@ -187,8 +198,8 @@ const ClubBoard = () => {
             {toggle === '1' && 
                 <Grid container>
                     <Grid xs={8}>
-                        {admin && <AnnouncementForm clubID={clubID} onSubmit={getClubAnnouncements} user={user.displayName} />}
-                        {Object.values(clubAnnouncements).map((announcement, index) => (
+                        {admin && <AnnouncementForm clubID={clubID} onSubmit={getClubAnnouncements} />}
+                        {Object.values(filteredAnnouncements).map((announcement, index) => (
                             <li key={announcement.id} style={{listStyle:'none'}}>
                                 <AnnouncementPost 
                                     id={announcement.id} 
@@ -198,7 +209,7 @@ const ClubBoard = () => {
                                     timestamp={announcement.time_posted}
                                     onSubmit={getClubAnnouncements}
                                     adminStatus={admin}
-                                    />
+                                    visibility={announcement.visibility}/>
                             </li>
                         ))}
                     </Grid>
@@ -209,7 +220,9 @@ const ClubBoard = () => {
                             id="outlined-basic" 
                             label="Search for Announcement" 
                             variant="filled"
-                            color="success" 
+                            color="success"
+                            value={searchTerm}
+                            onChange={handleSearchTerm} 
                             InputProps={{
                                 startAdornment: (
                                 <InputAdornment position="start">

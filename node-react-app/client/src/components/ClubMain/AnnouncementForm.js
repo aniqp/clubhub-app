@@ -137,7 +137,7 @@ const AnnouncementForm = (props) => {
             </Grid>
             <Grid xs={11}>
                 <Button className={classes.btn} onClick={()=> setPostModalOpen(true)} open={postModalOpen} onClose={()=> setPostModalOpen(false)}>Share an Announcement...</Button>
-                <PostModal classes={classes} user={props.user} open={postModalOpen} onClose={() => setPostModalOpen(false)} onSubmit={handleSubmit} />
+                <PostModal classes={classes} open={postModalOpen} onClose={() => setPostModalOpen(false)} onSubmit={handleSubmit} />
             </Grid>
 
         </Card>
@@ -166,7 +166,7 @@ const OVERLAY_STYLES = {
     zIndex:1000
 }
 
-const PostModal = ({ classes, user, open, onClose, onSubmit }) => {
+const PostModal = ({ classes, open, onClose, onSubmit }) => {
     const [title, setTitle] = React.useState('');
     const [content, setContent] = React.useState('');
     const [radiobtn, setRadiobtn] = React.useState('1');

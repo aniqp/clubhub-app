@@ -110,6 +110,7 @@ const Dashboard = () => {
               adminStatus={false}
               onDashboard={onDashboard}
               club_id={announcement.club_id}
+              visibility = {announcement.visibility}
             />
           </li>
         )}

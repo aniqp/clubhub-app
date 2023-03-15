@@ -135,7 +135,7 @@ app.post('/api/getClubAnnouncements', (req,res) => {
 	let connection = mysql.createConnection(config);
 	let clubID = req.body.clubID;
 
-	const sql = `SELECT a.title, a.body, a.time_posted, a.id 
+	const sql = `SELECT a.title, a.body, a.time_posted, a.id, a.visibility 
 	from announcements as a, clubs as c 
 	where c.id = a.club_id and c.id = ?
 	order by time_posted desc;`;
@@ -399,7 +399,7 @@ app.post('/api/getAnnouncements', (req,res) => {
 	// let clubID = req.body.clubID;
 	let userID = req.body.userID;
 
-	let sql = `SELECT clubs.name, a.title, a.body, a.time_posted, a.id, clubs.id club_id from announcements a
+	let sql = `SELECT clubs.name, a.title, a.body, a.time_posted, a.id, a.visibility, clubs.id club_id from announcements a
 	INNER JOIN memberships on memberships.club_id = a.club_id
 	INNER JOIN clubs on clubs.id = memberships.club_id
 	WHERE memberships.uid = ?
