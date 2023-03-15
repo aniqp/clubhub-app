@@ -8,6 +8,8 @@ import { useUser } from '../Firebase/context';
 import { useSignInWithGoogle } from 'react-firebase-hooks/auth';
 import { useAuthHeader } from '../Firebase/context';
 import { serverURL } from '../../constants/config'
+import { toast } from 'react-toastify'; 
+import "react-toastify/dist/ReactToastify.css";
 
 const useStyles = makeStyles((theme) => ({
     li:{
@@ -44,6 +46,15 @@ const ClubCard = ({club, isMember, onJoin}) => {
         return input;
     };
 
+    toast.configure();
+    const notify = () => {
+        console.log('in')
+        toast.success("Success: Club was joined.", {
+            position: toast.POSITION.TOP_RIGHT,
+            autoClose: true
+        });
+    }
+
     // Non-users will be redirected to sign in when trying to join a club 
     const [auth] = useState(getAuth())
     const [signInWithGoogle] = useSignInWithGoogle(auth)
@@ -76,6 +87,7 @@ const ClubCard = ({club, isMember, onJoin}) => {
             .then(res => {
                 console.log('club join successful')
                 onJoin();
+                notify()
             })
         } else {
             console.log('not signed in')

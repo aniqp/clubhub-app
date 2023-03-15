@@ -10,21 +10,21 @@ import { useUser } from '../Firebase/context';
 const useStyles = makeStyles((theme) => ({
   navlinks: {
     display: "flex",
-    
+
   },
   link: {
     fontFamily: 'Biryani, sans-serif',
     textDecoration: "none",
-    fontWeight:'600',
+    fontWeight: 800,
     color: "white",
     fontSize: "15px",
-    marginLeft:'10%',
+    marginLeft: '10%',
     "&:hover": {
       color: "yellow",
       borderBottom: "1px solid white",
     },
     "&.active": {
-      background:'red',
+      background: 'red',
       color: "yellow",
       borderBottom: "1px solid white",
     },
@@ -32,13 +32,13 @@ const useStyles = makeStyles((theme) => ({
   logo: {
     fontFamily: 'Biryani, sans-serif',
     fontSize: '1.5rem',
-    color:'white',
-    fontWeight:'600',
-    borderBottom:'yellow 2px solid',
-  }, 
+    color: 'white',
+    fontWeight: 800,
+    borderBottom: 'yellow 2px solid',
+  },
   toolbar: {
-    display:'flex',
-    justifyContent:'space-between',
+    display: 'flex',
+    justifyContent: 'space-between',
   }
 }));
 const Navbar = () => {
@@ -54,35 +54,35 @@ const Navbar = () => {
       <AppBar position="fixed">
         <Toolbar className={classes.toolbar}>
           <Grid item xs={4} className={classes.navlinks}>
+              <Link
+                to='/'
+                onClick={() => history.push('/')}
+                className={classes.link}
+              >
+                Home
+              </Link>
             <Link
-              to = '/'
-              onClick={() => history.push('/')}
-              className={classes.link}
-            >
-              Home
-            </Link>
-            <Link
-              to = '/explore'
+              to='/explore'
               onClick={() => history.push('/explore')}
               className={classes.link}>
               Explore
             </Link>
             {user &&
-            <Link
-              to = '/myclubs'
-              onClick={() => history.push('/myclubs')}
-              className={classes.link}>
-              My Clubs
-            </Link>}
+              <Link
+                to='/myclubs'
+                onClick={() => history.push('/myclubs')}
+                className={classes.link}>
+                My Clubs
+              </Link>}
           </Grid>
           <Link
             to='/'
             onClick={() => history.push('/')}
             className={classes.link}
-            style={{margin:'0'}}>
+            style={{ margin: '0' }}>
             <Typography className={classes.logo}>CLUBHUB</Typography>
-            </Link>
-          <Grid xs={4} style={{display:'flex', justifyContent:'end', paddingRight:'46px'}}>
+          </Link>
+          <Grid xs={4} style={{ display: 'flex', justifyContent: 'end', paddingRight: '46px' }}>
             <SignIn />
           </Grid>
         </Toolbar>

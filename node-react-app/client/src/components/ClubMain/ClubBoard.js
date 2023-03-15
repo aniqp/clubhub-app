@@ -32,7 +32,6 @@ const useStyles = makeStyles((theme) => ({
 
 const ClubBoard = () => {
     const classes = useStyles();
-
     // Initialize user and admin status
     const user = useUser();
     const [admin, setAdmin] = React.useState(false);
@@ -191,7 +190,6 @@ const ClubBoard = () => {
         if (response.status !== 200) throw Error(body.message);
         return body;
     }
-
 
     return(<>
         <Grid className={classes.root} sx={{height:'100%'}}>

@@ -5,10 +5,12 @@ import profile from '../../images/profile-icon.png';
 import edit from '../../images/edit-icon.png';
 import del from '../../images/delete-icon.png';
 import close from '../../images/close-icon.png';
-import lock from '../../images/lock-icon.png';
+import lock from '../../images/close-icon.png';
 import { serverURL } from '../../constants/config';
 import { toast } from 'react-toastify'; 
+import { Link } from 'react-router-dom';
 import "react-toastify/dist/ReactToastify.css";
+import GroupsRoundedIcon from '@material-ui/icons/Group';
 
 const useStyles = makeStyles({
     root: {
@@ -170,7 +172,14 @@ export default function AnnouncementPost(props) {
     return(<>
         {((props.visibility === 'private' && admin) || (props.visibility === 'public')) &&
         <Card className={classes.card} sx={{ maxWidth: 500 }}>
-            <CardHeader 
+            {props.onDashboard &&
+            <Link to = {"/clubboard/" + props.club_id} style={{textDecoration: 'none'}}
+            >
+            <Typography style = {{justify: "space-between", marginLeft: "20px", marginTop: "15px", fontFamily: 'Arvo, serif' }}>
+                <GroupsRoundedIcon style = {{marginRight: '3px'}}/> {props.name}
+            </Typography>
+            </Link>}
+            <CardHeader
             avatar={<img src={profile} style={{height:'50px'}}></img>}
             title={
                 <Grid style={{display:'flex', justifyContent:'space-between'}}>

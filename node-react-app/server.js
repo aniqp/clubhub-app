@@ -369,7 +369,6 @@ app.post('/api/joinClub', (req,res) => {
 	});
 	connection.end();
 });
-
 app.post('/api/getMyClubs', (req,res) => {
 
 	let connection = mysql.createConnection(config);
@@ -390,6 +389,42 @@ app.post('/api/getMyClubs', (req,res) => {
 		let string = JSON.stringify(results);
 		res.send({ express: string })
 		//console.log(string)
+	});
+	connection.end();
+});
+
+app.post('/api/getAnnouncements', (req,res) => {
+
+	let connection = mysql.createConnection(config);
+	// let clubID = req.body.clubID;
+	let userID = req.body.userID;
+
+	let sql = `SELECT clubs.name, a.title, a.body, a.time_posted, a.id, clubs.id club_id from announcements a
+	INNER JOIN memberships on memberships.club_id = a.club_id
+	INNER JOIN clubs on clubs.id = memberships.club_id
+	WHERE memberships.uid = ?
+	AND DATE(a.time_posted) >= DATE(DATE_SUB(NOW(), INTERVAL 1 WEEK))`;
+
+	const data = userID
+
+	connection.query(sql, data, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message);
+		}
+		let string = JSON.stringify(results);
+		res.send({ express: string })
+		//console.log(string)
+	});
+});
+
+app.post('/api/leaveClub', (req,res) => {
+	let connection = mysql.createConnection(config);
+	let clubID = req.body.clubId;
+	let userID = req.body.userId;
+	let sql = `DELETE FROM memberships WHERE uid = ? AND club_id = ?`;
+	const data = [userID, clubID];
+	connection.query(sql, data, (error, results, fields) => {
+		if (error) throw error;
 	});
 	connection.end();
 });
