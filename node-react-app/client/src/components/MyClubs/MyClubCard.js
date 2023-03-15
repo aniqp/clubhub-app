@@ -64,8 +64,6 @@ const MyClubCard = (props) => {
     console.log('props')
     console.log(props.clubs)
     const user = useUser();
-    console.log("this is the uidd",user.uid)
-    //console.log("this is fr", props.user.uid)
     const handleClick = (clubId, userId) => {
         const response = fetch('/api/leaveClub', {
           method: 'POST',
