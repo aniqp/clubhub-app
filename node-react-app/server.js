@@ -424,7 +424,12 @@ app.post('/api/leaveClub', (req,res) => {
 	let sql = `DELETE FROM memberships WHERE uid = ? AND club_id = ?`;
 	const data = [userID, clubID];
 	connection.query(sql, data, (error, results, fields) => {
-		if (error) throw error;
+		if (error) {
+			return console.error(error.message);
+		}
+		let string = JSON.stringify(results);
+		res.send({ express: string })
+		//console.log(string)
 	});
 	connection.end();
 });

@@ -15,6 +15,9 @@ import media from '../../images/club-images/media.jpg'
 import politicsSocialAwareness from '../../images/club-images/politics_social_awareness.jpg'
 import religious from '../../images/club-images/religious.jpg'
 import { useUser } from '../Firebase/context';
+import { toast } from 'react-toastify'; 
+import "react-toastify/dist/ReactToastify.css";
+import { serverURL } from '../../constants/config';
 
 const MyClubCard = (props) => {
 
@@ -24,6 +27,14 @@ const MyClubCard = (props) => {
         }
         return input;
     };
+
+    toast.configure();
+    const notify = (name) => {
+        toast.success("Your request to leave "+name+" was successful", {
+            position: toast.POSITION.TOP_RIGHT,
+            autoClose: true
+        });
+    }
 
     function getClubCategory(club) {
         const category = club.categories.split(',')[0]
@@ -61,24 +72,40 @@ const MyClubCard = (props) => {
             return religious
         }
     }
-    console.log('props')
-    console.log(props.clubs)
+
     const user = useUser();
-    const handleClick = (clubId, userId) => {
-        const response = fetch('/api/leaveClub', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            clubId,
-            userId
-          })
-        });
-        history.push("/");
+    
+    const handleClick = (clubId, userId, clubName) => {
+        let data = {
+            clubId:clubId,
+            userId:userId,
+            clubName:clubName
+        }
+        
+        callApiLeaveClub(data)
+        .then(res => {
+            props.onChange();
+            notify(clubName);
+        })
     };
-        //call api to leave club
-        //redirect to myclubs page
+
+    const callApiLeaveClub = async (data) => {
+        const url = serverURL + '/api/leaveClub';
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                //authorization: `Bearer ${this.state.token}`
+            },
+            body: JSON.stringify({
+                clubId: data.clubId,
+                userId: data.userId
+            })
+        });
+        const body = await response.json();
+        if (response.status !== 200) throw Error(body.message);
+        return body;
+    }
         
 
     return (
@@ -98,7 +125,7 @@ const MyClubCard = (props) => {
                             <CardActions>
                                 <Button style={{ border: '1.5px solid' }} onClick={() => history.push(`/clubboard/${club.id}`)} color='primary' variant='outlined' >View Board</Button>
                                 
-                                <Button style={{ border: '1.5px solid' }} onClick={() => handleClick(club.id, user.uid)} color='primary' variant='outlined' >Leave Club</Button>
+                                <Button style={{ border: '1.5px solid' }} onClick={() => handleClick(club.id, user.uid, club.name)} color='primary' variant='outlined' >Leave Club</Button>
                             </CardActions>
                         </Card>
                     </Grid>
