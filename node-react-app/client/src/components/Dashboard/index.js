@@ -4,7 +4,6 @@ import history from '../Navigation/history';
 import { Pagination } from "@material-ui/lab";
 import { useUser } from '../Firebase/context';
 import AnnouncementPost from "../ClubMain/AnnouncementPost"
-import { fontWeight } from "@mui/system";
 
 const serverURL = ""
 

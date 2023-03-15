@@ -414,6 +414,8 @@ app.post('/api/getAnnouncements', (req,res) => {
 		let string = JSON.stringify(results);
 		res.send({ express: string })
 		//console.log(string)
+	});
+});
 
 app.post('/api/leaveClub', (req,res) => {
 	let connection = mysql.createConnection(config);
