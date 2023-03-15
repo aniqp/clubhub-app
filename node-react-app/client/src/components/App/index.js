@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect } from 'react';
 
 import Home from '../Home';
+import Dashboard from '../Dashboard'
 import Navbar from '../GlobHeader/navbar';
 import { BrowserRouter as Router } from "react-router-dom";
 
@@ -35,7 +36,7 @@ const App = () => {
           
             <PrivateRoute exact path="/" component={Home} /> */}
           <Navbar/>
-                
+
           <PrivateRoute exact path="/" component={Home} />
           </div>
         </UserContext.Provider>

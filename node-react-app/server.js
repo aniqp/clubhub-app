@@ -403,7 +403,8 @@ app.post('/api/getAnnouncements', (req,res) => {
 	let sql = `SELECT clubs.name, a.title, a.body, a.time_posted, a.id, clubs.id club_id from announcements a
 	INNER JOIN memberships on memberships.club_id = a.club_id
 	INNER JOIN clubs on clubs.id = memberships.club_id
-	WHERE memberships.uid = ?`;
+	WHERE memberships.uid = ?
+	AND DATE(a.time_posted) >= DATE(DATE_SUB(NOW(), INTERVAL 1 WEEK))`;
 
 	const data = userID
 
