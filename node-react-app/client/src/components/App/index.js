@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect } from 'react';
 
 import Home from '../Home';
+import Dashboard from '../Dashboard'
 import Navbar from '../GlobHeader/navbar';
 import { BrowserRouter as Router } from "react-router-dom";
 
@@ -22,7 +23,7 @@ const App = () => {
   useEffect(() => {
     const link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = "https://fonts.googleapis.com/css2?family=Arvo&family=Biryani:wght@200;800&display=swap";
+    link.href = "https://fonts.googleapis.com/css2?family=Arvo&family=Biryani:wght@200;600;700;800&display=swap";
     document.head.appendChild(link);
   }, []);
 
@@ -35,8 +36,8 @@ const App = () => {
           
             <PrivateRoute exact path="/" component={Home} /> */}
           <Navbar/>
-                
-          <PrivateRoute exact path="/" component={Home} />
+
+          <PrivateRoute exact path="/" />
           </div>
         </UserContext.Provider>
       </AuthHeaderContext.Provider>

@@ -7,7 +7,9 @@ import del from '../../images/delete-icon.png';
 import close from '../../images/close-icon.png';
 import { serverURL } from '../../constants/config';
 import { toast } from 'react-toastify'; 
+import { Link } from 'react-router-dom';
 import "react-toastify/dist/ReactToastify.css";
+import GroupsRoundedIcon from '@material-ui/icons/Group';
 
 const useStyles = makeStyles({
     root: {
@@ -167,7 +169,14 @@ export default function AnnouncementPost(props) {
 
     return(    
         <Card className={classes.card} sx={{ maxWidth: 500 }}>
-            <CardHeader 
+            {props.onDashboard &&
+            <Link to = {"/clubboard/" + props.club_id} style={{textDecoration: 'none'}}
+            >
+            <Typography style = {{justify: "space-between", marginLeft: "20px", marginTop: "15px", fontFamily: 'Arvo, serif' }}>
+                <GroupsRoundedIcon style = {{marginRight: '3px'}}/> {props.name}
+            </Typography>
+            </Link>}
+            <CardHeader
             avatar={<img src={profile} style={{height:'50px'}}></img>}
             title={<b>{props.title}</b>}
             subheader={props.timestamp.slice(0, 10) + '' + convertTime(props.timestamp.slice(10, 15))} />

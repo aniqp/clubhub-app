@@ -32,7 +32,6 @@ const useStyles = makeStyles((theme) => ({
 
 const ClubBoard = () => {
     const classes = useStyles();
-
     // Initialize user and admin status
     const user = useUser();
     const [admin, setAdmin] = React.useState(false);
@@ -198,7 +197,8 @@ const ClubBoard = () => {
                                     body={announcement.body} 
                                     timestamp={announcement.time_posted}
                                     onSubmit={getClubAnnouncements}
-                                    adminStatus={admin}/>
+                                    adminStatus={admin}
+                                    />
                             </li>
                         ))}
                     </Grid>
