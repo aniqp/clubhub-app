@@ -32,7 +32,6 @@ const useStyles = makeStyles((theme) => ({
 
 const ClubBoard = () => {
     const classes = useStyles();
-
     // Initialize user and admin status
     const user = useUser();
     const [admin, setAdmin] = React.useState(false);
