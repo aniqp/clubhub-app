@@ -188,7 +188,7 @@ const ClubBoard = () => {
             {toggle === '1' && 
                 <Grid container>
                     <Grid xs={8}>
-                        {admin && <AnnouncementForm clubID={clubID} onSubmit={getClubAnnouncements} user={user.displayName} />}
+                        {admin && <AnnouncementForm clubID={clubID} onSubmit={getClubAnnouncements} />}
                         {Object.values(clubAnnouncements).map((announcement, index) => (
                             <li key={announcement.id} style={{listStyle:'none'}}>
                                 <AnnouncementPost 
@@ -198,7 +198,8 @@ const ClubBoard = () => {
                                     body={announcement.body} 
                                     timestamp={announcement.time_posted}
                                     onSubmit={getClubAnnouncements}
-                                    adminStatus={admin}/>
+                                    adminStatus={admin}
+                                    visibility={announcement.visibility}/>
                             </li>
                         ))}
                     </Grid>

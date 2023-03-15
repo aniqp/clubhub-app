@@ -5,6 +5,7 @@ import profile from '../../images/profile-icon.png';
 import edit from '../../images/edit-icon.png';
 import del from '../../images/delete-icon.png';
 import close from '../../images/close-icon.png';
+import lock from '../../images/lock-icon.png';
 import { serverURL } from '../../constants/config';
 import { toast } from 'react-toastify'; 
 import "react-toastify/dist/ReactToastify.css";
@@ -164,12 +165,24 @@ export default function AnnouncementPost(props) {
         result += ' ' + meridien;
         return result;
     }
-
-    return(    
+    console.log('visibility: ', props.visibility)
+    console.log('admin status: ', admin)
+    return(<>
+        {((props.visibility === 'private' && admin) || (props.visibility === 'public')) &&
         <Card className={classes.card} sx={{ maxWidth: 500 }}>
             <CardHeader 
             avatar={<img src={profile} style={{height:'50px'}}></img>}
-            title={<b>{props.title}</b>}
+            title={
+                <Grid style={{display:'flex', justifyContent:'space-between'}}>
+                    <b>{props.title}</b>
+                    {props.visibility === 'private' && 
+                        <>
+                            <Box style={{display:'flex', alignContent:'center'}}>
+                                <Typography variant="body2" color='primary'>Admin Visibility</Typography>
+                                <img src={lock} style={{height:'18px', marginLeft:'5px'}} />
+                            </Box>
+                        </>}
+                </Grid>}
             subheader={props.timestamp.slice(0, 10) + '' + convertTime(props.timestamp.slice(10, 15))} />
             <CardContent>   
                 <Typography variant="body2" color="text.secondary">
@@ -184,7 +197,8 @@ export default function AnnouncementPost(props) {
                 <DeleteModal title={props.title} body={props.body} open={deleteModalOpen} onClose={() => setDeleteModalOpen(false)} onSubmit={handleDeleteClick} />
             </CardActions>}
         </Card>
-    )
+        }
+    </>)
 }
 
 

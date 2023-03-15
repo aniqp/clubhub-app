@@ -135,7 +135,7 @@ app.post('/api/getClubAnnouncements', (req,res) => {
 	let connection = mysql.createConnection(config);
 	let clubID = req.body.clubID;
 
-	const sql = `SELECT a.title, a.body, a.time_posted, a.id 
+	const sql = `SELECT a.title, a.body, a.time_posted, a.id, a.visibility 
 	from announcements as a, clubs as c 
 	where c.id = a.club_id and c.id = ?
 	order by time_posted desc;`;
