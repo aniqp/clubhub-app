@@ -395,8 +395,8 @@ app.post('/api/getMyClubs', (req,res) => {
 
 app.post('/api/leaveClub', (req,res) => {
 	let connection = mysql.createConnection(config);
-	let clubID = req.body.clubID;
-	let userID = req.body.userID;
+	let clubID = req.body.clubId;
+	let userID = req.body.userId;
 	let sql = `DELETE FROM memberships WHERE uid = ? AND club_id = ?`;
 	const data = [userID, clubID];
 	connection.query(sql, data, (error, results, fields) => {

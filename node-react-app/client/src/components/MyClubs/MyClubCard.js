@@ -14,7 +14,7 @@ import health from '../../images/club-images/health.jpg'
 import media from '../../images/club-images/media.jpg'
 import politicsSocialAwareness from '../../images/club-images/politics_social_awareness.jpg'
 import religious from '../../images/club-images/religious.jpg'
-
+import { useUser } from '../Firebase/context';
 
 const MyClubCard = (props) => {
 
@@ -63,6 +63,26 @@ const MyClubCard = (props) => {
     }
     console.log('props')
     console.log(props.clubs)
+    const user = useUser();
+    console.log("this is the uidd",user.uid)
+    //console.log("this is fr", props.user.uid)
+    const handleClick = (clubId, userId) => {
+        const response = fetch('/api/leaveClub', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            clubId,
+            userId
+          })
+        });
+        history.push("/");
+    };
+        //call api to leave club
+        //redirect to myclubs page
+        
+
     return (
         <Grid container spacing={2}>
             {props.clubs.map((club) => (
@@ -79,6 +99,8 @@ const MyClubCard = (props) => {
                             </CardContent>
                             <CardActions>
                                 <Button style={{ border: '1.5px solid' }} onClick={() => history.push(`/clubboard/${club.id}`)} color='primary' variant='outlined' >View Board</Button>
+                                
+                                <Button style={{ border: '1.5px solid' }} onClick={() => handleClick(club.id, user.uid)} color='primary' variant='outlined' >Leave Club</Button>
                             </CardActions>
                         </Card>
                     </Grid>
