@@ -1,9 +1,11 @@
 import React from 'react';
-import { Grid, Card } from "@material-ui/core";
+import { Grid, Card, Button } from "@material-ui/core";
 import { Typography } from '@material-ui/core';
 import { makeStyles } from "@material-ui/core/styles";
 import profile from '../../images/profile-icon.png';
 import membersIcon from '../../images/members.png';
+import { useUser } from '../Firebase/context';
+import history from '../Navigation/history';
 
 const useStyles = makeStyles((theme) => ({
     root:{
@@ -69,8 +71,56 @@ const useStyles = makeStyles((theme) => ({
 
 
 
+
 const Members = ({name, members}) => {
     const classes = useStyles();
+    const user = useUser();
+    //check the role of the user in members
+    console.log(user.uid)
+    //const myrole = members.filter(member => member.uid === user.uid)
+    //check the role of the user in members
+    const myrole = members.find(member => member.uid === user.uid)
+    console.log("my role", myrole.role)
+    for (let i = 0; i < members.length; i++) {
+        console.log("this club", members[i].club_id)
+    }
+
+    const handleClickUser = (userId, clubId) => {
+        fetch('/api/promoteUser', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            userId: userId,
+            clubId: clubId
+          })
+        })
+          .then(response => response.json())
+          .then(data => console.log(data))
+          .catch(error => console.error(error));
+          history.push("/myclubs");
+      }
+
+      const handleClickAdmin = (userId, clubId) => {
+        fetch('/api/demoteAdmin', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            userId: userId,
+            clubId: clubId
+          })
+        })
+          .then(response => response.json())
+          .then(data => console.log(data))
+          .catch(error => console.error(error));
+           history.push("/myclubs");
+      }
+
+
+
 
     return(
         <Grid container className={classes.root}>
@@ -86,6 +136,9 @@ const Members = ({name, members}) => {
                 <Card className={classes.header}>
                     <Grid xs={6} item>Name</Grid>
                     <Grid xs={6} item>Role</Grid>
+                    {myrole.role === 'owner' && (
+                        <Grid xs={6} item>Promote</Grid>
+                    )}
                 </Card>}
                 {members.map((member) => (
                 <Card className={classes.card}>
@@ -104,6 +157,17 @@ const Members = ({name, members}) => {
                             <Typography className={[classes.role, classes.userRole]}> {member.role}</Typography>
                         )}
                     </Grid>
+                    {myrole.role === 'owner' && (
+                    <Grid item style={{display:'flex'}}>
+                        {member.role === 'user' && (
+                            <Button className={[classes.role, classes.adminRole]} onClick={() => handleClickUser(member.uid, member.club_id)}> Promote</Button>
+                        )}
+                        {member.role === 'admin' && (
+                            <Button className={[classes.role, classes.ownerRole]} onClick={() => handleClickAdmin(member.uid, member.club_id)}> Demote</Button>
+                        )}
+                    </Grid>
+                    )}
+
                 </Card>
                   ))}
             </Grid>

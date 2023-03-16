@@ -234,10 +234,12 @@ app.post('/api/getClubMembers', (req,res) => {
 	let connection = mysql.createConnection(config);
 	let clubID = req.body.clubID;
 
-	let sql = `SELECT u.name, m.role 
+	//rewrite sql to also get the uid of the user
+	let sql = `SELECT u.name, u.uid, m.role, m.club_id
 	FROM memberships as m, users as u 
 	WHERE m.club_id= ? and m.uid = u.uid
 	order by role desc;`;
+
 
 	const data = [clubID]
 
@@ -433,6 +435,7 @@ app.post('/api/leaveClub', (req,res) => {
 	});
 	connection.end();
 });
+
 
 app.listen(port, () => console.log(`Listening on port ${port}`)); //for the dev version
 //app.listen(port, '129.97.25.211'); //for the deployed version, specify the IP address of the server
