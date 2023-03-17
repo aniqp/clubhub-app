@@ -17,6 +17,8 @@ CREATE TABLE `clubs` (
 	PRIMARY KEY (`id`)
 );
 
+ALTER TABLE `clubs` ADD `hold_applications` BOOLEAN;
+
 -- Create memberships table
 CREATE TABLE `memberships` (
 	`uid` VARCHAR(255) NOT NULL,
@@ -73,7 +75,6 @@ CREATE TABLE `attendance` (
 	FOREIGN KEY (`uid`) REFERENCES users(uid)
 );
 
-drop table attendance;
 
 -- Populate clubs table with clubs from WUSA
 INSERT INTO `clubs` (name, categories, description) VALUES ("A Cappella Club","creative-arts-dance-and-music","The UW A Cappella Club is the umbrella club of all a cappella groups at the University of Waterloo! UWACC was founded in 2008 originally with one ensemble and has since expanded to include many different groups including the AcaBellas, the Unaccompanied Minors, ACE, the Musical InterDudes, the Water Boys, and In Full Colour. 
