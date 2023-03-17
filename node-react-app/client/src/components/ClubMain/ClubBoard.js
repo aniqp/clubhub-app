@@ -35,6 +35,7 @@ const ClubBoard = () => {
     // Initialize user and admin status
     const user = useUser();
     const [admin, setAdmin] = React.useState(false);
+    const [acceptAll, setAcceptAll] = React.useState(true);
 
     const { clubID } = useParams();
     const [clubTitle, setClubTitle] = React.useState();
@@ -108,6 +109,7 @@ const ClubBoard = () => {
             .then(res => {
                 var parsed = JSON.parse(res.express);
                 setClubTitle(parsed[0].name)
+                setAcceptAll(!parsed[0].hold_applications)
             })
     }
 
@@ -240,7 +242,7 @@ const ClubBoard = () => {
             {toggle == '3' && <>Temp</>}
             {toggle === '4' && 
                 <Typography>
-                    <Members name={clubTitle} members={members} />
+                    <Members name={clubTitle} members={members} isAdmin={admin} acceptAll={acceptAll}/>
                 </Typography>}
             {toggle == '5' && <>Temp</>}
         </Grid>
