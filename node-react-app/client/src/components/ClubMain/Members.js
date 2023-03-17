@@ -68,11 +68,11 @@ const Application = ({ members, acceptAll }) => {
   const classes = useStyles();
   const { clubID } = useParams();
   const authHeader = useAuthHeader();
-  //   const applicants = useMemo(
-  //     () => members?.filter((_) => _.role === "pending"),
-  //     [members]
-  //   );
-  const applicants = [{ name: "George" }];
+    const applicants = useMemo(
+      () => members?.filter((_) => _.role === "pending"),
+      [members]
+    );
+//   const applicants = [{ name: "George" }];
 
   const acceptUser = async (user) => {
     const request = {
