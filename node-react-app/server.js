@@ -281,14 +281,15 @@ app.post('/api/getCurrentUserRole', (req,res) => {
 app.post('/api/acceptUser', (req, res) => {
 	let connection = mysql.createConnection(config)
 	const user = req['user'];
+	const clubID = req['clubID'];
 	if (!user) {res.status(400).send("No user provided"); next();};
 	
 	const query = `
 	UPDATE memberships
 	SET role="user"
-	WHERE uid=? AND club_id
+	WHERE uid=? AND club_id=?
 	`
-	const data = [user.uid, club]
+	const data = [user.uid, clubID]
 
 	connection.query(query, data, (error, results, fields) => {
 		if (error) {
