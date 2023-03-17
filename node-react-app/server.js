@@ -234,7 +234,7 @@ app.post('/api/getClubMembers', (req,res) => {
 	let connection = mysql.createConnection(config);
 	let clubID = req.body.clubID;
 
-	let sql = `SELECT u.name, m.role 
+	let sql = `SELECT u.name, m.role, u.uid
 	FROM memberships as m, users as u 
 	WHERE m.club_id= ? and m.uid = u.uid
 	order by role desc;`;
@@ -436,3 +436,86 @@ app.post('/api/leaveClub', (req,res) => {
 
 app.listen(port, () => console.log(`Listening on port ${port}`)); //for the dev version
 //app.listen(port, '129.97.25.211'); //for the deployed version, specify the IP address of the server
+
+
+app.post('/api/addAdmin', (req, res) => {
+    let connection = mysql.createConnection(config);
+    let userID = req.body.userID;
+
+	// console.log(newTitle, newBody)
+
+    let sql = `UPDATE memberships as m, users as u
+	SET role = 'admin'
+	WHERE m.uid = u.uid and u.uid=?`
+
+	const data = [userID]
+	// console.log(userID)
+	
+    connection.query(sql, data, (error, results, fields) => {
+		console.log(sql)
+		if (error) {
+			return console.error(error.message);
+		}
+		let string = JSON.stringify(results);
+		res.send({ express: string })
+		console.log(string)
+	});
+	connection.end();
+
+})
+
+app.post('/api/removeAdmin', (req, res) => {
+    let connection = mysql.createConnection(config);
+    let userID = req.body.userID;
+
+	// console.log(newTitle, newBody)
+
+    let sql = `UPDATE memberships as m, users as u
+	SET role = 'user'
+	WHERE m.uid = u.uid and u.uid=?`
+
+	const data = [userID]
+
+    connection.query(sql, data, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message);
+		}
+		let string = JSON.stringify(results);
+		res.send({ express: string })
+		console.log(string)
+	});
+	connection.end();
+
+});
+
+app.post('/api/transferClubOwnership', (req, res) => {
+    let connection = mysql.createConnection(config);
+    let newOwnerID = req.body.newOwnerID;
+	let oldOwnerID = req.body.oldOwnerID;
+	let clubID = req.body.clubID;
+	let newRole = req.body.role;
+
+    let sql = `UPDATE memberships as m1
+	JOIN 
+	(
+		SELECT ? as uid, ? as club_id, 'owner' as role
+		UNION
+		select ? as CustomerID, ? as club_id, ? as role
+	) as m2 on m1.uid=m2.uid and m1.club_id=m2.club_id
+	set m1.role=m2.role;`
+
+	const data = [newOwnerID, clubID, oldOwnerID, clubID, newRole]
+	console.log(sql)
+	console.log(data)
+    connection.query(sql, data, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message);
+		}
+		let string = JSON.stringify(results);
+		res.send({ express: string })
+		console.log(string)
+	});
+	connection.end();
+
+});
+

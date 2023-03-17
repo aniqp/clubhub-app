@@ -7,8 +7,6 @@ import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import Announcements from './Announcements';
 import Members from './Members';
 import { useParams } from 'react-router-dom';
-import creativeArt from '../../images/club-images/creative_art.jpg'
-
 
 
 
@@ -32,10 +30,6 @@ const useStyles = makeStyles((theme) => ({
     header:{
         borderBottom:'rgba(121, 121, 121, 0.07) solid 1px',
         background:'#fff',
-        height:'300px'
-    },
-    headerItems:{
-        height:'300px',
     },
     clubTitle:{
         fontWeight:'600',
@@ -44,7 +38,8 @@ const useStyles = makeStyles((theme) => ({
     titleHeader:{
         display:'flex',
         alignItems:'end',
-        padding:'0 0 50px 10px',
+        margin:'50px'
+        // padding:'0 0 50px 10px',
     },
     toggleGroup: {
         display:'flex',
@@ -90,9 +85,6 @@ const ClubBoardHeader = ({ clubTitle, toggle, handleToggle }) => {
 
     return (<>
         <Grid container className={classes.header}>
-            <Grid item xs={5} className={classes.headerItems}>
-                <img className={classes.headerImg} src={creativeArt}></img>
-            </Grid>
             <Grid item xs={7} className={[classes.titleHeader, classes.headerItems]}>
                 <Typography className={classes.clubTitle} variant='h4'>{clubTitle}</Typography>
             </Grid>
