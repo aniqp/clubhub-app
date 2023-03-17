@@ -111,7 +111,7 @@ app.post('/api/getClubs', (req, res) => {
 	// FROM clubs
 	// WHERE clubs.id = ${clubID}`;
 	
-	const sql = `SELECT name, description
+	const sql = `SELECT name, description, hold_applications
 	FROM clubs
 	WHERE clubs.id = ?`;
 
@@ -276,6 +276,30 @@ app.post('/api/getCurrentUserRole', (req,res) => {
 	});
 	connection.end();
 
+});
+
+app.post('/api/acceptUser', (req, res) => {
+	let connection = mysql.createConnection(config)
+	const user = req['user'];
+	if (!user) {res.status(400).send("No user provided"); next();};
+	
+	const query = `
+	UPDATE memberships
+	SET role="user"
+	WHERE uid=? AND club_id
+	`
+	const data = [user.uid, club]
+
+	connection.query(query, data, (error, results, fields) => {
+		if (error) {
+		  // Return an error if the query failed
+		  res.status(500).json({ error: error.message });
+		} else {
+		  // Return a success message
+		  res.status(200).send(`User ${user.name} accepted to club`);
+		}
+	  });
+	  connection.end();
 });
 
 app.post('/api/getAllClubs', (req, res) => {
