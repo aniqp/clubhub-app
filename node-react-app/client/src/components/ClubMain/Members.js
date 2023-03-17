@@ -97,7 +97,7 @@ const Application = ({ members, acceptAll }) => {
 
   const denyUser = async (user) => {
     const request = {
-      method: "POST",
+      method: "DELETE",
       headers: {
         ...authHeader(),
         Accept: "*/*",
@@ -107,12 +107,12 @@ const Application = ({ members, acceptAll }) => {
         clubID,
       },
     };
-    const URL = serverURL + "/api/acceptUser";
+    const URL = serverURL + "/api/denyUser";
     // Fetch accept user api
     try {
       const response = await fetch(URL, request);
     } catch {
-      console.error("Could not accept user");
+      console.error("Could not deny user");
     }
   };
 
