@@ -68,13 +68,34 @@ const Application = ({ members, acceptAll }) => {
   const classes = useStyles();
   const { clubID } = useParams();
   const authHeader = useAuthHeader();
-    const applicants = useMemo(
-      () => members?.filter((_) => _.role === "pending"),
-      [members]
-    );
-//   const applicants = [{ name: "George" }];
+    // const applicants = useMemo(
+    //   () => members?.filter((_) => _.role === "pending"),
+    //   [members]
+    // );
+  const applicants = [{ name: "George" }];
 
   const acceptUser = async (user) => {
+    const request = {
+      method: "POST",
+      headers: {
+        ...authHeader(),
+        Accept: "*/*",
+      },
+      body: {
+        user,
+        clubID,
+      },
+    };
+    const URL = serverURL + "/api/acceptUser";
+    // Fetch accept user api
+    try {
+      const response = await fetch(URL, request);
+    } catch {
+      console.error("Could not accept user");
+    }
+  };
+
+  const denyUser = async (user) => {
     const request = {
       method: "POST",
       headers: {
@@ -111,6 +132,7 @@ const Application = ({ members, acceptAll }) => {
           >
             <span>{app.name}</span>
             <Button onClick={() => acceptUser(app)}>Accept</Button>
+            <Button onClick={() => denyUser(app)}>Deny</Button>
           </Card>
         ))}
     </Grid>
