@@ -51,13 +51,13 @@ const Dashboard = () => {
 
   const [myClubs, setMyClubs] = React.useState([])
 
+  const [loading, setLoading] = React.useState(true)
+
   const onDashboard = true;
 
   const user = useUser();
 
   const classes = useStyles();
-
-  const drawerWidth = 240
 
   useEffect(() => {
     if (user) {
@@ -72,14 +72,8 @@ const Dashboard = () => {
 
   const filteredAnnouncements = announcements.filter((announcement) => announcement.name.includes(clubSelected))
 
-  if (filteredAnnouncements === "") {
-    setTimeout(() => {
-      return (<CircularProgress />)
-    }, 300)
-  }
-
   function isAdmin(announcement) {
-    return (((announcement.role == "owner" || announcement.role == "admin") && announcement.visibility == "private")  || announcement.visibility == "public")
+    return (((announcement.role == "owner" || announcement.role == "admin") && announcement.visibility == "private") || announcement.visibility == "public")
   }
 
   const getAnnouncements = () => {
@@ -97,6 +91,7 @@ const Dashboard = () => {
           return 0 //default return value (no sorting)
         })
         setAnnouncements(parsed)
+        setLoading(false)
       })
   }
 
@@ -150,6 +145,12 @@ const Dashboard = () => {
     return body;
   }
 
+  if (loading === true) {
+    return (<div align="center">
+      <CircularProgress />
+    </div>)
+  }
+
   return (
     <div className={classes.root}>
       <Box sx={{ display: 'flex' }}>
@@ -168,7 +169,7 @@ const Dashboard = () => {
               {myClubs.map((text, index) => (
                 <div>
                   <ListItem key={text} style={{ maxWidth: "250px" }}>
-                    <ListItemButton button={true} onClick={() => { setClubSelected(text) }} selected = {clubSelected === text}>
+                    <ListItemButton button={true} onClick={() => { setClubSelected(text) }} selected={clubSelected === text}>
                       <GroupsRoundedIcon style={{ marginRight: "15px" }} />
                       <ListItemText primary={text} sx={{ fontFamily: 'Arvo, serif' }} />
                     </ListItemButton>
@@ -178,10 +179,10 @@ const Dashboard = () => {
             </List>
           </Box>
         </Drawer>
-        <Grid>
-          <Typography variant="h5" style={{marginLeft: "50px", fontFamily: 'Arvo, serif' }}>Announcements</Typography>
-          {filteredAnnouncements.map((announcement, index) =>
-            <Grid item key={announcement.id} style={{ listStyle: 'none' }} xs = {15}>
+        <Grid textAlign="center">
+          <Typography variant="h5" style={{ marginLeft: "50px", fontFamily: 'Arvo, serif' }}>Announcements</Typography>
+          {filteredAnnouncements.length !== 0 ? filteredAnnouncements.map((announcement, index) =>
+            <Grid item key={announcement.id} style={{ listStyle: 'none' }} xs={15}>
               <AnnouncementPost
                 id={announcement.id}
                 name={announcement.name}
@@ -194,7 +195,7 @@ const Dashboard = () => {
                 visibility={announcement.visibility}
               />
             </Grid>
-          )}
+          ) : <Typography variant="h6" style={{ marginLeft: "50px", marginTop: "20px" }}>This club has no recent announcements.</Typography>}
         </Grid>
       </Box>
     </div>
