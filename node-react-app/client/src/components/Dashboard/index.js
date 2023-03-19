@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import {
   makeStyles, Grid, TextField, FormControl, MenuItem, InputLabel,
   Select, Box, Typography, Drawer, CssBaseline, AppBar, Toolbar, List, Divider, Button,
-  ListItem, ListItemIcon, ListItemText
+  ListItem, ListItemIcon, ListItemText, Link
 } from "@material-ui/core";
 import ListItemButton from '@material-ui/core/ListItem'
 import InboxIcon from '@material-ui/icons/Inbox'
@@ -175,9 +175,14 @@ const Dashboard = () => {
                     </ListItemButton>
                   </ListItem>
                 </div>
-              ))}
+              ))}             
             </List>
           </Box>
+          <ListItem key='View All' style={{ maxWidth: "250px", display: 'flex', justifyContent: 'space-between', position: 'absolute', bottom: 0 }}>
+                    <Link onClick={() => { setClubSelected("") }} style = {{textAlign: "right", marginLeft: "140px", cursor: 'pointer'}}>
+                      <ListItemText primary={'View All'} sx={{ fontFamily: 'Arvo, serif' }} />
+                    </Link>
+                  </ListItem> 
         </Drawer>
         <Grid textAlign="center">
           <Typography variant="h5" style={{ marginLeft: "50px", fontFamily: 'Arvo, serif' }}>Announcements</Typography>

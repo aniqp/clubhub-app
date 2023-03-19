@@ -26,7 +26,7 @@ export default function PrivateRoute() {
   if(loading === true) {
     setTimeout(() => {
       setLoading(false)
-    }, 300)
+    }, 500)
     return (
     <div align = "center">
         <CircularProgress/>
