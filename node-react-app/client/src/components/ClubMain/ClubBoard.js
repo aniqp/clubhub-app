@@ -1,9 +1,9 @@
-import React from 'react';
+import React, {Component} from 'react';
 import { makeStyles, Grid, Typography, TextField, InputAdornment } from "@material-ui/core";
 import { useParams } from 'react-router-dom';
 import ClubBoardHeader from './ClubBoardHeader';
 import { serverURL } from '../../constants/config';
-import Members from './Members';
+// import Members from './Members';
 import AnnouncementPost from './AnnouncementPost';
 import AnnouncementForm from './AnnouncementForm';
 import search from '../../images/search-icon.png';
@@ -35,12 +35,13 @@ const ClubBoard = () => {
     // Initialize user and admin status
     const user = useUser();
     const [admin, setAdmin] = React.useState(false);
+    const [noAnnouncementMsg, setNoAnnouncementMsg] = React.useState('')
 
     const { clubID } = useParams();
     const [clubTitle, setClubTitle] = React.useState();
-    const [toggle, setToggle] = React.useState("2");
+    // const [toggle, setToggle] = React.useState("2");
     const [clubAnnouncements, setClubAnnouncements] = React.useState([]);
-    const [members, setMembers] = React.useState([]);
+    // const [members, setMembers] = React.useState([]);
     
 
     const [searchTerm, setSearchTerm] = React.useState('');
@@ -65,8 +66,8 @@ const ClubBoard = () => {
 
     React.useEffect(() => {
         getClubAnnouncements();
-        getClubTitle();
-        getClubMembers();
+        // getClubTitle();
+        // getClubMembers();
     }, []);
 
     const getUserRole = (userID) => {
@@ -103,36 +104,36 @@ const ClubBoard = () => {
         return body;
     }
 
-    const getClubTitle = () => {
-        callApiGetClubs()
-            .then(res => {
-                var parsed = JSON.parse(res.express);
-                setClubTitle(parsed[0].name)
-            })
-    }
+    // const getClubTitle = () => {
+    //     callApiGetClubs()
+    //         .then(res => {
+    //             var parsed = JSON.parse(res.express);
+    //             setClubTitle(parsed[0].name)
+    //         })
+    // }
 
-    const callApiGetClubs = async () => {
-        const url = serverURL + '/api/getClubs';
-        const response = await fetch(url, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                //authorization: `Bearer ${this.state.token}`
-            },
-            body: JSON.stringify({
-                clubID: clubID
-            })
-        });
-        const body = await response.json();
-        if (response.status !== 200) throw Error(body.message);
-        return body;
-    }
+    // const callApiGetClubs = async () => {
+    //     const url = serverURL + '/api/getClubs';
+    //     const response = await fetch(url, {
+    //         method: "POST",
+    //         headers: {
+    //             "Content-Type": "application/json",
+    //             //authorization: `Bearer ${this.state.token}`
+    //         },
+    //         body: JSON.stringify({
+    //             clubID: clubID
+    //         })
+    //     });
+    //     const body = await response.json();
+    //     if (response.status !== 200) throw Error(body.message);
+    //     return body;
+    // }
 
-    const handleToggle = (event, newToggle) => {
-        if (newToggle !== null) {
-            setToggle(newToggle);
-        }
-    };
+    // const handleToggle = (event, newToggle) => {
+    //     if (newToggle !== null) {
+    //         setToggle(newToggle);
+    //     }
+    // };
 
     // CLUB ANNOUNCEMENTS
     const getClubAnnouncements = () => {
@@ -141,6 +142,9 @@ const ClubBoard = () => {
             .then(res => {
                 var parsed = JSON.parse(res.express);
                 setClubAnnouncements(parsed);
+                if (parsed.length == 0){
+                    setNoAnnouncementMsg('No Announcements')
+                }
             })
     }
 
@@ -162,40 +166,39 @@ const ClubBoard = () => {
         return body;
     }
 
-    // CLUB MEMBERS
-    const getClubMembers = () => {
-        // console.log('getting members');
-        callApiGetClubMembers()
-            .then(res => {
-                var parsed = JSON.parse(res.express);
-                setMembers(parsed);
-            })
-    }
+    // // CLUB MEMBERS
+    // const getClubMembers = () => {
+    //     // console.log('getting members');
+    //     callApiGetClubMembers()
+    //         .then(res => {
+    //             var parsed = JSON.parse(res.express);
+    //             setMembers(parsed);
+    //         })
+    // }
 
 
-    const callApiGetClubMembers = async () => {
-        const url = serverURL + '/api/getClubMembers';
-        const response = await fetch(url, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                //authorization: `Bearer ${this.state.token}`
-            },
-            body: JSON.stringify({
-                clubID: clubID
-            })
-        });
+    // const callApiGetClubMembers = async () => {
+    //     const url = serverURL + '/api/getClubMembers';
+    //     const response = await fetch(url, {
+    //         method: "POST",
+    //         headers: {
+    //             "Content-Type": "application/json",
+    //             //authorization: `Bearer ${this.state.token}`
+    //         },
+    //         body: JSON.stringify({
+    //             clubID: clubID
+    //         })
+    //     });
 
-        const body = await response.json();
-        if (response.status !== 200) throw Error(body.message);
-        return body;
-    }
+    //     const body = await response.json();
+    //     if (response.status !== 200) throw Error(body.message);
+    //     return body;
+    // }
     
 
     return(<>
+        <ClubBoardHeader active={"1"}/>
         <Grid className={classes.root} sx={{height:'100%'}}>
-            <ClubBoardHeader clubTitle={clubTitle} toggle={toggle} handleToggle={handleToggle}/>
-            {toggle === '1' && 
                 <Grid container>
                     <Grid xs={8}>
                         {admin && <AnnouncementForm clubID={clubID} onSubmit={getClubAnnouncements} />}
@@ -232,20 +235,21 @@ const ClubBoard = () => {
                     </Grid>}
                     {clubAnnouncements.length == 0 && 
                         <Grid container style={{display:'flex', justifyContent:'center', padding:'30px 0'}}>
-                            <Typography variant={'h6'}><b>No Announcements</b></Typography>
+                            <Typography variant={'h6'}><b>{noAnnouncementMsg}</b></Typography>
                         </Grid>
                     }
-                </Grid>}
-            {toggle == '2' && <>Temp</>}
-            {toggle == '3' && <>Temp</>}
-            {toggle === '4' && 
-                <Typography>
-                    <Members name={clubTitle} members={members} isAdmin={admin} onChange={getClubMembers} />
-                </Typography>}
-            {toggle == '5' && <>Temp</>}
+                </Grid>
         </Grid>
     </>)
 
 }
 
 export default ClubBoard;
+
+// {toggle == '2' && <>Temp</>}
+//             {toggle == '3' && <>Temp</>}
+//             {toggle === '4' && 
+//                 <Typography>
+//                     <Members name={clubTitle} members={members} isAdmin={admin} onChange={getClubMembers} />
+//                 </Typography>}
+//             {toggle == '5' && <>Temp</>}

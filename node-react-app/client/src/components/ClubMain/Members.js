@@ -7,14 +7,18 @@ import search from '../../images/search-icon.png';
 import info from '../../images/info-icon.png';
 import { Pagination } from "@material-ui/lab";
 import ManageAdmin from './members/dialogs/ManageAdmin';
+import TransferOwnership from './members/dialogs/TransferOwner';
 import { useParams } from 'react-router-dom';
 import { serverURL } from '../../constants/config';
+import ClubBoardHeader from './ClubBoardHeader';
 
 const useStyles = makeStyles((theme) => ({
     root: {
         display: 'flex',
         flexDirection: 'row',
         padding: '20px 10px 20px 30px',
+        background:'#e7ecef',
+        minHeight:'100vh',
 
     },
     search: {
@@ -102,23 +106,35 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-const Members = ({ name, members, isAdmin, onChange }) => {
+const Members = ({ name, onChange }) => {
     const user = useUser();
+    const { clubID } = useParams();
+    const [members, setMembers] = React.useState([]);
+    const [currentUserRole, setCurrentUserRole] = React.useState('');
+    const [isAdmin, setIsAdmin] = React.useState(false);
 
-    const currentUserRole = (
-        (members.find((member) => member.uid == user.uid)).role
-    )
+
+    React.useEffect(() => {
+        getClubMembers();
+    }, []);
+
+    React.useEffect(() => {
+        if (members.length > 0){
+            setCurrentUserRole(members.find((member) => member.uid == user.uid).role)
+            
+            if (currentUserRole !== 'user'){
+                setIsAdmin(true);
+            }
+        }
+    }, [members]);
+
     
-        console.log(currentUserRole)
+    
+    console.log(currentUserRole)
     const [openOwnerDialog, setOpenOwnerDialog] = React.useState(false);
     const [openAdminDialog, setOpenAdminDialog] = React.useState(false);
 
     const classes = useStyles();
-
-    // const handleClickOpen = () => {
-    //     // setOpen(true);
-
-    // };
 
     const handleClose = (event, reason) => {
         if (reason !== 'backdropClick') {
@@ -127,11 +143,46 @@ const Members = ({ name, members, isAdmin, onChange }) => {
         }
     };
 
-    return ( 
-        <Grid container className = { classes.root } >
-            <Grid item xs = { 3 } >
-                <Card className = { classes.memberCount } >
-                    <img src = { membersIcon } style = {{ height: '50px' } } /> 
+    // CLUB MEMBERS
+    const getClubMembers = () => {
+        console.log('getting members');
+        callApiGetClubMembers()
+            .then(res => {
+                var parsed = JSON.parse(res.express);
+                console.log('pre')
+                console.log(members)
+
+                setMembers(parsed);
+                console.log('post')
+                console.log(members)
+            })
+    }
+
+
+    const callApiGetClubMembers = async () => {
+        const url = serverURL + '/api/getClubMembers';
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                //authorization: `Bearer ${this.state.token}`
+            },
+            body: JSON.stringify({
+                clubID: clubID
+            })
+        });
+
+        const body = await response.json();
+        if (response.status !== 200) throw Error(body.message);
+        return body;
+    }
+
+    return ( <>
+        <ClubBoardHeader active={"4"}/>
+        <Grid container className={classes.root}>
+            <Grid item xs={3}>
+                <Card className={classes.memberCount } >
+                    <img src={membersIcon} style = {{ height: '50px' } } /> 
                     <Typography className = { classes.text2 } color = 'primary' > 
                         { members.length } 
                     </Typography> 
@@ -148,7 +199,7 @@ const Members = ({ name, members, isAdmin, onChange }) => {
                             style = {{ background: '#283371' }}>
                                 Transfer Club Ownership 
                         </Button> 
-                        <OwnerDialog open={ openOwnerDialog }close = { handleClose } classes = { classes } members = { members.slice(1, members.length)} currentUser={user}/> 
+                        <TransferOwnership open={openOwnerDialog} close={handleClose} members={members.slice(1, members.length)} currentUser={user} onChange={getClubMembers}/> 
                         </>}
                         <Button 
                             onClick = {() => { setOpenAdminDialog(true) } }
@@ -156,7 +207,7 @@ const Members = ({ name, members, isAdmin, onChange }) => {
                             style = {{ background: '#5566c3' } } > 
                             Manage Admins 
                         </Button> 
-                        <ManageAdmin open={openAdminDialog} close={handleClose} members={members} onChange={onChange}/>
+                        <ManageAdmin open={openAdminDialog} close={handleClose} members={members} onChange={getClubMembers}/>
                     </div>}    
             </Grid> 
             <Grid item xs = { 6 } style = {{ padding: '10px 0 0 60px' }}>
@@ -198,169 +249,7 @@ const Members = ({ name, members, isAdmin, onChange }) => {
                     </TableContainer>} 
             </Grid>        
         </Grid>
-    )
+        </>)
 }
 
 export default Members;
-
-const OwnerDialog = ({ open, close, classes, members, onChange, currentUser }) => {
-    const {clubID} = useParams();
-    const [searchTerm, setSearchTerm] = React.useState('');
-
-
-    const handleSearchTerm = (e) => {
-        setSearchTerm(e.target.value);
-        setRadioBtn('');
-        setSelectedMember('');
-    }
-
-    const filteredMembers = members.filter((member) =>
-        member.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
-    const [radioBtn, setRadioBtn] = React.useState('');
-    const [selectedMember, setSelectedMember] = React.useState('');
-
-    const handleRatioBtn = (e) => {
-        setRadioBtn(e.target.value);
-        let select = members.find((member) => member.uid === e.target.value)
-        setSelectedMember(select.name)
-    }
-
-
-    // PAGINATION
-    const [currentPage, setCurrentPage] = useState(1);
-    const [usersPerPage, setUsersPerPage] = useState(4);
-
-    const indexOfLastUser = (currentPage) * usersPerPage;
-    const indexOfFirstUser = indexOfLastUser - usersPerPage;
-    const currentUsers = filteredMembers.slice(indexOfFirstUser, indexOfLastUser);
-
-    const handlePageClick = (event, value) => {
-        setCurrentPage(value);
-    }
-
-    const [checked, setChecked] = React.useState(false);
-
-    const handleCheckbox = (e) => {
-        setChecked(current => !current);
-        
-    }
-
-    const handleSubmit = () => {
-        let role = 'user'
-        if (checked){
-            role = 'admin'
-        }
-
-        callApiTransferOwner(role)
-            .then(res => {
-                var parsed = JSON.parse(res.express);  
-            })
-    }
-
-    const callApiTransferOwner = async (role) => {
-        const url = serverURL + "/api/transferClubOwnership";
-        const response = await fetch(url, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            newOwnerID: radioBtn,
-            oldOwnerID: currentUser.uid,
-            clubID: clubID,
-            role:role,
-          }),
-        });
-        const body = await response.json();
-        if (response.status !== 200) throw Error(body.message);
-        return body;
-    };
-
-
-
-    if (!open) return null
-    return ( <>
-        <Dialog open = { open } close = { close } >
-            <DialogTitle style = {{ background: '#eceef8', width: '500px', borderBottom: '#eceef8 solid 1px' }} className = { classes.dialogTitle } >
-                <span style = {
-                    { display: 'flex', width: '100%', borderBottom: '0.5px solid #c6cceb', paddingBottom: '10px' }}>
-                        Transfer Club Ownership 
-                </span> 
-            </DialogTitle> 
-            <DialogContent style = {{ background: '#eceef8', paddingBottom: '25px', minHeight: '380px', width: '500px' }}>
-                <Box component = "form" sx = {{ display: 'flex', flexWrap: 'wrap' }}>
-                <Grid style = {{ marginBottom: '20px', width: '100%' }}>
-                    <TextField
-                    id = "outlined-basic"
-                    label = "Search Members"
-                    variant = "filled"
-                    color = "success"
-                    fullWidth value = { searchTerm }
-                    onChange = { handleSearchTerm }
-                    InputProps = {{
-                        startAdornment: ( 
-                            <InputAdornment position = "start" >
-                            <img className = { classes.search }
-                            src = { search }/> 
-                            </InputAdornment>),
-                            onKeyDown: (e) => {
-                                if (e.key === 'Enter') {
-                                    e.stopPropagation();
-                                }
-                            },className: classes.input}}
-                        /> 
-                </Grid> 
-                <Grid style = {{ width: '100%' }}>
-                    <RadioGroup
-                    column
-                    name = "position"
-                    value = {radioBtn}
-                    onChange = {handleRatioBtn}
-                    className = {classes.radioGroup}
-                    color = 'primary'>
-                        <Grid style = {{ display: 'flex', flexDirection: 'column', background: '#fff', width: '100%', borderRadius: '8px' }}> 
-                            {Object.values(currentUsers).map((member) => ( 
-                                <Button className = {classes.radiobtn} style = {{background: '#fff', textTransform: 'none', borderBottom: '1px lightgray solid', borderRadius: '0' }}>
-                                    <Typography style = {{marginLeft: '10px' }}>{ member.name }</Typography> 
-                                    <FormControlLabel value = {member.uid}
-                                    control = {< Radio />}
-                                    labelPlacement = "start"
-                                    color = 'primary' />
-                                </Button>   
-                            ))} 
-                        </Grid> 
-                        <Grid item style = {{ display: 'flex', justifyContent: 'center', width: '100%', marginTop: '10px' }}>
-                            <Pagination 
-                                variant = "outlined"
-                                color = "primary"
-                                shape = 'rounded'
-                                count = { Math.ceil(filteredMembers.length / usersPerPage) }
-                                page = { currentPage }
-                                onChange = { handlePageClick }
-                            /> 
-                        </Grid> 
-                    </RadioGroup> 
-                </Grid> 
-                {selectedMember &&
-                    <Grid style = {{ paddingTop: '30px' }}>
-                    <Typography> The selected new club owner is <b> {selectedMember}</b></Typography>
-                    </Grid>} 
-                <Grid style={{display:'flex', justifyContent:'end', paddingTop:'25px', width:'100%', alignItems:'center'}}>
-                    <FormControlLabel control={<Checkbox value="1" onChange={handleCheckbox}/>} label="Stay as Admin?" labelPlacement="start"/>
-                    {/* <img src={info} className={classes.img}/> */}
-                </Grid>
-            </Box>
-        </DialogContent> 
-        <DialogActions >
-            <Button onClick = {
-                () => { close();
-                    setRadioBtn('');
-                    setSelectedMember('') } } > Cancel </Button> 
-            <Button onClick = {()=>{handleSubmit(); close();}}> Ok </Button> 
-        </DialogActions> 
-    </Dialog>
-
-    </>)
-};

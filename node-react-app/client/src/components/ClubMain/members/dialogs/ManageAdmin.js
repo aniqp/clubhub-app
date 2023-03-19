@@ -87,6 +87,7 @@ const ManageAdminDialog = ({open, close, members, onChange}) => {
             callApiAddAdmin()
             .then(res => {
                 var parsed = JSON.parse(res.express);  
+                onChange();
             })
 
         }
@@ -95,11 +96,11 @@ const ManageAdminDialog = ({open, close, members, onChange}) => {
             callApiRemoveAdmin()
             .then(res => {
                 var parsed = JSON.parse(res.express);  
+                onChange();
             })
         }
         setAddAdmin('');
         setRemoveAdmin('');
-        onChange();
         
     }
 
