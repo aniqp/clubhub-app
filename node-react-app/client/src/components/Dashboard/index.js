@@ -78,6 +78,10 @@ const Dashboard = () => {
     }, 300)
   }
 
+  function isAdmin(announcement) {
+    return (((announcement.role == "owner" || announcement.role == "admin") && announcement.visibility == "private")  || announcement.visibility == "public")
+  }
+
   const getAnnouncements = () => {
     callApiGetAnnouncements()
       .then(res => {
@@ -177,14 +181,14 @@ const Dashboard = () => {
         <Grid>
           <Typography variant="h5" style={{marginLeft: "50px", fontFamily: 'Arvo, serif' }}>Announcements</Typography>
           {filteredAnnouncements.map((announcement, index) =>
-            <Grid item key={announcement.id} style={{ listStyle: 'none' }} xs = {12}>
+            <Grid item key={announcement.id} style={{ listStyle: 'none' }} xs = {15}>
               <AnnouncementPost
                 id={announcement.id}
                 name={announcement.name}
                 title={announcement.title}
                 body={announcement.body}
                 timestamp={announcement.time_posted}
-                adminStatus={false}
+                adminStatus={isAdmin(announcement)}
                 onDashboard={onDashboard}
                 club_id={announcement.club_id}
                 visibility={announcement.visibility}
