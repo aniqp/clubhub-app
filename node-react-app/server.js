@@ -162,9 +162,9 @@ app.post('/api/postAnnouncement', (req, res) => {
     let connection = mysql.createConnection(config);
     let data = req.body;
 
-    let sql = `INSERT into announcements (club_id, title, body, time_posted)
-	values(?,?,?,?)`
-    let announcement = [data.clubID, data.title, data.body, data.time_posted]
+    let sql = `INSERT into announcements (club_id, title, body, time_posted, visibility)
+	values(?,?,?,?,?)`
+    let announcement = [data.clubID, data.title, data.body, data.time_posted, data.visibility]
 
     connection.query(sql, announcement, (error, results, fields) => {
         if (error) {
