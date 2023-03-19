@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {
   makeStyles, Grid, TextField, FormControl, MenuItem, InputLabel,
-  Select, Box, Typography, Drawer, CssBaseline, AppBar, Toolbar, List, Divider,
+  Select, Box, Typography, Drawer, CssBaseline, AppBar, Toolbar, List, Divider, Button,
   ListItem, ListItemIcon, ListItemText
 } from "@material-ui/core";
 import ListItemButton from '@material-ui/core/ListItem'
@@ -11,7 +11,8 @@ import history from '../Navigation/history';
 import { Pagination } from "@material-ui/lab";
 import { useUser } from '../Firebase/context';
 import AnnouncementPost from "../ClubMain/AnnouncementPost"
-import { PodcastsRounded } from "@mui/icons-material";
+import GroupsRoundedIcon from '@material-ui/icons/Group';
+import CircularProgress from "@material-ui/core/CircularProgress"
 
 const serverURL = ""
 
@@ -46,6 +47,8 @@ const Dashboard = () => {
 
   const [announcements, setAnnouncements] = React.useState([])
 
+  const [clubSelected, setClubSelected] = React.useState("")
+
   const [myClubs, setMyClubs] = React.useState([])
 
   const onDashboard = true;
@@ -66,6 +69,14 @@ const Dashboard = () => {
       console.log('Failed')
     }
   }, [user]);
+
+  const filteredAnnouncements = announcements.filter((announcement) => announcement.name.includes(clubSelected))
+
+  if (filteredAnnouncements === "") {
+    setTimeout(() => {
+      return (<CircularProgress />)
+    }, 300)
+  }
 
   const getAnnouncements = () => {
     callApiGetAnnouncements()
@@ -137,45 +148,36 @@ const Dashboard = () => {
 
   return (
     <div className={classes.root}>
-      <Typography className={classes.title} variant="h4" align="center">
-        Your clubs, at a glance
-      </Typography>
-      <Typography className={classes.title2} variant="h5" align="center">
-        Recent Announcements
-      </Typography>
       <Box sx={{ display: 'flex' }}>
-        <CssBaseline />
-        <Toolbar>
-        </Toolbar>
         <Drawer
           variant="permanent"
           style={{
             zIndex: 0,
             maxWidth: "25px",
-            flexShrink: 0
+            flexShrink: 0,
           }}
         >
           <Toolbar />
-          <Box sx={{ overflow: 'auto' }}>
+          <Box sx={{ overflow: 'auto' }} textAlign="center">
+            <Typography variant="h6" style={{ marginTop: "25px", fontFamily: 'Biryani, sans-serif', fontWeight: 600 }}>My Clubs</Typography>
             <List>
               {myClubs.map((text, index) => (
-                <ListItem key={text} disablePadding style= {{maxWidth: "250px"}}>
-                  <ListItemButton>
-                    <ListItemIcon>
-                      {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                    </ListItemIcon>
-                    <ListItemText primary={text} />
-                  </ListItemButton>
-                </ListItem>
+                <div>
+                  <ListItem key={text} style={{ maxWidth: "250px" }}>
+                    <ListItemButton button={true} onClick={() => { setClubSelected(text) }} selected = {clubSelected === text}>
+                      <GroupsRoundedIcon style={{ marginRight: "15px" }} />
+                      <ListItemText primary={text} sx={{ fontFamily: 'Arvo, serif' }} />
+                    </ListItemButton>
+                  </ListItem>
+                </div>
               ))}
             </List>
-            <Divider />
           </Box>
         </Drawer>
-        <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-          <Toolbar />
-          {announcements.map((announcement, index) =>
-            <li key={announcement.id} style={{ listStyle: 'none' }}>
+        <Grid>
+          <Typography variant="h5" style={{marginLeft: "50px", fontFamily: 'Arvo, serif' }}>Announcements</Typography>
+          {filteredAnnouncements.map((announcement, index) =>
+            <Grid item key={announcement.id} style={{ listStyle: 'none' }} xs = {12}>
               <AnnouncementPost
                 id={announcement.id}
                 name={announcement.name}
@@ -187,9 +189,9 @@ const Dashboard = () => {
                 club_id={announcement.club_id}
                 visibility={announcement.visibility}
               />
-            </li>
+            </Grid>
           )}
-        </Box>
+        </Grid>
       </Box>
     </div>
   );
