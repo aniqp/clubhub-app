@@ -45,6 +45,10 @@ const useStyles = makeStyles({
     },
     card:{
         margin:'20px 50px'
+    },
+    dashboardCard: {
+        margin:'20px 50px',
+        width: 400
     }, 
     cardActions:{
         display:'flex',
@@ -62,7 +66,6 @@ export default function AnnouncementPost(props) {
 
     const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
     const [editModalOpen, setEditModelOpen] = React.useState(false);
-    
     toast.configure();
     const notify = () => {
         console.log('in')
@@ -171,7 +174,7 @@ export default function AnnouncementPost(props) {
     console.log('admin status: ', admin)
     return(<>
         {((props.visibility === 'private' && admin) || (props.visibility === 'public')) &&
-        <Card className={classes.card} sx={{ maxWidth: 500 }}>
+        <Card className={props.onDashboard ? classes.dashboardCard : classes.card }  sx={{ maxWidth: 500 }}>
             {props.onDashboard &&
             <Link to = {"/clubboard/" + props.club_id} style={{textDecoration: 'none'}}
             >
@@ -198,7 +201,7 @@ export default function AnnouncementPost(props) {
                 {props.body}
                 </Typography>
             </CardContent>
-            {admin && 
+            {(admin && props.onDashboard === false) && 
             <CardActions className={classes.cardActions} disableSpacing>
                 <Button onClick={() => setEditModelOpen(true)}><img src={edit} style={{height:'25px'}}></img></Button>
                 <EditModal title={props.title} body={props.body} open={editModalOpen} onClose={() => setEditModelOpen(false)} onSubmit={handleEditClick}/>

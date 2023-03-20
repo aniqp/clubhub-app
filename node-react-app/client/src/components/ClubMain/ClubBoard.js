@@ -210,7 +210,9 @@ const ClubBoard = () => {
                                     timestamp={announcement.time_posted}
                                     onSubmit={getClubAnnouncements}
                                     adminStatus={admin}
-                                    visibility={announcement.visibility}/>
+                                    visibility={announcement.visibility}
+                                    onDashboard = {false}
+                                    />
                             </li>
                         ))}
                     </Grid>
