@@ -122,10 +122,6 @@ const ClubBoardHeader = ({active}) => {
         return body;
     }
 
-    // React.useEffect(() => {
-    //     document.body.classList.add('red');
-    // }, [] )
-
     return (<>
         <Grid container className={classes.header}>
             <Grid item xs={7} className={[classes.titleHeader, classes.headerItems]}>
