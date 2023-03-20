@@ -113,7 +113,13 @@ const MyClubCard = (props) => {
 
     const [admin, setAdmin] = React.useState(false);
     const [leaveClubsModalOpen, setLeaveClubsModalOpen] = React.useState(false);
-    
+    const[leaveClub, setLeaveClub] = React.useState({});
+
+    const handleLeaveClub = (id, name) => {
+        let data = {id:id, name:name};
+        setLeaveClub(data);
+        setLeaveClubsModalOpen(true);
+    }
 
     return (
         <Grid container spacing={2}>
@@ -131,8 +137,8 @@ const MyClubCard = (props) => {
                             </CardContent>
                             <CardActions style={{display:'flex', justifyContent:'space-between'}}>
                                 <Button style={{ border: '1.5px solid' }} onClick={() => history.push(`/clubboard/${club.id}`)} color='primary' variant='outlined' >View Board</Button>
-                                <Button style={{ border: '1.5px solid' }} onClick={() => setLeaveClubsModalOpen(true)} color='secondary' variant='outlined'>Leave Club</Button>
-                                <LeaveClubModal clubName={club.name} open={leaveClubsModalOpen} onClose={() => setLeaveClubsModalOpen(false)} onSubmit={()=> handleClick(club.id, user.uid, club.name)}/>
+                                <Button style={{ border: '1.5px solid' }} onClick={() =>{handleLeaveClub(club.id, club.name)}} color='secondary' variant='outlined'>Leave Club</Button>
+                                <LeaveClubModal key={club.id} clubData={leaveClub} open={leaveClubsModalOpen} onClose={() => setLeaveClubsModalOpen(false)} onSubmit={()=> handleClick(leaveClub.id, user.uid, leaveClub.name)}/>
                             </CardActions>
                         </Card>
                     </Grid>
@@ -166,9 +172,8 @@ const OVERLAY_STYLES = {
     zIndex:1000
 }
 
-const LeaveClubModal = ({ open, onClose, onSubmit, clubName }) => {
+const LeaveClubModal = ({ open, clubData, onClose, onSubmit }) => {
     if (!open) return null
-
     return(
         <>
             <div style={OVERLAY_STYLES} />
@@ -181,7 +186,7 @@ const LeaveClubModal = ({ open, onClose, onSubmit, clubName }) => {
                         <img src={caution} style={{height:'70px', marginLeft:'15px'}} />
                         <Box>
                             <Typography style={{margin:'10px 20px 5px 20px', fontWeight:'600', letterSpacing:'0.02em'}}>Leave Club</Typography>
-                            <Typography style={{margin:'0 20px 20px 20px'}}>Are you sure you want to leave {clubName}?</Typography>
+                            <Typography style={{margin:'0 20px 20px 20px'}}>Are you sure you want to leave {clubData.name}?</Typography>
                         </Box> 
                     </Grid>
                     <Grid style={{display:'flex', flexDirection:'row', justifyContent:'center', padding:'10px 10px 15px 10px'}}>
