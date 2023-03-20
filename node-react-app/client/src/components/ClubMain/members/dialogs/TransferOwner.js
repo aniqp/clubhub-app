@@ -97,7 +97,7 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-const TransferOwnership = ({ open, close, members, onChange, currentUser }) => {
+const TransferOwnership = ({ open, close, members, onChange, currentUser, changeUserStatus }) => {
     const classes = useStyles();
     const {clubID} = useParams();
     const [searchTerm, setSearchTerm] = React.useState('');
@@ -135,7 +135,7 @@ const TransferOwnership = ({ open, close, members, onChange, currentUser }) => {
         setCurrentPage(value);
     }
 
-    const [checked, setChecked] = React.useState(false);
+    const [checked, setChecked] = React.useState(true);
 
     const handleCheckbox = (e) => {
         setChecked(current => !current);
@@ -147,11 +147,12 @@ const TransferOwnership = ({ open, close, members, onChange, currentUser }) => {
         if (checked){
             role = 'admin'
         }
+        changeUserStatus(role); 
 
         callApiTransferOwner(role)
             .then(res => {
                 var parsed = JSON.parse(res.express);
-                onChange(); 
+                onChange();
             })
     }
 
@@ -244,7 +245,7 @@ const TransferOwnership = ({ open, close, members, onChange, currentUser }) => {
                     <Typography> The selected new club owner is <b> {selectedMember}</b></Typography>
                     </Grid>} 
                 <Grid style={{display:'flex', justifyContent:'end', paddingTop:'25px', width:'100%', alignItems:'center'}}>
-                    <FormControlLabel control={<Checkbox value="1" onChange={handleCheckbox}/>} label="Stay as Admin?" labelPlacement="start"/>
+                    <FormControlLabel control={<Checkbox defaultChecked value="1" onChange={handleCheckbox}/>} label="Stay as Admin?" labelPlacement="start"/>
                     {/* <img src={info} className={classes.img}/> */}
                 </Grid>
             </Box>

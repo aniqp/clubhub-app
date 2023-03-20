@@ -59,12 +59,12 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const ManageAdminDialog = ({open, close, members, onChange}) => {
+const ManageAdminDialog = ({open, close, members, onChange, currentUser}) => {
     const classes = useStyles();
     const [activeButton, setActiveButton] = useState('');
     
     const currentAdmins = members.filter((member) => (
-        member.role.includes('admin' || 'owner'))
+        (member.role.includes('admin' || 'owner')) && (member.uid != currentUser.uid))
     );  
 
     const currentMembers = members.filter((member) => (
@@ -75,10 +75,6 @@ const ManageAdminDialog = ({open, close, members, onChange}) => {
     const [addAdmin, setAddAdmin] = React.useState('');
     const [removeAdmin, setRemoveAdmin] = React.useState('');
 
-    // const handleRatioBtn = (e) => {
-    //     setBtn(e.target.value);
-        
-    // }
 
     const handleSubmit = () => {
         // Add new admin

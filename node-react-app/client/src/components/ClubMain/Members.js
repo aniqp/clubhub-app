@@ -124,13 +124,14 @@ const Members = ({ name, onChange }) => {
             
             if (currentUserRole !== 'user'){
                 setIsAdmin(true);
+            } else {
+                setIsAdmin(false);
             }
         }
-    }, [members]);
+    }, [members, currentUserRole]);
 
     
     
-    console.log(currentUserRole)
     const [openOwnerDialog, setOpenOwnerDialog] = React.useState(false);
     const [openAdminDialog, setOpenAdminDialog] = React.useState(false);
 
@@ -145,16 +146,11 @@ const Members = ({ name, onChange }) => {
 
     // CLUB MEMBERS
     const getClubMembers = () => {
-        console.log('getting members');
+        // console.log('getting members');
         callApiGetClubMembers()
             .then(res => {
                 var parsed = JSON.parse(res.express);
-                console.log('pre')
-                console.log(members)
-
                 setMembers(parsed);
-                console.log('post')
-                console.log(members)
             })
     }
 
@@ -175,6 +171,10 @@ const Members = ({ name, onChange }) => {
         const body = await response.json();
         if (response.status !== 200) throw Error(body.message);
         return body;
+    }
+
+    const handleUserRoleAfterTransfer = (role) => {
+        setCurrentUserRole(role);
     }
 
     return ( <>
@@ -199,7 +199,7 @@ const Members = ({ name, onChange }) => {
                             style = {{ background: '#283371' }}>
                                 Transfer Club Ownership 
                         </Button> 
-                        <TransferOwnership open={openOwnerDialog} close={handleClose} members={members.slice(1, members.length)} currentUser={user} onChange={getClubMembers}/> 
+                        <TransferOwnership open={openOwnerDialog} close={handleClose} members={members.slice(1, members.length)} currentUser={user} onChange={getClubMembers} changeUserStatus={handleUserRoleAfterTransfer}/> 
                         </>}
                         <Button 
                             onClick = {() => { setOpenAdminDialog(true) } }
@@ -207,7 +207,7 @@ const Members = ({ name, onChange }) => {
                             style = {{ background: '#5566c3' } } > 
                             Manage Admins 
                         </Button> 
-                        <ManageAdmin open={openAdminDialog} close={handleClose} members={members} onChange={getClubMembers}/>
+                        <ManageAdmin open={openAdminDialog} close={handleClose} members={members} onChange={getClubMembers} currentUser={user} />
                     </div>}    
             </Grid> 
             <Grid item xs = { 6 } style = {{ padding: '10px 0 0 60px' }}>
