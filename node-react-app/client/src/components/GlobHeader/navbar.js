@@ -51,7 +51,7 @@ const Navbar = () => {
   return (
     <>
       <CssBaseline />
-      <AppBar position="fixed">
+      <AppBar position="fixed" sx = {{zIndex: 1201}}>
         <Toolbar className={classes.toolbar}>
           <Grid item xs={4} className={classes.navlinks}>
               <Link
