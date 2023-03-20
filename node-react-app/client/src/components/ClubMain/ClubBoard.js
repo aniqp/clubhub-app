@@ -56,7 +56,7 @@ const ClubBoard = () => {
     React.useEffect(() => {
         if (user) {
             let userID = user.uid;
-            console.log(userID)
+            // console.log(userID)
             getUserRole(userID);
         } else {
             setAdmin(false);
@@ -80,7 +80,7 @@ const ClubBoard = () => {
                 } else {
                     setAdmin(false);
                 }
-                console.log(parsed);
+                // console.log(parsed);
             })
     }
 
@@ -136,7 +136,7 @@ const ClubBoard = () => {
 
     // CLUB ANNOUNCEMENTS
     const getClubAnnouncements = () => {
-        console.log('updating announcements');
+        // console.log('updating announcements');
         callApiGetClubAnnouncements()
             .then(res => {
                 var parsed = JSON.parse(res.express);
@@ -164,7 +164,7 @@ const ClubBoard = () => {
 
     // CLUB MEMBERS
     const getClubMembers = () => {
-        console.log('getting members');
+        // console.log('getting members');
         callApiGetClubMembers()
             .then(res => {
                 var parsed = JSON.parse(res.express);
