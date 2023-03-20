@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import {
   makeStyles, Grid, TextField, FormControl, MenuItem, InputLabel,
   Select, Box, Typography, Drawer, CssBaseline, AppBar, Toolbar, List, Divider, Button,
-  ListItem, ListItemIcon, ListItemText, Link
+  ListItem, ListItemIcon, ListItemText, Link, Card, CardMedia, CardContent
 } from "@material-ui/core";
 import ListItemButton from '@material-ui/core/ListItem'
 import InboxIcon from '@material-ui/icons/Inbox'
@@ -13,6 +13,7 @@ import { useUser } from '../Firebase/context';
 import AnnouncementPost from "../ClubMain/AnnouncementPost"
 import GroupsRoundedIcon from '@material-ui/icons/Group';
 import CircularProgress from "@material-ui/core/CircularProgress"
+import announcementHero from "../../../src/images/announcement-background.png"
 
 const serverURL = ""
 
@@ -152,8 +153,8 @@ const Dashboard = () => {
   }
 
   return (
-    <div className={classes.root}>
-      <Box sx={{ display: 'flex' }}>
+    <Grid container xs={8} spacing={6}>
+      <Grid container item xs={4}>
         <Drawer
           variant="permanent"
           style={{
@@ -175,35 +176,49 @@ const Dashboard = () => {
                     </ListItemButton>
                   </ListItem>
                 </div>
-              ))}             
+              ))}
             </List>
           </Box>
           <ListItem key='View All' style={{ maxWidth: "250px", display: 'flex', justifyContent: 'space-between', position: 'absolute', bottom: 0 }}>
-                    <Link onClick={() => { setClubSelected("") }} style = {{textAlign: "right", marginLeft: "140px", cursor: 'pointer'}}>
-                      <ListItemText primary={'View All'} sx={{ fontFamily: 'Arvo, serif' }} />
-                    </Link>
-                  </ListItem> 
+            <Link onClick={() => { setClubSelected("") }} style={{ textAlign: "right", marginLeft: "140px", cursor: 'pointer' }}>
+              <ListItemText primary={'View All'} sx={{ fontFamily: 'Arvo, serif' }} />
+            </Link>
+          </ListItem>
         </Drawer>
-        <Grid textAlign="center">
-          <Typography variant="h5" style={{ marginLeft: "50px", fontFamily: 'Arvo, serif' }}>Announcements</Typography>
-          {filteredAnnouncements.length !== 0 ? filteredAnnouncements.map((announcement, index) =>
-            <Grid item key={announcement.id} style={{ listStyle: 'none' }} xs={15}>
-              <AnnouncementPost
-                id={announcement.id}
-                name={announcement.name}
-                title={announcement.title}
-                body={announcement.body}
-                timestamp={announcement.time_posted}
-                adminStatus={isAdmin(announcement)}
-                onDashboard={onDashboard}
-                club_id={announcement.club_id}
-                visibility={announcement.visibility}
-              />
+      </Grid>
+      <Grid container item xs={8} spacing={12}>
+        <Grid item xs={12}>
+          <Card style={{ backgroundColor: '#6072C7', marginLeft: '40px', marginTop: '40px', width: '150%' }}>
+            <Grid container xs = {16}>
+              <Grid item xs={8} style={{ display: 'flex', alignItems: 'center' }}>
+                <CardContent>
+                  <Typography variant="h5" style={{ fontFamily: 'Biryani, sans-serif', fontWeight: 600, color: 'white' }}>What's new in Clubsville?</Typography>
+                  <Typography variant="h6" style={{ fontFamily: 'Biryani, sans-serif', fontWeight: 400, color: 'white', marginTop: '20px'}}>View all your clubs' announcements!</Typography>
+                </CardContent>
+              </Grid>
+              <Grid item xs={4} style = {{display: 'flex', justifyContent: 'flex-end'}}>
+                <CardMedia component="img" image={announcementHero} style={{ width: '100%', maxWidth: '100%' }} />
+              </Grid>
             </Grid>
-          ) : <Typography variant="h6" style={{ marginLeft: "50px", marginTop: "20px" }}>This club has no recent announcements.</Typography>}
+          </Card>
         </Grid>
-      </Box>
-    </div>
+        {filteredAnnouncements.length !== 0 ? filteredAnnouncements.map((announcement, index) =>
+          <Grid container item spacing={2} key={announcement.id} style={{ listStyle: 'none', width: '150%' }} xs={20}>
+            <AnnouncementPost
+              id={announcement.id}
+              name={announcement.name}
+              title={announcement.title}
+              body={announcement.body}
+              timestamp={announcement.time_posted}
+              adminStatus={isAdmin(announcement)}
+              onDashboard={onDashboard}
+              club_id={announcement.club_id}
+              visibility={announcement.visibility}
+            />
+          </Grid>
+        ) : <Typography variant="h6" style={{ marginLeft: "50px", marginTop: "20px" }}>This club has no recent announcements.</Typography>}
+      </Grid>
+    </Grid>
   );
 };
 
