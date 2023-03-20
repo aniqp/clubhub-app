@@ -91,13 +91,13 @@ const AnnouncementForm = (props) => {
     const timestamp = () => {
         let today = new Date();
         const leadingZero = (n) => {
-            if (n.toString.length == 1){
+            if (n.toString == '0'){
                 n = '0' + n;
                 return n;
             }
             return;
         }
-        let date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate()+' '+leadingZero(today.getHours())+':'+leadingZero(today.getMinutes())+':'+today.getSeconds();
+        let date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate()+' '+leadingZero(today.getHours())+':'+(today.getMinutes())+':'+today.getSeconds();
         return date;
     }
 
