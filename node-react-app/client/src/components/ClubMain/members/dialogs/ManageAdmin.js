@@ -1,11 +1,12 @@
 import React, {useState} from 'react';
-import { Tooltip, makeStyles, Radio, RadioGroup, FormControlLabel, TextField, InputAdornment, Box, Dialog, DialogTitle, DialogContent, DialogActions, Typography, Button, Grid, } from '@material-ui/core';
+import { makeStyles, Radio, RadioGroup, FormControlLabel, TextField, InputAdornment, Box, Dialog, DialogTitle, DialogContent, DialogActions, Typography, Button, Grid, } from '@material-ui/core';
 import search from '../../../../images/search-icon.png';
 import add from '../../../../images/add-icon.png';
 import remove from '../../../../images/remove-icon.png';
-import caution from '../../../../images/caution-icon.png';
 import { Pagination } from "@material-ui/lab";
 import { serverURL } from '../../../../constants/config';
+import { toast } from 'react-toastify'; 
+
 
 const useStyles = makeStyles((theme) => ({
     adminBtnGroup:{
@@ -79,7 +80,24 @@ const ManageAdminDialog = ({open, close, members, onChange, currentUser}) => {
     const [isAddActive, setIsAddActive] = React.useState(false);
     const [isRemoveActive, setIsRemoveActive] = React.useState(false);
     
-    const handleSubmit = () => {
+
+    toast.configure();
+    const notifyAdd = (user) => {
+        toast.success(user + " has been added to club admins", {
+            position: toast.POSITION.TOP_RIGHT,
+            autoClose: true
+        });
+    }
+
+    const notifyRemove = (user) => {
+        toast.info(user + " has been removed from club admins", {
+            position: toast.POSITION.TOP_RIGHT,
+            autoClose: true
+        });
+    }
+
+    const handleSubmit = (user) => {
+
         // Add new admin
         if (btn === '1'){
             callApiAddAdmin()
@@ -88,6 +106,7 @@ const ManageAdminDialog = ({open, close, members, onChange, currentUser}) => {
                 setAddAdmin('');
                 setIsAddActive(false);
                 onChange();
+                notifyAdd(user);
             })
 
         }
@@ -99,6 +118,7 @@ const ManageAdminDialog = ({open, close, members, onChange, currentUser}) => {
                 setRemoveAdmin('');
                 setIsRemoveActive(false);
                 onChange();
+                notifyRemove(user);
             })
         }
         setBtn('');
@@ -238,7 +258,7 @@ const List = ({title, arr, onSelect}) => {
     const [radioBtn, setRadioBtn] = React.useState('1');
     const [selectedMember, setSelectedMember] = React.useState(''); 
     const [searchTerm, setSearchTerm] = React.useState('');
-    
+
     const handleSearchTerm = (e) => {
         setSearchTerm(e.target.value);
         setRadioBtn('');
@@ -363,7 +383,7 @@ const ConfirmationDialog = ({open, back, cancel, addAdmin, removeAdmin, add, mem
             </Grid>
             <Grid>
                 <Button onClick={()=>{back();cancel();}}>Cancel</Button>
-                <Button onClick={()=>{back();cancel(); onSubmit();}}>Confirm</Button>
+                <Button onClick={()=>{back();cancel(); onSubmit(user);}}>Confirm</Button>
             </Grid>
         </DialogActions>
     </Dialog >

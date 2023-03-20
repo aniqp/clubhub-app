@@ -5,6 +5,7 @@ import { Pagination } from "@material-ui/lab";
 import { serverURL } from '../../../../constants/config';
 import { useParams } from 'react-router-dom';
 import caution from '../../../../images/caution-icon.png';
+import { toast } from 'react-toastify'; 
 
 
 const useStyles = makeStyles((theme) => ({
@@ -111,6 +112,14 @@ const TransferOwnership = ({ open, close, members, onChange, currentUser, change
         setSelectedMember('');
     }
 
+    toast.configure();
+    const notify = (selectedMember) => {
+        toast.info(selectedMember + " has been transferred club ownership", {
+            position: toast.POSITION.TOP_RIGHT,
+            autoClose: true
+        });
+    }
+
     const filteredMembers = members.filter((member) =>
         member.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -144,6 +153,7 @@ const TransferOwnership = ({ open, close, members, onChange, currentUser, change
             .then(res => {
                 var parsed = JSON.parse(res.express);
                 onChange();
+                notify(selectedMember);
             })
     }
 
