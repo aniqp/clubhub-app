@@ -13,7 +13,7 @@ import { useUser } from '../Firebase';
 
 const useStyles = makeStyles((theme) => ({
     root:{
-        background:'#e7ecef',
+        background:'#f5f5f5',
         minHeight:'100vh'
     },
     textField: {
