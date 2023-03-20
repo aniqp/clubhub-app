@@ -65,13 +65,6 @@ const ManageAdminDialog = ({open, close, members, onChange, currentUser}) => {
 
     const [openConfirmationDialog, setOpenConfirmationDialog] = React.useState(false);
 
-    const handleConfirmationClose = (event, reason) => {
-        if (reason == 'backdropClick') {
-            setOpenConfirmationDialog(false);
-        }
-    };
-
-    
     const currentAdmins = members.filter((member) => (
         (member.role.includes('admin' || 'owner')) && (member.uid != currentUser.uid))
     );  
@@ -172,9 +165,6 @@ const ManageAdminDialog = ({open, close, members, onChange, currentUser}) => {
             setDisabled(true);
         }
     }, [btn, addAdmin, removeAdmin])
-
-    console.log(openConfirmationDialog)
-    const test = false;
 
     if (!open) return null
     return(<>

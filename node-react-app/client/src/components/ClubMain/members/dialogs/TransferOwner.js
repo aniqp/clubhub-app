@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { Checkbox, makeStyles, Radio, RadioGroup, FormControlLabel, TextField, InputAdornment, Box, Dialog, DialogTitle, DialogContent, DialogActions, Typography, Button, Grid, } from '@material-ui/core';
+import { makeStyles, Radio, RadioGroup, FormControlLabel, TextField, InputAdornment, Box, Dialog, DialogTitle, DialogContent, DialogActions, Typography, Button, Grid, } from '@material-ui/core';
 import search from '../../../../images/search-icon.png';
 import { Pagination } from "@material-ui/lab";
 import { serverURL } from '../../../../constants/config';
@@ -103,7 +103,7 @@ const TransferOwnership = ({ open, close, members, onChange, currentUser, change
     const classes = useStyles();
     const {clubID} = useParams();
     const [searchTerm, setSearchTerm] = React.useState('');
-
+    const [openConfirmationDialog, setOpenConfirmationDialog] = React.useState(false);
 
     const handleSearchTerm = (e) => {
         setSearchTerm(e.target.value);
@@ -137,28 +137,17 @@ const TransferOwnership = ({ open, close, members, onChange, currentUser, change
         setCurrentPage(value);
     }
 
-    const [checked, setChecked] = React.useState(true);
-
-    const handleCheckbox = (e) => {
-        setChecked(current => !current);
-        
-    }
-
     const handleSubmit = () => {
-        let role = 'user'
-        if (checked){
-            role = 'admin'
-        }
-        changeUserStatus(role); 
+        changeUserStatus('admin'); 
 
-        callApiTransferOwner(role)
+        callApiTransferOwner()
             .then(res => {
                 var parsed = JSON.parse(res.express);
                 onChange();
             })
     }
 
-    const callApiTransferOwner = async (role) => {
+    const callApiTransferOwner = async () => {
         const url = serverURL + "/api/transferClubOwnership";
         const response = await fetch(url, {
           method: "POST",
@@ -169,7 +158,7 @@ const TransferOwnership = ({ open, close, members, onChange, currentUser, change
             newOwnerID: radioBtn,
             oldOwnerID: currentUser.uid,
             clubID: clubID,
-            role:role,
+            role:'admin',
           }),
         });
         const body = await response.json();
@@ -177,6 +166,15 @@ const TransferOwnership = ({ open, close, members, onChange, currentUser, change
         return body;
     };
 
+    const [disabled, setDisabled] = React.useState(true);
+
+    React.useEffect(() => {
+        if (radioBtn !== ''){
+            setDisabled(false);
+        } else {
+            setDisabled(true);
+        }
+    }, [radioBtn])
 
 
     if (!open) return null
@@ -246,10 +244,6 @@ const TransferOwnership = ({ open, close, members, onChange, currentUser, change
                     <Grid style = {{ paddingTop: '30px' }}>
                     <Typography> The selected new club owner is <b> {selectedMember}</b></Typography>
                     </Grid>} 
-                <Grid style={{display:'flex', justifyContent:'end', paddingTop:'25px', width:'100%', alignItems:'center'}}>
-                    <FormControlLabel control={<Checkbox defaultChecked value="1" onChange={handleCheckbox}/>} label="Stay as Admin?" labelPlacement="start"/>
-                    {/* <img src={info} className={classes.img}/> */}
-                </Grid>
             </Box>
         </DialogContent> 
         <DialogActions >
@@ -257,7 +251,14 @@ const TransferOwnership = ({ open, close, members, onChange, currentUser, change
                 () => { close();
                     setRadioBtn('');
                     setSelectedMember('') } } > Cancel </Button> 
-            <Button onClick = {()=>{handleSubmit(); close();}}> Ok </Button> 
+            <Button disabled={disabled} onClick = {()=>{setOpenConfirmationDialog(true);}}> Ok </Button> 
+            <ConfirmationDialog 
+                open={openConfirmationDialog}
+                back={()=>{setOpenConfirmationDialog(false)}} 
+                cancel={close} 
+                onSubmit={handleSubmit}
+                members={members}
+                selectedMember={selectedMember}/>
         </DialogActions> 
     </Dialog>
 
@@ -265,3 +266,36 @@ const TransferOwnership = ({ open, close, members, onChange, currentUser, change
 };
 
 export default TransferOwnership;
+
+const ConfirmationDialog = ({open, back, cancel, onSubmit, selectedMember}) => {
+    const classes = useStyles();
+
+    if (!open) return null
+    return(
+    <Dialog open={open} close={back} >
+        <DialogContent style={{background:'#eceef8', paddingBottom:'10px', minHeight:'120px', width:'400px'}}>
+            <Grid container style={{display:'flex', flexDirection:'column', alignItems:'center'}}>
+                <img src={caution} style={{width:'75px', marginBottom:'5px'}} />
+                <Grid item style={{display:'flex', justifyContent:'center'}}>
+                    <Box style={{textAlign:'center'}}>
+                        <Typography style={{margin:'0 0 20px 0'}}>
+                            Are you sure you want to transfer club ownership to <b>{selectedMember}</b>?
+                            <br /><br />
+                            <p style={{color:'red'}}>You will lose club owner privileges and be downgraded to admin</p>
+                        </Typography>
+                    </Box> 
+                </Grid>
+            </Grid>
+        </DialogContent>
+        <DialogActions style={{display:'flex', justifyContent:'space-between'}}>
+            <Grid>
+                <Button onClick={()=>{back();}}>Back</Button>
+            </Grid>
+            <Grid>
+                <Button onClick={()=>{back();cancel();}}>Cancel</Button>
+                <Button onClick={()=>{back();cancel(); onSubmit();}}>Confirm</Button>
+            </Grid>
+        </DialogActions>
+    </Dialog >
+    )
+}
