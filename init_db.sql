@@ -55,14 +55,14 @@ CREATE TABLE `events` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`title` TINYTEXT,
 	`location` TINYTEXT,
-	`time` DATETIME,
+	`start_time` DATETIME,
+	`end_time` DATETIME,
 	`body` TEXT,
 	`time_posted` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	`visibility` ENUM("public", "private"),
 	PRIMARY KEY (`id`),
 	FOREIGN KEY (`club_id`) REFERENCES clubs(id)
 );
-
-ALTER TABLE `events` ADD `visibility` ENUM("public", "private");
 
 CREATE TABLE `attendance` (
 	`event_id` INT NOT NULL,
