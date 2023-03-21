@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from "react";
 import {
-  makeStyles, Grid, TextField, FormControl, MenuItem, InputLabel,
-  Select, Box, Typography, Drawer, CssBaseline, AppBar, Toolbar, List, Divider, Button,
-  ListItem, ListItemIcon, ListItemText, Link, Card, CardMedia, CardContent
+  makeStyles, Grid, Box, Typography, Drawer, Toolbar, List, Divider, Button,
+  ListItem, ListItemText, Link, Card, CardMedia, CardContent, Collapse
 } from "@material-ui/core";
-import ListItemButton from '@material-ui/core/ListItem'
-import InboxIcon from '@material-ui/icons/Inbox'
-import MailIcon from '@material-ui/icons/Mail'
-import history from '../Navigation/history';
-import { Pagination } from "@material-ui/lab";
+import ListItemButton from "@material-ui/core/ListItem"
 import { useUser } from '../Firebase/context';
 import AnnouncementPost from "../ClubMain/AnnouncementPost"
 import GroupsRoundedIcon from '@material-ui/icons/Group';
 import CircularProgress from "@material-ui/core/CircularProgress"
 import announcementHero from "../../../src/images/announcement-background.png"
+import eventsHero from "../../../src/images/events-hero.png"
+import ExpandLess from "@material-ui/icons/ExpandLess"
+import ExpandMore from "@material-ui/icons/ExpandMore"
+import AnnouncementIcon from '@material-ui/icons/Announcement';
+import EventIcon from "@material-ui/icons/Event"
 
 const serverURL = ""
 
@@ -48,7 +48,9 @@ const Dashboard = () => {
 
   const [announcements, setAnnouncements] = React.useState([])
 
-  const [clubSelected, setClubSelected] = React.useState("")
+  const [clubAnnouncementSelected, setClubAnnouncementSelected] = React.useState("")
+
+  const [clubEventSelected, setClubEventSelected] = React.useState(false)
 
   const [myClubs, setMyClubs] = React.useState([])
 
@@ -71,7 +73,7 @@ const Dashboard = () => {
     }
   }, [user]);
 
-  const filteredAnnouncements = announcements.filter((announcement) => announcement.name.includes(clubSelected))
+  const filteredAnnouncements = announcements.filter((announcement) => announcement.name.includes(clubAnnouncementSelected))
 
   function isAdmin(announcement) {
     return (((announcement.role == "owner" || announcement.role == "admin") && announcement.visibility == "private") || announcement.visibility == "public")
@@ -155,71 +157,148 @@ const Dashboard = () => {
   return (
     <Grid container xs={8} spacing={6}>
       <Grid container item xs={4}>
-        <Drawer
-          variant="permanent"
-          style={{
-            zIndex: 0,
-            maxWidth: "25px",
-            flexShrink: 0,
-          }}
-        >
-          <Toolbar />
-          <Box sx={{ overflow: 'auto' }} textAlign="center">
-            <Typography variant="h6" style={{ marginTop: "25px", fontFamily: 'Biryani, sans-serif', fontWeight: 600 }}>My Clubs</Typography>
-            <List>
-              {myClubs.map((text, index) => (
-                <div>
-                  <ListItem key={text} style={{ maxWidth: "250px" }}>
-                    <ListItemButton button={true} onClick={() => { setClubSelected(text) }} selected={clubSelected === text}>
-                      <GroupsRoundedIcon style={{ marginRight: "15px" }} />
-                      <ListItemText primary={text} sx={{ fontFamily: 'Arvo, serif' }} />
-                    </ListItemButton>
-                  </ListItem>
-                </div>
-              ))}
-            </List>
-          </Box>
-          <ListItem key='View All' style={{ maxWidth: "250px", display: 'flex', justifyContent: 'space-between', position: 'absolute', bottom: 0 }}>
-            <Link onClick={() => { setClubSelected("") }} style={{ textAlign: "right", marginLeft: "140px", cursor: 'pointer' }}>
-              <ListItemText primary={'View All'} sx={{ fontFamily: 'Arvo, serif' }} />
-            </Link>
-          </ListItem>
-        </Drawer>
+        <SideBar
+          myClubs={myClubs}
+          clubAnnouncementSelected={clubAnnouncementSelected}
+          setClubAnnouncementSelected={setClubAnnouncementSelected}
+          setClubEventSelected={setClubEventSelected}
+        />
       </Grid>
-      <Grid container item xs={8} spacing={12}>
-        <Grid item xs={12}>
-          <Card style={{ backgroundColor: '#6072C7', marginLeft: '40px', marginTop: '40px', width: '150%' }}>
-            <Grid container xs = {16}>
-              <Grid item xs={8} style={{ display: 'flex', alignItems: 'center' }}>
-                <CardContent>
-                  <Typography variant="h5" style={{ fontFamily: 'Biryani, sans-serif', fontWeight: 600, color: 'white' }}>What's new in Clubsville?</Typography>
-                  <Typography variant="h6" style={{ fontFamily: 'Biryani, sans-serif', fontWeight: 400, color: 'white', marginTop: '20px'}}>View all your clubs' announcements!</Typography>
-                </CardContent>
-              </Grid>
-              <Grid item xs={4} style = {{display: 'flex', justifyContent: 'flex-end'}}>
-                <CardMedia component="img" image={announcementHero} style={{ width: '100%', maxWidth: '100%' }} />
-              </Grid>
+      <Grid container item xs={8} spacing={11}>
+        {clubEventSelected === false ?
+          <>
+            <Grid item xs={12}>
+              <AnnouncementHeader />
             </Grid>
-          </Card>
-        </Grid>
-        {filteredAnnouncements.length !== 0 ? filteredAnnouncements.map((announcement, index) =>
-          <Grid container item spacing={2} key={announcement.id} style={{ listStyle: 'none', width: '150%' }} xs={20}>
-            <AnnouncementPost
-              id={announcement.id}
-              name={announcement.name}
-              title={announcement.title}
-              body={announcement.body}
-              timestamp={announcement.time_posted}
-              adminStatus={isAdmin(announcement)}
-              onDashboard={onDashboard}
-              club_id={announcement.club_id}
-              visibility={announcement.visibility}
-            />
+            <Grid container item spacing={2} style={{ listStyle: 'none', width: '169%' }} xs={60}>
+              {filteredAnnouncements.length !== 0 ?
+                filteredAnnouncements.map((announcement, index) =>
+                  <AnnouncementPost
+                    key={announcement.id}
+                    id={announcement.id}
+                    name={announcement.name}
+                    title={announcement.title}
+                    body={announcement.body}
+                    timestamp={announcement.time_posted}
+                    adminStatus={isAdmin(announcement)}
+                    onDashboard={onDashboard}
+                    club_id={announcement.club_id}
+                    visibility={announcement.visibility}
+                  />
+                ) :
+                <Typography variant="h6" style={{ marginLeft: "50px", marginTop: "20px" }}>This club has no recent announcements.</Typography>
+              }
+            </Grid>
+          </>
+          :
+          <Grid item xs={12}>
+            <EventsHeader />
           </Grid>
-        ) : <Typography variant="h6" style={{ marginLeft: "50px", marginTop: "20px" }}>This club has no recent announcements.</Typography>}
+        }
       </Grid>
     </Grid>
   );
 };
+
+const SideBar = (props) => {
+  return (
+    <Drawer
+      variant="permanent"
+      style={{
+        zIndex: 0,
+        maxWidth: "25px",
+        flexShrink: 0,
+      }}
+    >
+      <Toolbar />
+      <Box sx={{ overflow: 'auto' }} textAlign="center">
+        <Typography variant="h6" style={{ marginTop: "25px", fontFamily: 'Biryani, sans-serif', fontWeight: 600 }}>My Clubs</Typography>
+        {props.myClubs.map((text, index) => (
+          <MyClubs
+            myClubs={props.myClubs}
+            setClubAnnouncementSelected={props.setClubAnnouncementSelected}
+            setClubEventSelected={props.setClubEventSelected}
+            text={text}
+          />
+        ))}
+      </Box>
+      {/* <ListItem key='View All' style={{ maxWidth: "250px", display: 'flex', justifyContent: 'space-between', position: 'absolute', bottom: 0 }}>
+        <Link onClick={() => { props.setClubAnnouncementSelected("") }} style={{ textAlign: "right", marginLeft: "140px", cursor: 'pointer' }}>
+          <ListItemText primary={'View All'} sx={{ fontFamily: 'Arvo, serif' }} />
+        </Link>
+      </ListItem> */}
+    </Drawer>
+  )
+}
+
+const MyClubs = (props) => {
+  const [listExpand, setListExpand] = React.useState(false)
+  return (
+    <List>
+      <div>
+        <ListItem key={props.text} style={{ maxWidth: "250px" }}>
+          <ListItemButton button={true} onClick={() => { setListExpand(!listExpand) }}>
+            <GroupsRoundedIcon style={{ marginRight: "15px" }} />
+            <ListItemText primary={props.text} sx={{ fontFamily: 'Arvo, serif' }} />
+            {listExpand ? <ExpandLess /> : <ExpandMore />}
+          </ListItemButton>
+        </ListItem>
+        <Collapse in={listExpand} timeout="auto" unmountOnExit>
+          <List component="div" disablePadding style={{ paddingLeft: '15%' }}>
+            <ListItemButton selected={props.clubAnnouncementSelected === props.text} button={true} style={{ textAlign: 'justify' }} onClick=
+              {() => {
+                props.setClubAnnouncementSelected(props.text)
+                props.setClubEventSelected(false)
+              }}>
+              <AnnouncementIcon />
+              <ListItemText primary="Announcements" style={{ paddingLeft: '5%' }} />
+            </ListItemButton>
+            <ListItemButton button={true} style={{ textAlign: 'justify' }} onClick=
+              {() => {
+                props.setClubEventSelected(true)
+              }}>
+              <EventIcon />
+              <ListItemText primary="Events" style={{ paddingLeft: '5%' }} />
+            </ListItemButton>
+          </List>
+        </Collapse>
+      </div>
+    </List>
+  )
+}
+
+const AnnouncementHeader = () => {
+  return (
+    <Card style={{ backgroundColor: '#6072C7', marginLeft: '40px', marginTop: '40px', width: '150%' }}>
+      <Grid container xs={16}>
+        <Grid item xs={8} style={{ display: 'flex', alignItems: 'center' }}>
+          <CardContent>
+            <Typography variant="h5" style={{ fontFamily: 'Biryani, sans-serif', fontWeight: 600, color: 'white' }}>What's new in Clubsville?</Typography>
+            <Typography variant="h6" style={{ fontFamily: 'Biryani, sans-serif', fontWeight: 400, color: 'white', marginTop: '20px' }}>View your clubs' recent announcements!</Typography>
+          </CardContent>
+        </Grid>
+        <Grid item xs={4} style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <CardMedia component="img" image={announcementHero} style={{ width: '100%', maxWidth: '100%' }} />
+        </Grid>
+      </Grid>
+    </Card>)
+}
+
+const EventsHeader = () => {
+  return (
+    <Card style={{ backgroundColor: '#ef9090', marginLeft: '40px', marginTop: '40px', width: '150%' }}>
+      <Grid container xs={16}>
+        <Grid item xs={8} style={{ display: 'flex', alignItems: 'center' }}>
+          <CardContent>
+            <Typography variant="h5" style={{ fontFamily: 'Biryani, sans-serif', fontWeight: 600, color: 'white' }}>Get ready for get-togethers</Typography>
+            <Typography variant="h6" style={{ fontFamily: 'Biryani, sans-serif', fontWeight: 400, color: 'white', marginTop: '20px' }}>View your club's upcoming events!</Typography>
+          </CardContent>
+        </Grid>
+        <Grid item xs={4} style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <CardMedia component="img" image={eventsHero} style={{ width: '115%' }} />
+        </Grid>
+      </Grid>
+    </Card>)
+}
 
 export default Dashboard;
