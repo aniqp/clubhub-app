@@ -286,7 +286,7 @@ const AnnouncementHeader = () => {
 
 const EventsHeader = () => {
   return (
-    <Card style={{ backgroundColor: '#ef9090', marginLeft: '40px', marginTop: '40px', width: '150%' }}>
+    <Card style={{ backgroundColor: '#408EB4', marginLeft: '40px', marginTop: '40px', width: '150%' }}>
       <Grid container xs={16}>
         <Grid item xs={8} style={{ display: 'flex', alignItems: 'center' }}>
           <CardContent>
