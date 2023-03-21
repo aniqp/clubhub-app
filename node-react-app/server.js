@@ -472,6 +472,19 @@ app.post('/api/kickUser', (req,res) => {
 	connection.end();
 });
 
+app.post('/api/changeUserTitle' , (req,res) => {
+	let connection = mysql.createConnection(config);
+	let clubID = req.body.clubId;
+	let userID = req.body.userId;
+	let title = req.body.title;
+	let sql = `UPDATE memberships SET title = ? WHERE uid = ? AND club_id = ?`;
+	const data = [title, userID, clubID];
+	connection.query(sql, data, (error, results, fields) => {
+		if (error) throw error;
+	});
+	connection.end();
+});
+
 
 app.listen(port, () => console.log(`Listening on port ${port}`)); //for the dev version
 //app.listen(port, '129.97.25.211'); //for the deployed version, specify the IP address of the server

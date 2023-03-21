@@ -119,6 +119,23 @@ const Members = ({name, members}) => {
            history.push("/myclubs");
       }
 
+      const handleKickUser = (userId, clubId) => {
+        fetch('/api/kickUser', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                userId: userId,
+                clubId: clubId
+            })
+        })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error(error));
+        history.push("/myclubs");
+    }
+
 
 
 
@@ -166,6 +183,13 @@ const Members = ({name, members}) => {
                             <Button className={[classes.role, classes.ownerRole]} onClick={() => handleClickAdmin(member.uid, member.club_id)}> Demote</Button>
                         )}
                     </Grid>
+                    )}
+                    {myrole.role === 'admin' && (
+                        <Grid item style={{display:'flex'}}>
+                            {member.role === 'user' && (
+                                <Button className={[classes.role, classes.adminRole]} onClick={() => handleKickUser(member.uid, member.club_id)}> Kick</Button>
+                            )}
+                        </Grid>
                     )}
 
                 </Card>
