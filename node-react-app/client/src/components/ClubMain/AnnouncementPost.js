@@ -44,7 +44,7 @@ const useStyles = makeStyles({
         fontSize:'0.9rem',
     },
     card:{
-        margin:'20px 50px'
+        margin:'20px 10px 30px 10px'
     },
     dashboardCard: {
         margin:'20px 50px',
@@ -174,7 +174,7 @@ export default function AnnouncementPost(props) {
     console.log('admin status: ', admin)
     return(<>
         {((props.visibility === 'private' && admin) || (props.visibility === 'public')) &&
-        <Card className={props.onDashboard ? classes.dashboardCard : classes.card }  sx={{ maxWidth: 500 }}>
+        <Card className={props.onDashboard ? classes.dashboardCard : classes.card }  style={{ margin:'20px 0 30px', padding:'10px'}}sx={{ maxWidth: 500 }}>
             {props.onDashboard &&
             <Link to = {"/clubboard/" + props.club_id} style={{textDecoration: 'none'}}
             >

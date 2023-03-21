@@ -106,14 +106,12 @@ const ClubBoardHeader = ({ clubTitle, toggle, handleToggle }) => {
                     Events
                 </ToggleButton>
                 <ToggleButton value="3">
-                    Polls
+                Members
                 </ToggleButton>
                 <ToggleButton value="4">
-                    Members
+                Photos
                 </ToggleButton>
-                <ToggleButton value="5">
-                    Photos
-                </ToggleButton>
+             
             </StyledToggleButtonGroup>
         </Grid>
         
