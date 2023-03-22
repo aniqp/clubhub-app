@@ -1,5 +1,12 @@
 import React, { useMemo } from "react";
-import { Grid, Card, Button } from "@material-ui/core";
+import {
+  Grid,
+  Card,
+  Button,
+  Switch,
+  FormControlLabel,
+  CardContent,
+} from "@material-ui/core";
 import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import profile from "../../images/profile-icon.png";
@@ -7,7 +14,6 @@ import membersIcon from "../../images/members.png";
 import { useParams } from "react-router-dom";
 import { useAuthHeader } from "../Firebase";
 import { serverURL } from "../../constants/config";
-import { async } from "@firebase/util";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -62,17 +68,38 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "600",
     fontSize: "25pt",
   },
+  applicant: {
+    display: "flex",
+    margin: "10px 10px",
+    padding: "10px 10px",
+    alignItems: "center",
+    height: "75px",
+    justifyContent: "space-between"
+  },
+  application: {
+    margin: "10px 10px",
+    padding: "10px 10px",
+    alignItems: "center",
+    height: "75px",
+    justifyContent: "space-between"
+  },
+  accept: {
+    background: "#BBFFBB",
+  },
+  deny: {
+    background: "#FFBBBB",
+  }
 }));
 
 const Application = ({ members, acceptAll }) => {
   const classes = useStyles();
   const { clubID } = useParams();
   const authHeader = useAuthHeader();
-    // const applicants = useMemo(
-    //   () => members?.filter((_) => _.role === "pending"),
-    //   [members]
-    // );
-  const applicants = [{ name: "George" }];
+  // const applicants = useMemo(
+  //   () => members?.filter((_) => _.role === "pending"),
+  //   [members]
+  // );
+  const applicants = [{ uid: "123", name: "George" }];
 
   const acceptUser = async (user) => {
     const request = {
@@ -117,22 +144,28 @@ const Application = ({ members, acceptAll }) => {
   };
 
   return (
-    <Grid xs={2} item>
+    <Grid xs={2} item direction="row">
       Application
-      <Card className={classes.card}>
-        Application Type: {acceptAll ? "AcceptAll" : "See Applicants"}
+      <Card className={classes.application}>
+        <Typography>
+          Application Type: {acceptAll ? "AcceptAll" : "See Applicants"}
+        </Typography>
+        <FormControlLabel
+          control={
+            <Switch checked={acceptAll} disabled={!!applicants.length} />
+          }
+          label={!!applicants.length ? "Must have empty list" : "Accept All"}
+        />
       </Card>
       {!acceptAll &&
         applicants?.map((app) => (
           <Card
-            xs={2}
             key={app.uid}
-            sx={{ justifyContent: "space-between" }}
-            className={classes.Card}
+            className={classes.applicant}
           >
             <span>{app.name}</span>
-            <Button onClick={() => acceptUser(app)}>Accept</Button>
-            <Button onClick={() => denyUser(app)}>Deny</Button>
+            <Button className={classes.deny} onClick={() => denyUser(app)}>Deny</Button>
+            <Button className={classes.accept} onClick={() => acceptUser(app)}>Accept</Button>
           </Card>
         ))}
     </Grid>
@@ -169,7 +202,7 @@ const Members = ({ name, members, isAdmin, acceptAll }) => {
         {members
           .filter((member) => member.role !== "pending")
           .map((member) => (
-            <Card className={classes.card}>
+            <Card key={member.uid} className={classes.card}>
               <Grid xs={6} item>
                 <img src={profile} className={classes.profile}></img>
                 {member.name}
