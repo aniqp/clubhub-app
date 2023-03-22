@@ -41,7 +41,7 @@ const ClubBoard = () => {
     const [clubTitle, setClubTitle] = React.useState();
     // const [toggle, setToggle] = React.useState("2");
     const [clubAnnouncements, setClubAnnouncements] = React.useState([]);
-    // const [members, setMembers] = React.useState([]);
+    const [members, setMembers] = React.useState([]);
     
 
     const [searchTerm, setSearchTerm] = React.useState('');
@@ -166,34 +166,33 @@ const ClubBoard = () => {
         return body;
     }
 
-    // // CLUB MEMBERS
-    // const getClubMembers = () => {
-    //     // console.log('getting members');
-    //     callApiGetClubMembers()
-    //         .then(res => {
-    //             var parsed = JSON.parse(res.express);
-    //             setMembers(parsed);
-    //         })
-    // }
+    // CLUB MEMBERS
+    const getClubMembers = () => {
+        // console.log('getting members');
+        callApiGetClubMembers()
+            .then(res => {
+                var parsed = JSON.parse(res.express);
+                setMembers(parsed);
+            })
+    }
 
+    const callApiGetClubMembers = async () => {
+        const url = serverURL + '/api/getClubMembers';
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                //authorization: `Bearer ${this.state.token}`
+            },
+            body: JSON.stringify({
+                clubID: clubID
+            })
+        });
 
-    // const callApiGetClubMembers = async () => {
-    //     const url = serverURL + '/api/getClubMembers';
-    //     const response = await fetch(url, {
-    //         method: "POST",
-    //         headers: {
-    //             "Content-Type": "application/json",
-    //             //authorization: `Bearer ${this.state.token}`
-    //         },
-    //         body: JSON.stringify({
-    //             clubID: clubID
-    //         })
-    //     });
-
-    //     const body = await response.json();
-    //     if (response.status !== 200) throw Error(body.message);
-    //     return body;
-    // }
+        const body = await response.json();
+        if (response.status !== 200) throw Error(body.message);
+        return body;
+    }
     
 
     return(<>

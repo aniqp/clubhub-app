@@ -294,8 +294,8 @@ const EventsHeader = () => {
             <Typography variant="h6" style={{ fontFamily: 'Biryani, sans-serif', fontWeight: 400, color: 'white', marginTop: '20px' }}>View your club's upcoming events!</Typography>
           </CardContent>
         </Grid>
-        <Grid item xs={5} style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <CardMedia component="img" image={eventsHero} />
+        <Grid item xs={5} style={{ display: 'flex', justifyContent: 'flex-end'}}>
+          <CardMedia component="img" image={eventsHero} style = {{width: '90%', paddingRight: '10px'}} />
         </Grid>
       </Grid>
     </Card>)
