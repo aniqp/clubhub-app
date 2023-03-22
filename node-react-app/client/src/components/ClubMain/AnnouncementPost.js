@@ -67,7 +67,7 @@ export default function AnnouncementPost(props) {
     const [editModalOpen, setEditModelOpen] = React.useState(false);
     toast.configure();
     const notify = () => {
-        console.log('in')
+        // console.log('in')
         toast.success("Success: Announcement post was edited.", {
             position: toast.POSITION.TOP_RIGHT,
             autoClose: true
@@ -81,7 +81,7 @@ export default function AnnouncementPost(props) {
         }
         callApiEditAnnouncement(data)
             .then(res => {
-                console.log('response')
+                // console.log('response')
                 var parsed = JSON.parse(res.express);
                 props.onSubmit();
                 notify();
@@ -169,8 +169,8 @@ export default function AnnouncementPost(props) {
         result += ' ' + meridien;
         return result;
     }
-    console.log('visibility: ', props.visibility)
-    console.log('admin status: ', admin)
+    // console.log('visibility: ', props.visibility)
+    // console.log('admin status: ', admin)
     return(<>
         {((props.visibility === 'private' && admin) || (props.visibility === 'public')) &&
         <Card className={props.onDashboard ? classes.dashboardCard : classes.card }>
