@@ -6,6 +6,9 @@ import profile from '../../images/profile-icon.png';
 import membersIcon from '../../images/members.png';
 import { useUser } from '../Firebase/context';
 import history from '../Navigation/history';
+import userButton from './editTitleModal';
+import Modal from 'react-modal';
+import FormButton from './Form';
 
 const useStyles = makeStyles((theme) => ({
     root:{
@@ -136,6 +139,9 @@ const Members = ({name, members}) => {
         history.push("/myclubs");
     }
 
+   
+
+
 
 
 
@@ -182,7 +188,12 @@ const Members = ({name, members}) => {
                         {member.role === 'admin' && (
                             <Button className={[classes.role, classes.ownerRole]} onClick={() => handleClickAdmin(member.uid, member.club_id)}> Demote</Button>
                         )}
+                        <FormButton clubId={member.club_id} userId={member.uid} />
+
                     </Grid>
+                    // <Grid item style={{display:'flex'}}>
+                    //     <userButton className={[classes.role, classes.adminRole]} onClick={() => handleKickUser(member.uid, member.club_id)}> Kick</userButton>
+                    // </Grid>
                     )}
                     {myrole.role === 'admin' && (
                         <Grid item style={{display:'flex'}}>
