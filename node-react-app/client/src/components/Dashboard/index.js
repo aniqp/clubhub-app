@@ -186,7 +186,7 @@ const Dashboard = () => {
                     visibility={announcement.visibility}
                   />
                 ) :
-                <Typography variant="h6" style={{ marginLeft: "50px", marginTop: "20px" }}>This club has no recent announcements.</Typography>
+                <Typography variant="h6" style={{marginTop: "20px" }}>This club has no recent announcements.</Typography>
               }
             </Grid>
           </>
@@ -269,7 +269,7 @@ const MyClubs = (props) => {
 
 const AnnouncementHeader = () => {
   return (
-    <Card style={{ height:'220px', backgroundColor: '#6072C7', margin: '40px 0 30px 0'}}>
+    <Card style={{ height:'200px', backgroundColor: '#6072C7', margin: '40px 0 30px 0', display: 'flex', alignContent: 'center'}}>
       <Grid container xs={12}>
         <Grid item xs={8} style={{ display: 'flex', alignItems: 'center' }}>
           <CardContent>
@@ -277,8 +277,8 @@ const AnnouncementHeader = () => {
             <Typography variant="h6" style={{ fontFamily: 'Biryani, sans-serif', fontWeight: 400, color: 'white', marginTop: '20px' }}>View your clubs' recent announcements!</Typography>
           </CardContent>
         </Grid>
-        <Grid item xs={4} style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <CardMedia component="img" image={announcementHero} style={{ width: '100%', maxWidth: '100%' }} />
+        <Grid item xs={4} style={{ display: 'flex', justifyContent: 'flex-end'}}>
+          <CardMedia component="img" image={announcementHero} />
         </Grid>
       </Grid>
     </Card>)
@@ -286,16 +286,16 @@ const AnnouncementHeader = () => {
 
 const EventsHeader = () => {
   return (
-    <Card style={{ height:'220px', backgroundColor: '#408EB4', margin: '40px 0 30px 0'}}>
+    <Card style={{ height:'200px', backgroundColor: '#ee9d79', margin: '40px 0 30px 0', display: 'flex', alignContent: 'center'}}>
       <Grid container xs={12}>
-        <Grid item xs={8} style={{ display: 'flex', alignItems: 'center' }}>
+        <Grid item xs={7} style={{ display: 'flex', alignItems: 'center' }}>
           <CardContent>
             <Typography variant="h5" style={{ fontFamily: 'Biryani, sans-serif', fontWeight: 600, color: 'white' }}>Get ready for get-togethers</Typography>
             <Typography variant="h6" style={{ fontFamily: 'Biryani, sans-serif', fontWeight: 400, color: 'white', marginTop: '20px' }}>View your club's upcoming events!</Typography>
           </CardContent>
         </Grid>
-        <Grid item xs={4} style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <CardMedia component="img" image={eventsHero} style={{ width: '115%' }} />
+        <Grid item xs={5} style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <CardMedia component="img" image={eventsHero} />
         </Grid>
       </Grid>
     </Card>)
