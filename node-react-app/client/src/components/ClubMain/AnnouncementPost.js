@@ -47,8 +47,7 @@ const useStyles = makeStyles({
         margin:'20px 50px'
     },
     dashboardCard: {
-        margin:'20px 50px',
-        width: 900
+        margin:'15px 0px',
     }, 
     cardActions:{
         display:'flex',

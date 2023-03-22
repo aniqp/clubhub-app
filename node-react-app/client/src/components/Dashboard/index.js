@@ -155,8 +155,8 @@ const Dashboard = () => {
   }
 
   return (
-    <Grid container xs={8} spacing={6}>
-      <Grid container item xs={4}>
+    <Grid container>
+      <Grid item xs={3} style={{zIndex:'100'}}>
         <SideBar
           myClubs={myClubs}
           clubAnnouncementSelected={clubAnnouncementSelected}
@@ -164,13 +164,13 @@ const Dashboard = () => {
           setClubEventSelected={setClubEventSelected}
         />
       </Grid>
-      <Grid container item xs={8} spacing={11}>
+      <Grid item xs={8}>
         {clubEventSelected === false ?
           <>
-            <Grid item xs={12}>
+            <Grid item>
               <AnnouncementHeader />
             </Grid>
-            <Grid container item spacing={2} style={{ listStyle: 'none', width: '169%' }} xs={60}>
+            <Grid item style={{ listStyle: 'none'}} xs={12}>
               {filteredAnnouncements.length !== 0 ?
                 filteredAnnouncements.map((announcement, index) =>
                   <AnnouncementPost
@@ -269,8 +269,8 @@ const MyClubs = (props) => {
 
 const AnnouncementHeader = () => {
   return (
-    <Card style={{ backgroundColor: '#6072C7', marginLeft: '40px', marginTop: '40px', width: '150%' }}>
-      <Grid container xs={16}>
+    <Card style={{ height:'220px', backgroundColor: '#6072C7', margin: '40px 0 30px 0'}}>
+      <Grid container xs={12}>
         <Grid item xs={8} style={{ display: 'flex', alignItems: 'center' }}>
           <CardContent>
             <Typography variant="h5" style={{ fontFamily: 'Biryani, sans-serif', fontWeight: 600, color: 'white' }}>What's new in Clubsville?</Typography>
@@ -286,8 +286,8 @@ const AnnouncementHeader = () => {
 
 const EventsHeader = () => {
   return (
-    <Card style={{ backgroundColor: '#408EB4', marginLeft: '40px', marginTop: '40px', width: '150%' }}>
-      <Grid container xs={16}>
+    <Card style={{ height:'220px', backgroundColor: '#408EB4', margin: '40px 0 30px 0'}}>
+      <Grid container xs={12}>
         <Grid item xs={8} style={{ display: 'flex', alignItems: 'center' }}>
           <CardContent>
             <Typography variant="h5" style={{ fontFamily: 'Biryani, sans-serif', fontWeight: 600, color: 'white' }}>Get ready for get-togethers</Typography>
