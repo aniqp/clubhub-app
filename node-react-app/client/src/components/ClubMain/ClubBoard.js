@@ -166,16 +166,15 @@ const ClubBoard = () => {
         return body;
     }
 
-    // // CLUB MEMBERS
-    // const getClubMembers = () => {
-    //     // console.log('getting members');
-    //     callApiGetClubMembers()
-    //         .then(res => {
-    //             var parsed = JSON.parse(res.express);
-    //             setMembers(parsed);
-    //         })
-    // }
-
+    // CLUB MEMBERS
+    const getClubMembers = () => {
+        // console.log('getting members');
+        callApiGetClubMembers()
+            .then(res => {
+                var parsed = JSON.parse(res.express);
+                setMembers(parsed);
+            })
+    }
 
     // const callApiGetClubMembers = async () => {
     //     const url = serverURL + '/api/getClubMembers';
