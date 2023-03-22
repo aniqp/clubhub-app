@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Link, styled, Paper, Grid, Typography, Divider, makeStyles } from '@material-ui/core';
+import { styled, Paper, Grid, Typography, Divider, makeStyles } from '@material-ui/core';
 // import { Link } from 'react-router-dom';
 import history from '../Navigation/history';
 import ToggleButton from '@material-ui/lab/ToggleButton';
@@ -7,7 +7,8 @@ import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import Announcements from './Announcements';
 import Members from './Members';
 import { useParams } from 'react-router-dom';
-import creativeArt from '../../images/club-images/creative_art.jpg'
+import { serverURL } from '../../constants/config';
+import { Switch, Rote, Link } from 'react-router-dom';
 
 
 
@@ -32,10 +33,7 @@ const useStyles = makeStyles((theme) => ({
     header:{
         borderBottom:'rgba(121, 121, 121, 0.07) solid 1px',
         background:'#fff',
-        height:'300px'
-    },
-    headerItems:{
-        height:'300px',
+        minHeight:'144px',
     },
     clubTitle:{
         fontWeight:'600',
@@ -44,7 +42,8 @@ const useStyles = makeStyles((theme) => ({
     titleHeader:{
         display:'flex',
         alignItems:'end',
-        padding:'0 0 50px 10px',
+        margin:'50px'
+        // padding:'0 0 50px 10px',
     },
     toggleGroup: {
         display:'flex',
@@ -81,18 +80,50 @@ const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
     },
   }));
 
-const ClubBoardHeader = ({ clubTitle, toggle, handleToggle }) => {
+const ClubBoardHeader = ({active}) => {
     const classes = useStyles();
+    const { clubID } = useParams();
+    const [clubTitle, setClubTitle] = React.useState();
+    const [toggle, setToggle] = React.useState(active);
+    // const [active, setActive] = React.useState(active);
 
-    // React.useEffect(() => {
-    //     document.body.classList.add('red');
-    // }, [] )
+    React.useEffect(() => {
+        getClubTitle();
+    }, []);
+
+    const handleToggle = (event, newToggle) => {
+        if (newToggle !== null) {
+            setToggle(newToggle);
+        }
+    };
+
+    const getClubTitle = () => {
+        callApiGetClubs()
+            .then(res => {
+                var parsed = JSON.parse(res.express);
+                setClubTitle(parsed[0].name)
+            })
+    }
+
+    const callApiGetClubs = async () => {
+        const url = serverURL + '/api/getClubs';
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                //authorization: `Bearer ${this.state.token}`
+            },
+            body: JSON.stringify({
+                clubID: clubID
+            })
+        });
+        const body = await response.json();
+        if (response.status !== 200) throw Error(body.message);
+        return body;
+    }
 
     return (<>
         <Grid container className={classes.header}>
-            <Grid item xs={5} className={classes.headerItems}>
-                <img className={classes.headerImg} src={creativeArt}></img>
-            </Grid>
             <Grid item xs={7} className={[classes.titleHeader, classes.headerItems]}>
                 <Typography className={classes.clubTitle} variant='h4'>{clubTitle}</Typography>
             </Grid>
@@ -103,7 +134,7 @@ const ClubBoardHeader = ({ clubTitle, toggle, handleToggle }) => {
                 value={toggle}
                 exclusive
                 onChange={handleToggle}>
-                <ToggleButton value="1">
+                <ToggleButton value="1" onClick={()=> history.push(`/clubboard/${clubID}/`)}>
                     Announcements
                 </ToggleButton>
                 <ToggleButton value="2">
@@ -112,7 +143,7 @@ const ClubBoardHeader = ({ clubTitle, toggle, handleToggle }) => {
                 <ToggleButton value="3">
                     Polls
                 </ToggleButton>
-                <ToggleButton value="4">
+                <ToggleButton value="4" onClick={()=> history.push(`/clubboard/${clubID}/members`)}>
                     Members
                 </ToggleButton>
                 <ToggleButton value="5">
@@ -120,9 +151,7 @@ const ClubBoardHeader = ({ clubTitle, toggle, handleToggle }) => {
                 </ToggleButton>
             </StyledToggleButtonGroup>
         </Grid>
-        
    </>)
-
 }
 
 export default ClubBoardHeader;
