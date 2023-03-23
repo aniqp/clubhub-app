@@ -199,7 +199,7 @@ const ClubBoard = () => {
             <ClubBoardHeader clubTitle={clubTitle} toggle={toggle} handleToggle={handleToggle}/>
             {toggle === '1' && 
                 <Grid container>
-                    <Grid xs={8}>
+                    <Grid xs={8} item>
                         {admin && <AnnouncementForm clubID={clubID} onSubmit={getClubAnnouncements} />}
                         {Object.values(filteredAnnouncements).map((announcement, index) => (
                             <li key={announcement.id} style={{listStyle:'none'}}>
@@ -243,9 +243,7 @@ const ClubBoard = () => {
             {toggle == '2' && <>Temp</>}
             {toggle == '3' && <>Temp</>}
             {toggle === '4' && 
-                <Typography>
-                    <Members name={clubTitle} members={members} isAdmin={admin} acceptAll={acceptAll}/>
-                </Typography>}
+                    <Members name={clubTitle} members={members} isAdmin={admin} acceptAll={acceptAll}/>}
             {toggle == '5' && <>Temp</>}
         </Grid>
     </>)

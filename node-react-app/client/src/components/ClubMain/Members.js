@@ -95,11 +95,12 @@ const Application = ({ members, acceptAll }) => {
   const classes = useStyles();
   const { clubID } = useParams();
   const authHeader = useAuthHeader();
-  // const applicants = useMemo(
-  //   () => members?.filter((_) => _.role === "pending"),
-  //   [members]
-  // );
-  const applicants = [{ uid: "123", name: "George" }];
+
+  const applicants = useMemo(
+    () => members?.filter((member) => member.role === "pending") || [],
+    [members]
+  );
+  // const applicants = [{ name: "George", role: "pending" }];
 
   const acceptUser = async (user) => {
     const request = {
@@ -152,15 +153,15 @@ const Application = ({ members, acceptAll }) => {
         </Typography>
         <FormControlLabel
           control={
-            <Switch checked={acceptAll} disabled={!!applicants.length} />
+            <Switch checked={acceptAll} disabled={!!applicants?.length} />
           }
-          label={!!applicants.length ? "Must have empty list" : "Accept All"}
+          label={!!applicants?.length ? "Must have empty list" : "Accept All"}
         />
       </Card>
       {!acceptAll &&
         applicants?.map((app) => (
           <Card
-            key={app.uid}
+            key={app.name}
             className={classes.applicant}
           >
             <span>{app.name}</span>
@@ -183,7 +184,7 @@ const Members = ({ name, members, isAdmin, acceptAll }) => {
           <Typography className={classes.text2} color="secondary">
             {members.length}
           </Typography>
-          <Typography className={classes.text1} color="text.secondary">
+          <Typography className={classes.text1} color="textSecondary">
             Club Members
           </Typography>
         </Card>
@@ -202,7 +203,7 @@ const Members = ({ name, members, isAdmin, acceptAll }) => {
         {members
           .filter((member) => member.role !== "pending")
           .map((member) => (
-            <Card key={member.uid} className={classes.card}>
+            <Card key={member.name} className={classes.card}>
               <Grid xs={6} item>
                 <img src={profile} className={classes.profile}></img>
                 {member.name}
@@ -235,7 +236,7 @@ const Members = ({ name, members, isAdmin, acceptAll }) => {
                 &nbsp;
                 <Typography color='secondary' className={classes.headerFont}>{members.length} members</Typography> 
             </Grid> */}
-      {isAdmin && <Application applicants={members} isAdmin={isAdmin} />}
+      {isAdmin && <Application members={members} acceptAll={isAdmin} />}
     </Grid>
   );
 };

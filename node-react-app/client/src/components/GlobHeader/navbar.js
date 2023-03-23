@@ -82,7 +82,7 @@ const Navbar = () => {
             style={{ margin: '0' }}>
             <Typography className={classes.logo}>CLUBHUB</Typography>
           </Link>
-          <Grid xs={4} style={{ display: 'flex', justifyContent: 'end', paddingRight: '46px' }}>
+          <Grid xs={4} item style={{ display: 'flex', justifyContent: 'end', paddingRight: '46px' }}>
             <SignIn />
           </Grid>
         </Toolbar>
