@@ -23,7 +23,7 @@ app.use(express.static(path.join(__dirname, "client/build")));
 
 // Allow localhost to make calls to API
 app.use((req, res, next) => {
-	console.log(req.headers.origin)
+	// console.log(req.headers.origin)
 	if (req.headers.origin?.includes('://localhost:')) {
 		console.log('Accepted')
 		res.header('Access-Control-Allow-Origin', req.headers.origin)
@@ -181,7 +181,7 @@ app.post('/api/postAnnouncement', (req, res) => {
             })
         };
     })
-
+	connection.end();
 })
 
 app.post('/api/deleteAnnouncement', (req, res) => {
@@ -300,7 +300,7 @@ app.post('/api/acceptUser', (req, res) => {
 		  res.status(200).send(`User ${user.name} accepted to club`);
 		}
 	  });
-	  connection.end();
+	connection.end();
 });
 
 app.delete('/api/denyUser', (req, res) => {
@@ -323,7 +323,7 @@ app.delete('/api/denyUser', (req, res) => {
 		  res.status(200).send(`User ${user.name} denied from club`);
 		}
 	  });
-	  connection.end();
+	connection.end();
 });
 
 app.post('/api/getAllClubs', (req, res) => {
@@ -397,6 +397,7 @@ app.post('/api/joinClub', (req,res) => {
         };
     })
 
+	connection.end();
 });
 
 
@@ -463,6 +464,7 @@ app.post('/api/getAnnouncements', (req,res) => {
 		res.send({ express: string })
 		//console.log(string)
 	});
+	connection.end();
 });
 
 app.post('/api/leaveClub', (req,res) => {
