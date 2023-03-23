@@ -93,7 +93,7 @@ const ClubBoardHeader = ({ clubTitle, toggle, handleToggle }) => {
             <Grid item xs={5} className={classes.headerItems}>
                 <img className={classes.headerImg} src={creativeArt}></img>
             </Grid>
-            <Grid item xs={7} className={[classes.titleHeader, classes.headerItems]}>
+            <Grid item xs={7} className={`${classes.titleHeader} ${classes.headerItems}`}>
                 <Typography className={classes.clubTitle} variant='h4'>{clubTitle}</Typography>
             </Grid>
         </Grid> 
