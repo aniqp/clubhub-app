@@ -145,7 +145,7 @@ const Application = ({ members, acceptAll }) => {
   };
 
   return (
-    <Grid xs={2} item direction="row">
+    <Grid xs={2} item container direction="row">
       Application
       <Card className={classes.application}>
         <Typography>
