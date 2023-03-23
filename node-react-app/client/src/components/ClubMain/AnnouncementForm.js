@@ -132,10 +132,10 @@ const AnnouncementForm = (props) => {
 
     return(
         <Card className={classes.card} sx={{ maxWidth: 500 }}>
-            <Grid xs={1}>
+            <Grid xs={1} item>
                 <img className={classes.profile} src={profile} />
             </Grid>
-            <Grid xs={11}>
+            <Grid xs={11} item>
                 <Button className={classes.btn} onClick={()=> setPostModalOpen(true)} open={postModalOpen} onClose={()=> setPostModalOpen(false)}>Share an Announcement...</Button>
                 <PostModal classes={classes} open={postModalOpen} onClose={() => setPostModalOpen(false)} onSubmit={handleSubmit} />
             </Grid>

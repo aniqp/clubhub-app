@@ -210,19 +210,19 @@ const Members = ({ name, members, isAdmin, acceptAll }) => {
               </Grid>
               <Grid item style={{ display: "flex", justifyContent: "center" }}>
                 {member.role === "owner" && (
-                  <Typography className={[classes.role, classes.ownerRole]}>
+                  <Typography className={`${classes.role} ${classes.ownerRole}`}>
                     {" "}
                     {member.role}
                   </Typography>
                 )}
                 {member.role === "admin" && (
-                  <Typography className={[classes.role, classes.adminRole]}>
+                  <Typography className={`${classes.role} ${classes.adminRole}`}>
                     {" "}
                     {member.role}
                   </Typography>
                 )}
                 {member.role === "user" && (
-                  <Typography className={[classes.role, classes.userRole]}>
+                  <Typography className={`${classes.role} ${classes.userRole}`}>
                     {" "}
                     {member.role}
                   </Typography>
