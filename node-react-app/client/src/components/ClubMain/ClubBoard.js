@@ -8,6 +8,7 @@ import AnnouncementPost from './AnnouncementPost';
 import AnnouncementForm from './AnnouncementForm';
 import search from '../../images/search-icon.png';
 import { useUser } from '../Firebase';
+import ImageUploadAndDisplay from './Photos';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -242,7 +243,10 @@ const ClubBoard = () => {
                 <Typography>
                     <Members name={clubTitle} members={members} />
                 </Typography>}
-            {toggle == '5' && <>Temp</>}
+            {toggle == '5' &&  
+                <Typography>
+                    <ImageUploadAndDisplay club_id={clubID} />
+                </Typography>}
         </Grid>
     </>)
 

@@ -1,7 +1,24 @@
 import React, { useState } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
 
+const useStyles = makeStyles((theme) => ({
+    button: {
+        textTransform: 'none',
+        fontSize: '14px',
+        padding: '6px 12px',
+        minWidth: 'unset',
+        fontWeight: 'normal',
+        lineHeight: 'inherit',
+        color: theme.palette.primary.main,
+        textDecoration: 'underline',
+        '&:hover': {
+          textDecoration: 'none'
+        }
+      }
+    }));
 function FormButton({ clubId, userId }) {
   const [showForm, setShowForm] = useState(false);
+  const classes = useStyles();
 
   const handleClick = () => {
     setShowForm(true);
@@ -55,7 +72,7 @@ function FormButton({ clubId, userId }) {
 
   return (
     <>
-      <button onClick={handleClick}>Open Form</button>
+      <button variant="text" className={classes.button} onClick={handleClick}>Edit</button>
 
       {showForm && <Form onClose={() => setShowForm(false)} />}
     </>

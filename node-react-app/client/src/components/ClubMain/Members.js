@@ -159,9 +159,6 @@ const Members = ({name, members}) => {
                 <Card className={classes.header}>
                     <Grid xs={6} item>Name</Grid>
                     <Grid xs={6} item>Role</Grid>
-                    {myrole.role === 'owner' && (
-                        <Grid xs={6} item>Promote</Grid>
-                    )}
                 </Card>}
                 {members.map((member) => (
                 <Card className={classes.card}>
