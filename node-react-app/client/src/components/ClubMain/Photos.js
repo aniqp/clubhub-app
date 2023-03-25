@@ -10,7 +10,13 @@ import {
 import ClubBoardHeader from './ClubBoardHeader';
 import { useParams } from 'react-router-dom';
 import { v4 } from "uuid"
-import { Fab, Grid, ImageList, ImageListItem } from '@material-ui/core'
+import { Grid, ImageList, ImageListItem, Button, Typography, Modal } from '@material-ui/core'
+import SpeedDial from "@material-ui/lab/SpeedDial";
+import SpeedDialAction from "@material-ui/lab/SpeedDialAction";
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+import MenuIcon from '@material-ui/icons/Menu';
+import SendIcon from '@material-ui/icons/Send';
+import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 
 function ImageUploadAndDisplay() {
 
@@ -18,6 +24,8 @@ function ImageUploadAndDisplay() {
   const [image, setImage] = useState(null);
   const [images, setImages] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
+  const [openSpeedDial, setOpenSpeedDial] = useState(false)
+  const [openModal, setOpenModal] = useState(false)
 
   const getImageNameFromUrl = (url) => {
     const urlObj = new URL(url);
@@ -61,7 +69,7 @@ function ImageUploadAndDisplay() {
 
   useEffect(() => {
     const fetchImages = async () => {
-      const listRef = ref(storage, `images/${clubID}`);
+      const listRef = ref(storage, `images/${clubID}/clubboard`);
       const list = await listAll(listRef);
       const imageUrls = await Promise.all(list.items.map((item) => getDownloadURL(item)));
       setImages(imageUrls);
@@ -72,13 +80,13 @@ function ImageUploadAndDisplay() {
   return (
     <div>
       <ClubBoardHeader active={"5"} />
-      <Grid container style={{ border: "2px solid green" }}>
-        <Grid item xs={8} style={{ border: "2px solid red" }}>
-          <ImageList sx={{ width: 500, height: 450, border: "2px solid blue" }} cols={3} rowHeight={164}>
+      <Grid container style={{ padding: '30px 30px' }}>
+        <Grid item xs={8} style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end' }}>
+          <ImageList cols={3} gap={4} style={{ alignItems: 'center' }}>
             {images.map((image, index) => (
-              <ImageListItem key={index} style={{ position: "relative", display: "inline-block" }}>
-                <img src={image} alt="Club" style={{ width: "200px" }} />
-                {/* <button
+              <ImageListItem key={index} style={{ objectFit: 'cover' }}>
+                <img src={image} alt="Club" style={{ borderRadius: '16px', objectFit: 'cover', width: '100%', height: '100%' }} />
+                <button
                   style={{
                     position: "absolute",
                     top: 0,
@@ -92,16 +100,41 @@ function ImageUploadAndDisplay() {
                   onClick={() => deleteImage(image)}
                 >
                   X
-                </button> */}
+                </button>
               </ImageListItem>
             ))}
           </ImageList>
         </Grid>
-        <Grid container item xs={4} style={{ width: 500, height: 450, border: "2px solid blue", alignItems: 'flex-end', justifyContent: 'flex-end' }}>
-          <input type="file" onChange={handleChange} />
-          <button onClick={handleUpload} disabled={!image || isUploading}>
+        <Grid item xs={4} style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end', paddingBottom: '30px' }}>
+          {/* <input type="file" onChange={handleChange} /> */}
+          <SpeedDial
+            ariaLabel="Speed Dial"
+            icon={<MenuIcon />}
+            direction='down'
+            hidden={false}
+            onOpen={() => { setOpenSpeedDial(true) }}
+            onClose={() => { setOpenSpeedDial(false) }}
+            open={openSpeedDial}
+          >
+            <SpeedDialAction
+              key="Upload Image"
+              icon={<CloudUploadIcon />}
+              tooltipTitle="Upload Image"
+            />
+            <SpeedDialAction
+              key="Select Images to Display on Explore Page"
+              icon={<SendIcon />}
+              tooltipTitle="Select Images to Display on Explore Page"
+            />
+            <SpeedDialAction
+              key="Delete Images"
+              icon={<DeleteForeverIcon />}
+              tooltipTitle="Select an Image to Delete"
+            />
+          </SpeedDial>
+          {/* <Button onClick={handleUpload} disabled={!image || isUploading}>
             {isUploading ? "Uploading..." : "Upload"}
-          </button>
+          </Button> */}
         </Grid>
       </Grid>
     </div>
