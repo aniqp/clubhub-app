@@ -11,6 +11,7 @@ import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
 import "react-toastify/dist/ReactToastify.css";
 import GroupsRoundedIcon from '@material-ui/icons/Group';
+import EventForm from './EventForm';
 
 const useStyles = makeStyles({
     root: {
@@ -170,8 +171,8 @@ export default function AnnouncementPost(props) {
         result += ' ' + meridien;
         return result;
     }
-    console.log('visibility: ', props.visibility)
-    console.log('admin status: ', admin)
+    // console.log('visibility: ', props.visibility)
+    // console.log('admin status: ', admin)
     return(<>
         {((props.visibility === 'private' && admin) || (props.visibility === 'public')) &&
         <Card className={props.onDashboard ? classes.dashboardCard : classes.card }  style={{ margin:'20px 0 30px', padding:'10px'}}sx={{ maxWidth: 500 }}>
@@ -365,4 +366,13 @@ const EditModal = ({title, body, open, onClose, onSubmit}) => {
         </>
     )
 
+}
+
+const EventFormDialog = () => {
+
+    return(
+        <>
+            <EventForm />
+        </>
+    )
 }

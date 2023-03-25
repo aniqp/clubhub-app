@@ -490,5 +490,64 @@ app.post('/api/deleteEvent', (req,res) => {
 
 })
 
+app.post('/api/getAttendance', (req, res) => {
+	let connection = mysql.createConnection(config);
+	let eventID = req.body.eventID;
+
+	let sql = `select * from attendance where event_id = ?`
+	const data = [eventID];
+	console.log(sql);
+	console.log(data);
+	connection.query(sql, data, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message);
+		}
+		let string = JSON.stringify(results);
+		res.send({ express: string })
+		//console.log(string)
+	});
+})
+
+app.post('/api/setAttendance', (req, res) => {
+	let connection = mysql.createConnection(config);
+	let eventID = req.body.eventID;
+	let userID = req.body.userID;
+	let status = req.body.attendanceStatus;
+	let name = req.body.name;
+
+	let sql = `INSERT into attendance (event_id, uid, status, name) values (?,?,?,?)`
+	const data = [eventID, userID, status, name];
+	console.log(sql);
+	console.log(data);
+	connection.query(sql, data, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message);
+		}
+		let string = JSON.stringify(results);
+		res.send({ express: string })
+		//console.log(string)
+	});
+})
+
+app.post('/api/changeAttendance', (req, res) => {
+	let connection = mysql.createConnection(config);
+	let eventID = req.body.eventID;
+	let userID = req.body.userID;
+	let status = req.body.attendanceStatus;
+
+	let sql = `UPDATE attendance SET status = ? WHERE uid=? and event_id = ?`
+	const data = [status, userID, eventID];
+	console.log(sql);
+	console.log(data);
+	connection.query(sql, data, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message);
+		}
+		let string = JSON.stringify(results);
+		res.send({ express: string })
+		//console.log(string)
+	});
+})
+
 app.listen(port, () => console.log(`Listening on port ${port}`)); //for the dev version
 //app.listen(port, '129.97.25.211'); //for the deployed version, specify the IP address of the server
