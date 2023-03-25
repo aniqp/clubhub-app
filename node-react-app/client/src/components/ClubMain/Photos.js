@@ -9,6 +9,8 @@ import {
 } from "firebase/storage";
 import ClubBoardHeader from './ClubBoardHeader';
 import { useParams } from 'react-router-dom';
+import { v4 } from "uuid"
+import { Fab, Grid, ImageList, ImageListItem } from '@material-ui/core'
 
 function ImageUploadAndDisplay() {
 
@@ -32,12 +34,12 @@ function ImageUploadAndDisplay() {
 
   const handleUpload = async () => {
     setIsUploading(true);
-    const storageRef = ref(storage, `images/${clubID}/${image.name}`);
+    const storageRef = ref(storage, `images/${clubID}/clubboard/${image.name + v4()}`);
     const uploadTask = uploadBytesResumable(storageRef, image);
 
     uploadTask.on(
       "state_changed",
-      () => {},
+      () => { },
       (error) => {
         console.log(error);
         setIsUploading(false);
@@ -69,33 +71,39 @@ function ImageUploadAndDisplay() {
 
   return (
     <div>
-      <ClubBoardHeader active = {"5"}/>
-      <input type="file" onChange={handleChange} />
-      <button onClick={handleUpload} disabled={!image || isUploading}>
-        {isUploading ? "Uploading..." : "Upload"}
-      </button>
-      <div>
-        {images.map((image, index) => (
-          <div key={index} style={{ position: "relative", display: "inline-block" }}>
-            <img src={image} alt="Club" style={{ width: "200px" }} />
-            <button
-              style={{
-                position: "absolute",
-                top: 0,
-                right: 0,
-                background: "red",
-                color: "white",
-                borderRadius: "50%",
-                border: "none",
-                cursor: "pointer",
-              }}
-              onClick={() => deleteImage(image)}
-            >
-              X
-            </button>
-          </div>
-        ))}
-      </div>
+      <ClubBoardHeader active={"5"} />
+      <Grid container style={{ border: "2px solid green" }}>
+        <Grid item xs={8} style={{ border: "2px solid red" }}>
+          <ImageList sx={{ width: 500, height: 450, border: "2px solid blue" }} cols={3} rowHeight={164}>
+            {images.map((image, index) => (
+              <ImageListItem key={index} style={{ position: "relative", display: "inline-block" }}>
+                <img src={image} alt="Club" style={{ width: "200px" }} />
+                {/* <button
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    right: 0,
+                    background: "red",
+                    color: "white",
+                    borderRadius: "50%",
+                    border: "none",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => deleteImage(image)}
+                >
+                  X
+                </button> */}
+              </ImageListItem>
+            ))}
+          </ImageList>
+        </Grid>
+        <Grid container item xs={4} style={{ width: 500, height: 450, border: "2px solid blue", alignItems: 'flex-end', justifyContent: 'flex-end' }}>
+          <input type="file" onChange={handleChange} />
+          <button onClick={handleUpload} disabled={!image || isUploading}>
+            {isUploading ? "Uploading..." : "Upload"}
+          </button>
+        </Grid>
+      </Grid>
     </div>
   );
 }
