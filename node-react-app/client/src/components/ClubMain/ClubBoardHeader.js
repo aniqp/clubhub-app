@@ -146,7 +146,7 @@ const ClubBoardHeader = ({active}) => {
                 <ToggleButton value="4" onClick={()=> history.push(`/clubboard/${clubID}/members`)}>
                     Members
                 </ToggleButton>
-                <ToggleButton value="5">
+                <ToggleButton value="5" onClick={()=> history.push(`/clubboard/${clubID}/photos`)}>
                     Photos
                 </ToggleButton>
             </StyledToggleButtonGroup>
