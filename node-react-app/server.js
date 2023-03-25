@@ -7,6 +7,7 @@ const bodyParser = require("body-parser");
 var admin = require("firebase-admin");
 
 var serviceAccount = require("./serviceAccountKey.json");
+const { start } = require('repl');
 
 admin.initializeApp({
 	credential: admin.credential.cert(serviceAccount)
@@ -433,6 +434,61 @@ app.post('/api/leaveClub', (req,res) => {
 	});
 	connection.end();
 });
+
+app.post('/api/getPastEvents', (req,res) => {
+	let connection = mysql.createConnection(config);
+	let clubID = req.body.clubID;
+	let todaysDate = req.body.todaysDate;
+
+	let sql = `select * from events where club_id = ? and start_time < ?`
+	const data = [clubID, todaysDate];
+	connection.query(sql, data, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message);
+		}
+		let string = JSON.stringify(results);
+		res.send({ express: string })
+		//console.log(string)
+	});
+
+})
+
+app.post('/api/getUpcomingEvents', (req,res) => {
+	let connection = mysql.createConnection(config);
+	let clubID = req.body.clubID;
+	let todaysDate = req.body.todaysDate;
+
+	let sql = `select * from events where club_id = ? and start_time >= ?`
+	const data = [clubID, todaysDate];
+	console.log(sql);
+	console.log(data);
+	connection.query(sql, data, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message);
+		}
+		let string = JSON.stringify(results);
+		res.send({ express: string })
+		//console.log(string)
+	});
+})
+
+app.post('/api/addEvent', (req,res) => {
+	let connection = mysql.createConnection(config);
+	
+
+})
+
+app.post('/api/editEvent', (req,res) => {
+	let connection = mysql.createConnection(config);
+	
+
+})
+
+app.post('/api/deleteEvent', (req,res) => {
+	let connection = mysql.createConnection(config);
+	
+
+})
 
 app.listen(port, () => console.log(`Listening on port ${port}`)); //for the dev version
 //app.listen(port, '129.97.25.211'); //for the deployed version, specify the IP address of the server

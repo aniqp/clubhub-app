@@ -17,8 +17,7 @@ import img9 from '../../images/events/concert.png'
 import img10 from '../../images/events/meeting3.jpg'
 import Avatar from '@material-ui/core/Avatar';
 import AvatarGroup from '@material-ui/lab/AvatarGroup';
-
-
+import { serverURL } from "../../constants/config";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -62,94 +61,91 @@ const useStyles = makeStyles((theme) => ({
     }
   }));
 
-
-const useImageLoaded = () => {
-    console.log('in')
-    const [loaded, setLoaded] = React.useState(false)
-    const ref = useRef();
-
-    const onLoad  = () => {setLoaded(true)};
-
-    React.useEffect(() => {
-        if (ref.current && ref.current.complete) {
-          onLoad();
-        }
-        
-    })
-    return [ref, loaded, onLoad]
-
-}
-
 const Events = () => {
     const classes = useStyles();
     const { clubID } = useParams();
-    const [expanded, setExpanded] = React.useState(null);
-    const [ref, loaded, onLoad] = useImageLoaded();
+    const [upcomingEvents, setUpcomingEvents] = React.useState([]);
+    const [pastEvents, setPastEvents] = React.useState([]);
 
+    React.useEffect(() => {
+        getEvents();
+    }, [])
 
-    const handleExpandClick = (clickedIndex) => {
-        if (expanded === clickedIndex){
-            setExpanded(null)
-        } else {
-            setExpanded(clickedIndex)
+    const timestamp = () => {
+        let today = new Date();
+        const leadingZero = (n) => {
+            if (n.toString.length == 1){
+                n = '0' + n;
+                return n;
+            }
+            return n;
         }
-    };
-    
+        let date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate()+' '+leadingZero(today.getHours())+':'+leadingZero(today.getMinutes())+':'+today.getSeconds();
+        return date;
+    }
 
-    let testData = [
-        {title:'FHS Formal 2019',
-        location:'RCH 302',
-        time:'Fri, March 28th 2023',
-        body:"Faculty of Health Sciences Students' Council is thrilled to present: FHS Formal 2019! This year's theme is 007, so break out your classiest black and white couture and join us at the Doubletree by Hilton on February 8th at 8pm!",
-        timeposted:'March 16th 2023',
-        visibility:'private'},
-        {title:'KinGames Annual Holiday Sweater Party',
-        location:'RCH 302',
-        time:'Thurs, December 6th, 2018',
-        body:"**WRISTBANDS**🎅🏿-$5 🤶🏻-No Cover 🎅🏿-Line Skip until 11. Contact any one of the Kin Games team members (event admins) to purchase.",
-        timeposted:'March 16th 2023',
-        visibility:'public'},
-        {title:'KinGames Annual Holiday Sweater Party',
-        location:'RCH 302',
-        time:'Thurs, December 6th, 2018',
-        body:"**WRISTBANDS**🎅🏿-$5 🤶🏻-No Cover 🎅🏿-Line Skip until 11. Contact any one of the Kin Games team members (event admins) to purchase.",
-        timeposted:'March 16th 2023',
-        visibility:'public'},
-        {title:'KinGames Annual Holiday Sweater Party',
-        location:'RCH 302',
-        time:'Thurs, December 6th, 2018',
-        body:"**WRISTBANDS**🎅🏿-$5 🤶🏻-No Cover 🎅🏿-Line Skip until 11. Contact any one of the Kin Games team members (event admins) to purchase.",
-        timeposted:'March 16th 2023',
-        visibility:'public'},
-        {title:'KinGames Annual Holiday Sweater Party',
-        location:'RCH 302',
-        time:'Thurs, December 6th, 2018',
-        body:"**WRISTBANDS**🎅🏿-$5 🤶🏻-No Cover 🎅🏿-Line Skip until 11. Contact any one of the Kin Games team members (event admins) to purchase.",
-        timeposted:'March 16th 2023',
-        visibility:'public'},
-        {title:'KinGames Annual Holiday Sweater Party',
-        location:'RCH 302',
-        time:'Thurs, December 6th, 2018',
-        body:"**WRISTBANDS**🎅🏿-$5 🤶🏻-No Cover 🎅🏿-Line Skip until 11. Contact any one of the Kin Games team members (event admins) to purchase.",
-        timeposted:'March 16th 2023',
-        visibility:'public'},
-        {title:'KinGames Annual Holiday Sweater Party',
-        location:'RCH 302',
-        time:'Thurs, December 6th, 2018',
-        body:"**WRISTBANDS**🎅🏿-$5 🤶🏻-No Cover 🎅🏿-Line Skip until 11. Contact any one of the Kin Games team members (event admins) to purchase.",
-        timeposted:'March 16th 2023',
-        visibility:'public'}
-    ];
+    // CLUB ANNOUNCEMENTS
+    const getEvents = () => {
+        callApiGetUpcomingEvents()
+            .then(res => {
+                var parsed = JSON.parse(res.express);
+                setUpcomingEvents(parsed);
+            })
+        
+        callApiGetPastEvents()
+            .then(res => {
+                var parsed = JSON.parse(res.express);
+                setPastEvents(parsed);
+            })
+    }
+
+    const callApiGetUpcomingEvents = async () => {
+        const url = serverURL + '/api/getUpcomingEvents';
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                //authorization: `Bearer ${this.state.token}`
+            },
+            body: JSON.stringify({
+                clubID: clubID,
+                todaysDate: timestamp(),
+            })
+        });
+
+        const body = await response.json();
+        if (response.status !== 200) throw Error(body.message);
+        return body;
+    }
+
+    const callApiGetPastEvents = async () => {
+        const url = serverURL + '/api/getPastEvents';
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                //authorization: `Bearer ${this.state.token}`
+            },
+            body: JSON.stringify({
+                clubID: clubID,
+                todaysDate: timestamp(),
+            })
+        });
+
+        const body = await response.json();
+        if (response.status !== 200) throw Error(body.message);
+        return body;
+    }
 
 
-
+    console.log(upcomingEvents);
     return(<>
         <Grid style={{display:'flex', justifyContent:'space-around', paddingTop:'20px'}}>
             <Grid xs={8}>
                 <Grid>
                     <Card style={{padding:'20px'}}>
                     <Typography style={{fontSize:'22pt', fontWeight:'300'}}>Upcoming Events</Typography>
-                        {Object.values(testData).map((event, index) => 
+                        {Object.values(upcomingEvents).map((event, index) => 
                             <EventList event={event} index={index}/>
                         )}
                     </Card>
@@ -157,7 +153,7 @@ const Events = () => {
                 <Grid style={{marginTop:'50px'}}>
                     <Card style={{padding:'20px'}}>
                     <Typography style={{fontSize:'22pt', fontWeight:'300'}}>Past Events</Typography>
-                        {Object.values(testData).map((event, index) => 
+                        {Object.values(pastEvents).map((event, index) => 
                             <EventList event={event} index={index}/>
                         )}
                     </Card>
@@ -171,29 +167,10 @@ const Events = () => {
                         <Typography>Create Event</Typography>
                     </Button>
                     <Grid style={{padding:'10px', display:'flex', justifyContent:'center', flexDirection:'column'}}>
-                        {/* <Skeleton variant="rect" animation="wave" width={250} height={160} /> */}
                         <EventImage image={sidebar} skeletonWidth={250} skeletonHeight = {160}/>
                     </Grid>
                 </Card>
             </Grid>
-            
-            {/* <Grid style={{display:'flex', margin:'30px', padding:'0 0 20px 0', justifyContent:'space-between', background:'#fff', borderBottom:'lightgray 1px solid'}}>
-                <Typography style={{fontSize:'22pt', fontWeight:'300'}}>Upcoming Events</Typography>
-                <Button className={classes.btn} onClick={() => history.push(`/clubboard/${clubID}/eventform`)}>
-                    <Typography style={{paddingRight:'5px'}}>+</Typography>
-                    <Typography>Create Event</Typography>
-                </Button>
-            </Grid>
-            <Grid style={{display:'flex', margin:'30px', padding:'0 0 20px 0', justifyContent:'space-between', borderBottom:'lightgray 1px solid'}}>
-                {Object.values(testData).map((event) => 
-                <>
-                Helo
-                </>
-                )}
-            </Grid>
-            <Grid>
-                Past Events
-            </Grid> */}
         </Grid>
     
     </>)
@@ -203,21 +180,37 @@ const Events = () => {
 export default Events;
 
 const EventImage = ({image, skeletonWidth, skeletonHeight}) => {
+
+    const placeholders = {
+        1:img1,
+        2:img2,
+        3:img3,
+        4:img4,
+        5:img5,
+        6:img6,
+        7:img7,
+        8:img8,
+        9:img9,
+        10:img10
+    }
+
     const classes = useStyles();
     const [loading, setLoading] = useState(true);
 
     return(
         <div style={{display: "flex", justifyContent: "center", alignItems: "center", }} >
-        <img 
-            src={image} 
-            className={classes.img}
-            style={{display: loading?"none":"block", width:"100%"}} 
-            onLoad={(e)=>{setLoading(false)}} />
-        <Skeleton variant="rect" animation="pulse" width={skeletonWidth} height={skeletonHeight} 
-        style={{
-            display: !loading&&"none", borderRadius:'12px'
-        }} />
-    </div> 
+            <img 
+                src={placeholders.image} 
+                className={classes.img}
+                style={{display: loading?"none":"block", width:"100%"}} 
+                onLoad={(e)=>{setLoading(false)}} />
+            <Skeleton 
+                variant="rect" 
+                animation="pulse" 
+                width={skeletonWidth} 
+                height={skeletonHeight} 
+                style={{display: !loading&&"none", borderRadius:'12px'}} />
+        </div> 
     )
 }
 
@@ -234,8 +227,6 @@ const EventList = ({event, index}) => {
         }
     };
     
-
-
     return(
         <Card style={{ margin:'20px 0 30px', padding:'20px'}}>
             <Grid style={{display:'flex'}}>
