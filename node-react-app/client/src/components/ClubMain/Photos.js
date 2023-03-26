@@ -10,7 +10,7 @@ import {
 import ClubBoardHeader from './ClubBoardHeader';
 import { useParams } from 'react-router-dom';
 import { v4 } from "uuid"
-import { Grid, ImageList, ImageListItem, Button, Typography, Modal, Card, CardContent, Box } from '@material-ui/core'
+import { Grid, ImageList, ImageListItem, Button, Typography, Modal, Card, CardContent, Box, Checkbox } from '@material-ui/core'
 import Alert from '@material-ui/lab/Alert'
 import SpeedDial from "@material-ui/lab/SpeedDial";
 import SpeedDialAction from "@material-ui/lab/SpeedDialAction";
@@ -20,6 +20,8 @@ import MenuIcon from '@material-ui/icons/Menu';
 import SendIcon from '@material-ui/icons/Send';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import KeyboardReturnIcon from '@material-ui/icons/KeyboardReturn'
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import CheckCircleOutlinedIcon from '@material-ui/icons/CheckCircleOutlined';
 
 const ImageUploadAndDisplay = () => {
 
@@ -32,6 +34,8 @@ const ImageUploadAndDisplay = () => {
   const [incorrectFileAlert, setIncorrectFileAlert] = useState(false)
   const [deleteMenu, setDeleteMenu] = useState(false)
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
+  const [selectMenu, setSelectMenu] = useState(false)
+  const [selectedImage, setSelectedImage] = useState(null)
 
   const fileInputRef = useRef(null);
   const handleFileSelect = () => {
@@ -109,6 +113,7 @@ const ImageUploadAndDisplay = () => {
             deleteMenu={deleteMenu}
             openDeleteModal={openDeleteModal}
             setOpenDeleteModal={setOpenDeleteModal}
+            selectMenu={selectMenu}
           />
         </Grid>
         <Grid item xs={4} style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end', paddingBottom: '30px' }}>
@@ -132,6 +137,8 @@ const ImageUploadAndDisplay = () => {
             setOpenModal={setOpenModal}
             setDeleteMenu={setDeleteMenu}
             deleteMenu={deleteMenu}
+            selectMenu={selectMenu}
+            setSelectMenu={setSelectMenu}
           />
         </Grid>
       </Grid>
@@ -142,19 +149,22 @@ const ImageUploadAndDisplay = () => {
 const ImageGrid = (props) => {
 
   const [deletedImage, setImageDeleted] = useState(null)
+  const [selectedImage, setSelectedImage] = useState(null)
 
   const handleDeleteConfirm = () => {
     props.deleteImage(deletedImage);
     props.setOpenDeleteModal(false);
   };
 
-  console.log(props)
-
   return (<>
     <ImageList cols={3} gap={4} rowHeight={300} style={{ alignItems: 'center' }}>
       {props.images.map((image, index) => (
         <ImageListItem key={index} style={{ objectFit: 'cover' }}>
-          <img src={image} alt="Club" style={{ borderRadius: '16px', objectFit: 'cover', width: '100%', height: '100%' }} />
+          <img src={image} alt="Club" onMouseOver={(e) => e.currentTarget.style.filter = 'brightness(70%)'}
+            onMouseOut={(e) => e.currentTarget.style.filter = 'brightness(100%)'}
+            style={{ borderRadius: '16px', objectFit: 'cover', width: '100%', height: '100%', cursor: 'pointer' }}
+            onClick={() => setSelectedImage(image)}
+          />
           {props.deleteMenu &&
             <div>
               <button
@@ -173,43 +183,34 @@ const ImageGrid = (props) => {
                   setImageDeleted(image)
                 }
                 }
-              // onClick={() => props.deleteImage(image)}
               >
                 X
               </button>
             </div>
           }
+          {props.selectMenu && <Checkbox ariaLabel='Checkbox' color="primary" icon={<CheckCircleOutlinedIcon />} checkedIcon={<CheckCircleIcon />}
+            style={{
+              position: "absolute",
+              top: 0,
+              right: 0,
+              borderRadius: "50%",
+              border: "none",
+              cursor: "pointer",
+            }}
+          />}
         </ImageListItem>
       ))}
     </ImageList>
+    <ConfirmImageDeleteModal
+      openDeleteModal={props.openDeleteModal}
+      setOpenDeleteModal={props.setOpenDeleteModal}
+      handleDeleteConfirm={handleDeleteConfirm}
+    />
     <Modal
-      open={props.openDeleteModal}
-      onClose={() => props.setOpenDeleteModal(false)}
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
-      style={{ position: 'absolute', display: 'flex', alignContent: 'center', justifyContent: 'center', top: '15%' }}
+      open={Boolean(selectedImage)}
+      onClose={() => setSelectedImage(null)}
     >
-      <Card style={{ width: '35%', height: '30%', borderRadius: '10px', display: 'flex', justifyContent: 'center', justifyItems: 'center' }}>
-        <CardContent style={{ display: 'flex' }}>
-          <Grid container>
-            <Grid container item xs = {12}>
-              <Typography id="modal-modal-title" variant="h6" style={{ fontFamily: 'Montserrat', fontWeight: 400 }}>
-                Confirm Deletion
-              </Typography>
-            </Grid>
-            <Grid item xs = {6}>
-              <Button variant="contained" color = "secondary" onClick={() => props.setOpenDeleteModal(false)}>
-                Cancel
-              </Button>
-            </Grid>
-            <Grid item xs = {6}>
-              <Button variant="contained" coloar = "primary" onClick={handleDeleteConfirm} sx={{ ml: 2 }}>
-                Delete
-              </Button>
-            </Grid>
-          </Grid>
-        </CardContent>
-      </Card>
+      <img src={selectedImage} alt="Club" style={{ maxHeight: '90vh', maxWidth: '90vw', margin: 'auto', display: 'block' }} />
     </Modal>
   </>
   )
@@ -267,6 +268,7 @@ const ImageModal = (props) => {
 }
 
 const ImageSpeedDial = (props) => {
+
   return (
     <SpeedDial
       ariaLabel="Speed Dial"
@@ -286,6 +288,7 @@ const ImageSpeedDial = (props) => {
         onClick={() => {
           props.setOpenModal(true);
           props.setDeleteMenu(false);
+          props.setSelectMenu(false)
         }
         }
       />
@@ -296,20 +299,54 @@ const ImageSpeedDial = (props) => {
         onClick={
           () =>
           (props.deleteMenu === false ?
-            props.setDeleteMenu(true) : props.setDeleteMenu(false)
+            (props.setDeleteMenu(true), props.setSelectMenu(false)) : props.setDeleteMenu(false)
           )}
       />
       <SpeedDialAction
-        key="Select Images to Display on Explore Page"
-        icon={<SendIcon />}
-        tooltipTitle="Select Images to Display on Explore Page"
+        key={props.selectMenu === false ? "Select Images to Display on Explore Page" : "Escape View"}
+        icon={props.selectMenu === false ? <SendIcon /> : <KeyboardReturnIcon />}
+        tooltipTitle={props.selectMenu === false ? "Select Images to Display on Explore Page" : "Escape View"}
+        onClick={() =>
+        (props.selectMenu === false ?
+          (props.setSelectMenu(true), props.setDeleteMenu(false)) : props.setSelectMenu(false)
+        )}
       />
     </SpeedDial>
   )
 }
 
-const ConfirmImageDeleteModal = () => {
-
+const ConfirmImageDeleteModal = (props) => {
+  return (
+    <Modal
+      open={props.openDeleteModal}
+      onClose={() => props.setOpenDeleteModal(false)}
+      aria-labelledby="modal-modal-title"
+      aria-describedby="modal-modal-description"
+      style={{ position: 'absolute', display: 'flex', alignContent: 'center', justifyContent: 'center', top: '20%' }}
+    >
+      <Card style={{ width: '25%', height: '30%', borderRadius: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <CardContent style={{ display: 'flex' }}>
+          <Grid container style={{}}>
+            <Grid container item xs={12} style={{ display: 'flex', justifyContent: 'center' }}>
+              <Typography id="modal-modal-title" variant="h6" style={{ fontFamily: 'Montserrat', fontWeight: 400, display: 'flex', justifyContent: 'center', paddingBottom: '20px' }}>
+                Delete this image?
+              </Typography>
+            </Grid>
+            <Grid container item xs={6} justifyContent='center'>
+              <Button variant="contained" color="secondary" onClick={() => props.setOpenDeleteModal(false)}>
+                Cancel
+              </Button>
+            </Grid>
+            <Grid container item xs={6} justifyContent='center'>
+              <Button variant="contained" coloar="primary" onClick={props.handleDeleteConfirm} sx={{ ml: 2 }}>
+                Delete
+              </Button>
+            </Grid>
+          </Grid>
+        </CardContent>
+      </Card>
+    </Modal>
+  )
 }
 
 export default ImageUploadAndDisplay;
