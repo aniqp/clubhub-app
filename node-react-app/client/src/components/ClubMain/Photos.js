@@ -19,8 +19,9 @@ import CloudUploadIconOutlined from '@material-ui/icons/CloudUploadOutlined';
 import MenuIcon from '@material-ui/icons/Menu';
 import SendIcon from '@material-ui/icons/Send';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
+import KeyboardReturnIcon from '@material-ui/icons/KeyboardReturn'
 
-function ImageUploadAndDisplay() {
+const ImageUploadAndDisplay = () => {
 
   const { clubID } = useParams()
   const [image, setImage] = useState(null);
@@ -29,10 +30,12 @@ function ImageUploadAndDisplay() {
   const [openSpeedDial, setOpenSpeedDial] = useState(false)
   const [openModal, setOpenModal] = useState(false)
   const [incorrectFileAlert, setIncorrectFileAlert] = useState(false)
+  const [deleteMenu, setDeleteMenu] = useState(false)
 
   const fileInputRef = useRef(null);
   const handleFileSelect = () => {
     fileInputRef.current.click();
+    setIncorrectFileAlert(false)
   };
 
   const getImageNameFromUrl = (url) => {
@@ -99,108 +102,160 @@ function ImageUploadAndDisplay() {
       <ClubBoardHeader active={"5"} />
       <Grid container style={{ padding: '30px 30px' }}>
         <Grid item xs={8} style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end' }}>
-          <ImageList cols={3} gap={4} rowHeight={300} style={{ alignItems: 'center' }}>
-            {images.map((image, index) => (
-              <ImageListItem key={index} style={{ objectFit: 'cover' }}>
-                <img src={image} alt="Club" style={{ borderRadius: '16px', objectFit: 'cover', width: '100%', height: '100%' }} />
-                <button
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    right: 0,
-                    background: "red",
-                    color: "white",
-                    borderRadius: "50%",
-                    border: "none",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => deleteImage(image)}
-                >
-                  X
-                </button>
-              </ImageListItem>
-            ))}
-          </ImageList>
+          <ImageGrid
+            images={images}
+            deleteImage={deleteImage}
+            deleteMenu={deleteMenu}
+          />
         </Grid>
         <Grid item xs={4} style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end', paddingBottom: '30px' }}>
-          <Modal
-            open={openModal}
-            onClose={() => {
-              setImage(null)
-              setOpenModal(false)
-            }}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-            style={{ position: 'absolute', display: 'flex', alignContent: 'center', justifyContent: 'center', top: '15%' }}
-          >
-            <Card style={{ width: '40%', height: '90%', borderRadius: '10px', display: 'flex', justifyContent: 'center', justifyItems: 'center' }}>
-              <CardContent style = {{justifyContent: 'center'}}>
-                <Typography style={{ fontFamily: 'Montserrat', fontWeight: 600, display: 'flex', justifyContent: 'center' }} variant="h5">Upload an image</Typography>
-                <Typography style={{ fontFamily: 'Montserrat', fontWeight: 400, paddingBottom: '10px', display: 'flex', justifyContent: 'center' }} variant="h6">.PNG and .JPEG formats are accepted</Typography>
-                <Grid container style={{ border: '2px dashed grey', height: '65%', display: 'flex', justifyContent: 'space-around', direction: 'column' }}>
-                  <Grid item xs={12} style={{ display: 'flex', justifyContent: 'center' }}>
-                    <CloudUploadIconOutlined style={{ height: '5em', width: '5em' }} />
-                  </Grid>
-                  <Grid item xs={4}>
-                    <Button variant="contained" color="primary" onClick={() => handleFileSelect()} style={{ display: 'flex', padding: '10px', alignContent: 'flex-end', width: '10em', height: '3em' }}>
-                      Choose File
-                    </Button>
-                    <input type="file" accept="image/jpeg, image/png" ref={fileInputRef} onChange={(handleChange)} style={{ display: 'none' }} />
-                  </Grid>
-                  <Grid item xs={4} style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                    <Button onClick={
-                      () =>
-                        (image !== null & image.type === 'image/jpeg' || image.type === 'image.png') ?
-                          handleUpload() : handleIncorrectFileAlert()
-                    } disabled={!image || isUploading} color="secondary" variant="contained" style={{ display: 'flex', padding: '10px', alignContent: 'flex-end', width: '10em', height: '3em' }}>
-                      {isUploading ? "Uploading..." : "Upload"}
-                    </Button>
-                  </Grid>
-                </Grid>
-                <Grid item style={{ display: 'flex', justifyContent: 'center', paddingTop: '10px' }}>
-                  {image &&
-                    <Typography style={{ backgroundColor: '#D3D3D3', borderRadius: '10px' }}>Selected file: {image.name}</Typography>
-                  }
-                  {incorrectFileAlert &&
-                    <Alert severity="warning">
-                      You have selected a file that is not in .jpeg or .png format. File not uploaded.
-                    </Alert>}
-                </Grid>
-              </CardContent>
-            </Card>
-          </Modal>
-          <SpeedDial
-            ariaLabel="Speed Dial"
-            icon={<MenuIcon />}
-            direction='down'
-            hidden={false}
-            onOpen={() => { setOpenSpeedDial(true) }}
-            onClose={() => {
-              setOpenSpeedDial(false);
-            }}
-            open={openSpeedDial}
-          >
-            <SpeedDialAction
-              key="Upload Image"
-              icon={<CloudUploadIcon />}
-              tooltipTitle="Upload Image"
-              onClick={() => setOpenModal(true)}
-            />
-            <SpeedDialAction
-              key="Select Images to Display on Explore Page"
-              icon={<SendIcon />}
-              tooltipTitle="Select Images to Display on Explore Page"
-            />
-            <SpeedDialAction
-              key="Delete Images"
-              icon={<DeleteForeverIcon />}
-              tooltipTitle="Select an Image to Delete"
-            />
-          </SpeedDial>
+          <ImageModal
+            openModal={openModal}
+            setImage={setImage}
+            setOpenModal={setOpenModal}
+            handleFileSelect={handleFileSelect}
+            handleChange={handleChange}
+            handleUpload={handleUpload}
+            image={image}
+            isUploading={isUploading}
+            fileInputRef={fileInputRef}
+            handleIncorrectFileAlert={handleIncorrectFileAlert}
+            incorrectFileAlert={incorrectFileAlert}
+            setIncorrectFileAlert={setIncorrectFileAlert}
+          />
+          <ImageSpeedDial
+            setOpenSpeedDial={setOpenSpeedDial}
+            openSpeedDial={openSpeedDial}
+            setOpenModal={setOpenModal}
+            setDeleteMenu={setDeleteMenu}
+            deleteMenu = {deleteMenu}
+          />
         </Grid>
       </Grid>
     </div >
   );
+}
+
+const ImageGrid = (props) => {
+
+  return (
+    <ImageList cols={3} gap={4} rowHeight={300} style={{ alignItems: 'center' }}>
+      {props.images.map((image, index) => (
+        <ImageListItem key={index} style={{ objectFit: 'cover' }}>
+          <img src={image} alt="Club" style={{ borderRadius: '16px', objectFit: 'cover', width: '100%', height: '100%' }} />
+          {props.deleteMenu &&
+            <button
+              style={{
+                position: "absolute",
+                top: 0,
+                right: 0,
+                background: "red",
+                color: "white",
+                borderRadius: "50%",
+                border: "none",
+                cursor: "pointer",
+              }}
+              onClick={() => props.deleteImage(image)}
+            >
+              X
+            </button>}
+
+        </ImageListItem>
+      ))}
+    </ImageList>
+  )
+}
+
+const ImageModal = (props) => {
+  return (
+    <Modal
+      open={props.openModal}
+      onClose={() => {
+        props.setImage(null)
+        props.setOpenModal(false)
+        props.setIncorrectFileAlert(false)
+      }}
+      aria-labelledby="modal-modal-title"
+      aria-describedby="modal-modal-description"
+      style={{ position: 'absolute', display: 'flex', alignContent: 'center', justifyContent: 'center', top: '15%' }}
+    >
+      <Card style={{ width: '40%', height: '90%', borderRadius: '10px', display: 'flex', justifyContent: 'center', justifyItems: 'center' }}>
+        <CardContent style={{ justifyContent: 'center' }}>
+          <Typography style={{ fontFamily: 'Montserrat', fontWeight: 600, display: 'flex', justifyContent: 'center' }} variant="h5">Upload an image</Typography>
+          <Typography style={{ fontFamily: 'Montserrat', fontWeight: 400, paddingBottom: '10px', display: 'flex', justifyContent: 'center' }} variant="h6">.PNG and .JPEG formats are accepted</Typography>
+          <Grid container style={{ border: '2px dashed grey', height: '65%', display: 'flex', justifyContent: 'space-around', direction: 'column' }}>
+            <Grid item xs={12} style={{ display: 'flex', justifyContent: 'center' }}>
+              <CloudUploadIconOutlined style={{ height: '5em', width: '5em' }} />
+            </Grid>
+            <Grid item xs={4} style={{ display: 'flex', alignItems: 'center' }}>
+              <Button variant="contained" color="primary" onClick={() => props.handleFileSelect()} style={{ display: 'flex', alignContent: 'flex-end', width: '10em', height: '3em' }}>
+                Choose File
+              </Button>
+              <input type="file" accept="image/jpeg, image/png" ref={props.fileInputRef} onChange={props.handleChange} style={{ display: 'none' }} />
+            </Grid>
+            <Grid item xs={4} style={{ display: 'flex', alignItems: 'center' }}>
+              <Button onClick={
+                () => (props.image.type === 'image/jpeg' || props.image.type === 'image/png') ?
+                  props.handleUpload() : props.handleIncorrectFileAlert()}
+                disabled={!props.image || props.isUploading} color="secondary" variant="contained" style={{ display: 'flex', padding: '10px', alignContent: 'flex-end', width: '10em', height: '3em' }}>
+                {props.isUploading ? "Uploading..." : "Upload"}
+              </Button>
+            </Grid>
+          </Grid>
+          <Grid item style={{ display: 'flex', justifyContent: 'center', paddingTop: '10px' }}>
+            {props.image &&
+              <Typography style={{ backgroundColor: '#D3D3D3', borderRadius: '10px' }}>Selected file: {props.image.name}</Typography>
+            }
+            {props.incorrectFileAlert &&
+              <Alert severity="warning">
+                You have selected a file that is not in .jpeg or .png format. File not uploaded. Please choose a .jpeg or .png file.
+              </Alert>}
+          </Grid>
+        </CardContent>
+      </Card>
+    </Modal>
+  )
+}
+
+const ImageSpeedDial = (props) => {
+  return (
+    <SpeedDial
+      ariaLabel="Speed Dial"
+      icon={<MenuIcon />}
+      direction='down'
+      hidden={false}
+      onOpen={() => { props.setOpenSpeedDial(true) }}
+      onClose={() => {
+        props.setOpenSpeedDial(false);
+      }}
+      open={props.openSpeedDial}
+    >
+      <SpeedDialAction
+        key="Upload Image"
+        icon={<CloudUploadIcon />}
+        tooltipTitle="Upload Image"
+        onClick={() => 
+          {props.setOpenModal(true);
+          props.setDeleteMenu(false);}
+        }
+      />
+      <SpeedDialAction
+        key= {props.deleteMenu === false? "Delete Images": "Escape View"}
+        icon={props.deleteMenu === false? <DeleteForeverIcon/>: <KeyboardReturnIcon/>}
+        tooltipTitle={props.deleteMenu === false? "Select Images to Delete": "Escape View"}
+        onClick={
+          () =>
+          (props.deleteMenu === false ?
+            props.setDeleteMenu(true) : props.setDeleteMenu(false)
+          )}
+      />
+      <SpeedDialAction
+        key="Select Images to Display on Explore Page"
+        icon={<SendIcon />}
+        tooltipTitle="Select Images to Display on Explore Page"
+      />
+    </SpeedDial>
+  )
 }
 
 export default ImageUploadAndDisplay;
