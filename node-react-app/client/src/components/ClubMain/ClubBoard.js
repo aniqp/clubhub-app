@@ -262,12 +262,10 @@ const ClubBoard = () => {
                                 <Typography style={{color:'rgb(55,72,97)', fontSize:'14pt',margin:'-20px 0 10px 0', fontWeight:'600'}}>{announcement.title}</Typography>
                                 <Typography style={{fontSize:'11pt'}}>{announcement.body}</Typography>
                             </Grid>
-                            <Grid style={{background:'rgb(237,240,247)', padding:'10px', display:'flex', justifyContent:'end', }}>
-                                <Button onClick={() => {handleExpandClick(index)}}  startIcon={<img src={comment} style={{height:'20px'}} />} style={{padding:'0 25px', borderRadius:'20px', color:'white', textTransform:'none', background:'rgb(55,72,97)'}}>
-                                    12
-                                </Button>
+                            {admin &&
+                            <Grid style={{background:'rgb(237,240,247)', display:'flex', justifyContent:'end', }}>
                                 <LongMenu />
-                            </Grid>
+                            </Grid>}
                         </Grid>
                     {announcement.id === 1 &&
                         <Grid xs={4} style={{backgroundImage: `url(${img1})`,   
@@ -282,37 +280,7 @@ const ClubBoard = () => {
                         backgroundPosition:'center'
                         }}></Grid> }
                     </Grid>
-            
                 </Card>
-                <Grid xs={8}>
-                    <Collapse in={expanded === index} timeout="auto" unmountOnExit style={{background:'rgb(237, 240, 247)', boxShadow:'0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12)'}}>
-                        <Grid>
-
-                       
-                        {Object.values(comments).map((comment) => 
-
-                        <Grid style={{display:'flex', flexDirection:'column', borderTop:'1px solid grey', margin:'10px'}}>
-                            <Grid style={{display:'flex', alignItems:'center', padding:'5px 20px 0'}}>
-                                <Avatar aria-label="recipe" className={classes.avatar}>
-                                        LT
-                                </Avatar>
-                                <Typography style={{fontWeight:'500', paddingLeft:'10px'}}>{comment.name}</Typography>
-
-                            </Grid>
-                            <Grid style={{display:'flex', flexDirection:'column', padding:'0 70px'}}>
-                                <Typography style={{fontSize:'10.5pt'}}>
-                                    {comment.comment}
-                                </Typography>
-                            </Grid>
-                        </Grid>)}
-            
-                            
-                        <TextField placeholder='Add Comment...'/>
-                        </Grid>
-                   
-
-                    </Collapse>
-                </Grid>
                 </>)}
             </Grid>
             <Grid xs={4} style={{display:'flex', justifyContent:'center', marginTop:'25px'}}>
