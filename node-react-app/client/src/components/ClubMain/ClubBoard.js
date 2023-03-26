@@ -1,20 +1,15 @@
 import React, {useState} from 'react';
-import { makeStyles, Dialog, IconButton, Grid, Radio, RadioGroup, InputLabel,FormControlLabel, Box, Typography,InputAdornment, Card, Button, Menu, MenuItem, Collapse, CardContent, TextField } from "@material-ui/core";
+import { makeStyles, Dialog, IconButton, Grid, Radio, RadioGroup, InputLabel,FormControlLabel, Box, Typography, Card, Button, Menu, MenuItem } from "@material-ui/core";
 import { useParams } from 'react-router-dom';
 import ClubBoardHeader from './ClubBoardHeader';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { serverURL } from '../../constants/config';
-import AnnouncementPost from './AnnouncementPost';
 import AnnouncementForm from './AnnouncementForm';
 import publicIcon from '../../images/public-icon.png';
 import privateIcon from '../../images/private-icon.png';
-import Events from './Events';
-import search from '../../images/search-icon.png';
-import comment from '../../images/comment.png';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import { red } from '@material-ui/core/colors';
 import img1 from '../../images/announcements/img1.png'
 import img2 from '../../images/announcements/img2.png'
 import img3 from '../../images/announcements/img3.png'
@@ -29,7 +24,6 @@ import img11 from '../../images/announcements/img11.png'
 import img12 from '../../images/announcements/img12.png'
 import { useUser } from '../Firebase';
 import caution from '../../images/caution-icon.png';
-import Edit from '@material-ui/icons/Edit';
 import CloseIcon from '@material-ui/icons/Close';
 import lock from '../../images/lock-icon.png';
 import { toast } from 'react-toastify'; 
@@ -42,38 +36,14 @@ const useStyles = makeStyles((theme) => ({
         minHeight:'100vh',
         paddingBottom:'50px'
     },
-    textField: {
-        width: '80%',
-        marginLeft: 'auto',
-        marginRight: 'auto',            
-        marginTop: 0,
-        fontWeight: 500
-    },
-    search:{
-        height:'20px'
-    },
-    avatar: {
-        backgroundColor: red[500],
-    },
-    boxshadow:{
-        boxShadow: '0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12)'
-    },    
     label:{
         color:'grey',
         fontSize:'9pt',
         marginBottom:'5px',
         letterSpacing:'1px'
     },
-    card:{
-        margin:'20px 50px',
-        display:'flex',
-        padding:'18px',
-        alignItems:'center',
-
-    }, 
     input:{
         width:'100%',
-        // margin: '5px 0 10px 0',
         border: 'rgba(0, 0, 0, 0.23) 1px solid',
         padding: '10px',
         background:'white',
@@ -82,10 +52,6 @@ const useStyles = makeStyles((theme) => ({
         '&:hover':{
             border:'1px solid black'
         },
-    },
-    profile: {
-        height:'50px',
-        paddingRight:'15px'
     },
     btn:{
         width:'100%',
@@ -138,47 +104,24 @@ const useStyles = makeStyles((theme) => ({
         paddingBottom:'10px',
         color:'#36454F'
     },
-    divider:{
-        // margin:'25px 0 5px 0',
-        // borderBottom:'1px solid #d9d9d9'
-    },
     radioGroup:{
         '&&:hover': {
             backgroundColor: 'transparent',
         }
-        
     },
-
 }));
 
 const ClubBoard = () => {
     const classes = useStyles();
-    // Initialize user and admin status
+    const { clubID } = useParams();
     const user = useUser();
     const [admin, setAdmin] = React.useState(false);
     const [noAnnouncementMsg, setNoAnnouncementMsg] = React.useState('')
-
-    const { clubID } = useParams();
-    const [clubTitle, setClubTitle] = React.useState();
-    // const [toggle, setToggle] = React.useState("2");
     const [clubAnnouncements, setClubAnnouncements] = React.useState([]);
-    const [members, setMembers] = React.useState([]);
     
-
-    const [searchTerm, setSearchTerm] = React.useState('');
-    
-    const handleSearchTerm = (e) => {
-        setSearchTerm(e.target.value);
-    }
-
-    const filteredAnnouncements = clubAnnouncements.filter((announcement) =>
-        announcement.body.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-
     React.useEffect(() => {
         if (user) {
             let userID = user.uid;
-            // console.log(userID)
             getUserRole(userID);
         } else {
             setAdmin(false);
@@ -187,8 +130,6 @@ const ClubBoard = () => {
 
     React.useEffect(() => {
         getClubAnnouncements();
-        // getClubTitle();
-        // getClubMembers();
     }, []);
 
     const getUserRole = (userID) => {
@@ -202,7 +143,6 @@ const ClubBoard = () => {
                 } else {
                     setAdmin(false);
                 }
-                // console.log(parsed);
             })
     }
 
@@ -225,40 +165,8 @@ const ClubBoard = () => {
         return body;
     }
 
-    // const getClubTitle = () => {
-    //     callApiGetClubs()
-    //         .then(res => {
-    //             var parsed = JSON.parse(res.express);
-    //             setClubTitle(parsed[0].name)
-    //         })
-    // }
-
-    // const callApiGetClubs = async () => {
-    //     const url = serverURL + '/api/getClubs';
-    //     const response = await fetch(url, {
-    //         method: "POST",
-    //         headers: {
-    //             "Content-Type": "application/json",
-    //             //authorization: `Bearer ${this.state.token}`
-    //         },
-    //         body: JSON.stringify({
-    //             clubID: clubID
-    //         })
-    //     });
-    //     const body = await response.json();
-    //     if (response.status !== 200) throw Error(body.message);
-    //     return body;
-    // }
-
-    // const handleToggle = (event, newToggle) => {
-    //     if (newToggle !== null) {
-    //         setToggle(newToggle);
-    //     }
-    // };
-
     // CLUB ANNOUNCEMENTS
     const getClubAnnouncements = () => {
-        // console.log('updating announcements');
         callApiGetClubAnnouncements()
             .then(res => {
                 var parsed = JSON.parse(res.express);
@@ -286,35 +194,6 @@ const ClubBoard = () => {
         if (response.status !== 200) throw Error(body.message);
         return body;
     }
-
-    // CLUB MEMBERS
-    const getClubMembers = () => {
-        // console.log('getting members');
-        callApiGetClubMembers()
-            .then(res => {
-                var parsed = JSON.parse(res.express);
-                setMembers(parsed);
-            })
-    }
-
-    const callApiGetClubMembers = async () => {
-        const url = serverURL + '/api/getClubMembers';
-        const response = await fetch(url, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                //authorization: `Bearer ${this.state.token}`
-            },
-            body: JSON.stringify({
-                clubID: clubID
-            })
-        });
-
-        const body = await response.json();
-        if (response.status !== 200) throw Error(body.message);
-        return body;
-    }
-
 
     return(<>
         <ClubBoardHeader active={"1"}/>

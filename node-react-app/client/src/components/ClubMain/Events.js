@@ -32,7 +32,8 @@ const useStyles = makeStyles((theme) => ({
       margin: "0 auto",
       alignItems: "center",
       justifycontent: "center",
-      marginTop: '30px'
+      marginTop: '30px',
+      minHeight:'100vh',
     },
     btn: {
         textTransform:'none',
@@ -197,7 +198,7 @@ const Events = () => {
 
     return(<>
         <ClubBoardHeader active={"2"}/>
-        <Grid style={{display:'flex', justifyContent:'space-around', paddingTop:'20px', background:'#f5f5f5'}}>
+        <Grid style={{minHeight:'100vh', display:'flex', justifyContent:'space-around', paddingTop:'20px', background:'#f5f5f5'}}>
             <Grid xs={8}>
                 <Grid>
                     <Card style={{padding:'20px'}}>
