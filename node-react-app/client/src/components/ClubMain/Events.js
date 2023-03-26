@@ -197,7 +197,7 @@ const Events = () => {
 
     return(<>
         <ClubBoardHeader active={"2"}/>
-        <Grid style={{display:'flex', justifyContent:'space-around', paddingTop:'20px'}}>
+        <Grid style={{display:'flex', justifyContent:'space-around', paddingTop:'20px', background:'#f5f5f5'}}>
             <Grid xs={8}>
                 <Grid>
                     <Card style={{padding:'20px'}}>

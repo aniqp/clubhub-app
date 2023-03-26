@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'row',
         padding: '20px 10px 20px 30px',
-        background:'#e7ecef',
+        background:'#f5f5f5',
         minHeight:'100vh',
 
     },
