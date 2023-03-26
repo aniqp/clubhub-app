@@ -15,6 +15,7 @@ import img7 from '../../images/events/conference.png'
 import img8 from '../../images/events/celebration3.png'
 import img9 from '../../images/events/concert.png'
 import img10 from '../../images/events/meeting3.jpg'
+import NewReleasesIcon from '@material-ui/icons/NewReleases';
 import Avatar from '@material-ui/core/Avatar';
 import AvatarGroup from '@material-ui/lab/AvatarGroup';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -202,17 +203,29 @@ const Events = () => {
                 <Grid>
                     <Card style={{padding:'20px'}}>
                     <Typography style={{fontSize:'22pt', fontWeight:'300'}}>Upcoming Events</Typography>
+                        {upcomingEvents.length > 0 ? <>
                         {Object.values(upcomingEvents).map((event, index) => 
                             <EventList event={event} index={index} currentUser={user} pastEvent={false}/>
-                        )}
+                        )}</> : 
+                        <Grid style={{display:'flex', justifyContent:'center', padding:'50px'}}>
+                            <Typography style={{color: '#C0C0C0', letterSpacing: '0.5px', fontSize: '14pt'}}>NO UPCOMING EVENTS</Typography>
+                        </Grid>
+                        }
                     </Card>
                 </Grid>
                 <Grid style={{marginTop:'50px'}}>
                     <Card style={{padding:'20px'}}>
                     <Typography style={{fontSize:'22pt', fontWeight:'300'}}>Past Events</Typography>
+                        {pastEvents.length > 0 ? 
+                        <> 
                         {Object.values(pastEvents).map((event, index) => 
                             <EventList event={event} index={index} currentUser={user} pastEvent={true}/>
                         )}
+                        </> : 
+                        <Grid style={{display:'flex', justifyContent:'center', padding:'50px'}}>
+                            <Typography style={{color:'#C0C0C0', letterSpacing: '0.5px', fontSize: '14pt'}}>NO PAST EVENTS</Typography>
+                        </Grid>
+                        }
                     </Card>
                 </Grid>
             </Grid>
@@ -417,12 +430,14 @@ const EventList = ({event, index, currentUser, pastEvent}) => {
                 <Grid sx={3}>
                     <EventImage image={event.placeholderPhoto} skeletonWidth={280} skeletonHeight = {180}/>
                 </Grid>
-                <Grid xs={7} style={{borderRight:'1px solid lightgray',}}>
-                    <Typography color='secondary' style={{fontFamily:"system-ui",letterSpacing:'1.1px', padding: '2px 30px 0px 30px', fontSize: '11pt', fontWeight: 400}}>
-                        {event.start_time_text}
-                    </Typography>
-                    <Typography style={{padding: '5px 30px', fontSize: '18pt', fontWeight: 600}}>{event.title}</Typography>
-                    <Typography style={{padding: '5px 30px', fontSize: '10pt', fontWeight: 400}}>{event.body}</Typography>
+                <Grid xs={7} style={{borderRight:'1px solid lightgray', display:'flex', flexDirection:'column', justifyContent:'space-between'}}>
+                    <Grid>
+                        <Typography color='secondary' style={{fontFamily:"system-ui",letterSpacing:'1.1px', padding: '2px 30px 0px 30px', fontSize: '11pt', fontWeight: 400}}>
+                            {event.start_time_text}
+                        </Typography>
+                        <Typography style={{padding: '5px 30px', fontSize: '18pt', fontWeight: 600}}>{event.title}</Typography>
+                        <Typography style={{padding: '5px 30px', fontSize: '10pt', fontWeight: 400}}>{event.body}</Typography>
+                    </Grid>
                     <Grid style={{display:'flex', justifyContent:'end', padding:'0 30px'}}>
                         <Button onClick={() => {handleExpandClick(index)}} style={{textTransform:'none', margin:'5px 0'}}>
                             <b style={{color:'rgba(0, 0, 0, 0.54)', letterSpacing:'0.5px', fontSize:'9.5pt'}}>
