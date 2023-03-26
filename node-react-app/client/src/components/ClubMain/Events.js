@@ -1,7 +1,7 @@
-import React, {useEffect, useRef, useQuery, useState} from "react";
+import React, {useEffect, useState} from "react";
 import history from '../Navigation/history';
 import { useParams } from 'react-router-dom';
-import { makeStyles, Card, Grid, Button, Typography, Collapse, CardContent, Tooltip, Dialog } from "@material-ui/core";
+import { makeStyles, Menu, MenuItem, IconButton, Box, Card, Grid, Button, Typography, Collapse, CardContent, Tooltip, Dialog } from "@material-ui/core";
 import Skeleton from '@material-ui/lab/Skeleton';
 import sidebar from '../../images/events/sidebar.jpg'
 import PeopleIcon from '@material-ui/icons/People';
@@ -15,7 +15,6 @@ import img7 from '../../images/events/conference.png'
 import img8 from '../../images/events/celebration3.png'
 import img9 from '../../images/events/concert.png'
 import img10 from '../../images/events/meeting3.jpg'
-import NewReleasesIcon from '@material-ui/icons/NewReleases';
 import Avatar from '@material-ui/core/Avatar';
 import AvatarGroup from '@material-ui/lab/AvatarGroup';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -25,6 +24,9 @@ import { deepOrange, indigo, teal, red, deepPurple, lightGreen } from '@material
 import { useUser } from '../Firebase';
 import EventForm from "./EventForm";
 import ClubBoardHeader from "./ClubBoardHeader";
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import DeleteIcon from '@material-ui/icons/Delete';
+import caution from '../../images/caution-icon.png';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -111,7 +113,53 @@ const Events = () => {
     const [pastEvents, setPastEvents] = React.useState([]);
     const [openEventForm, setOpenEventForm] = React.useState(false);
     const user = useUser();
+    const [isLoadingUpcomingEvents, setIsLoadingUpcomingEvents] = React.useState(true);
+    const [isLoadingPastEvents, setIsLoadingPastEvents] = React.useState(true);
+    const [admin, setAdmin] = React.useState(false);
 
+    React.useEffect(() => {
+        if (user) {
+            let userID = user.uid;
+            // console.log(userID)
+            getUserRole(userID);
+        } else {
+            setAdmin(false);
+        }
+    }, [user]);
+
+    const getUserRole = (userID) => {
+        callApiGetUserRole(userID)
+            .then(res => {
+                var parsed = JSON.parse(res.express);
+                if (parsed.length >= 1){
+                    if (parsed[0].role === 'owner' || parsed[0].role === 'admin'){
+                        setAdmin(true);
+                    }
+                } else {
+                    setAdmin(false);
+                }
+                // console.log(parsed);
+            })
+    }
+
+    const callApiGetUserRole = async (userID) => {
+        const url = serverURL + '/api/getCurrentUserRole';
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                //authorization: `Bearer ${this.state.token}`
+            },
+            body: JSON.stringify({
+                clubID: clubID,
+                userID: userID,
+            })
+        });
+
+        const body = await response.json();
+        if (response.status !== 200) throw Error(body.message);
+        return body;
+    }
 
     React.useEffect(() => {
         getEvents();
@@ -135,12 +183,15 @@ const Events = () => {
             .then(res => {
                 var parsed = JSON.parse(res.express);
                 setUpcomingEvents(parsed);
+                setIsLoadingUpcomingEvents(false);
+
             })
         
         callApiGetPastEvents()
             .then(res => {
                 var parsed = JSON.parse(res.express);
                 setPastEvents(parsed);
+                setIsLoadingPastEvents(false);
             })
     }
 
@@ -205,12 +256,13 @@ const Events = () => {
                     <Typography style={{fontSize:'22pt', fontWeight:'300'}}>Upcoming Events</Typography>
                         {upcomingEvents.length > 0 ? <>
                         {Object.values(upcomingEvents).map((event, index) => 
-                            <EventList event={event} index={index} currentUser={user} pastEvent={false}/>
-                        )}</> : 
+                            <EventList event={event} admin={admin} index={index} currentUser={user} pastEvent={false} onChange={getEvents}/>
+                        )}</> : <>
+                        {!isLoadingUpcomingEvents &&
                         <Grid style={{display:'flex', justifyContent:'center', padding:'50px'}}>
                             <Typography style={{color: '#C0C0C0', letterSpacing: '0.5px', fontSize: '14pt'}}>NO UPCOMING EVENTS</Typography>
                         </Grid>
-                        }
+                        }</>}
                     </Card>
                 </Grid>
                 <Grid style={{marginTop:'50px'}}>
@@ -219,12 +271,12 @@ const Events = () => {
                         {pastEvents.length > 0 ? 
                         <> 
                         {Object.values(pastEvents).map((event, index) => 
-                            <EventList event={event} index={index} currentUser={user} pastEvent={true}/>
+                            <EventList event={event} admin={admin} index={index} currentUser={user} pastEvent={true}/>
                         )}
-                        </> : 
+                        </> : <> {!isLoadingPastEvents &&
                         <Grid style={{display:'flex', justifyContent:'center', padding:'50px'}}>
                             <Typography style={{color:'#C0C0C0', letterSpacing: '0.5px', fontSize: '14pt'}}>NO PAST EVENTS</Typography>
-                        </Grid>
+                        </Grid>} </>
                         }
                     </Card>
                 </Grid>
@@ -285,11 +337,14 @@ const EventImage = ({image, skeletonWidth, skeletonHeight}) => {
     )
 }
 
-const EventList = ({event, index, currentUser, pastEvent}) => {
+const EventList = ({event, index, currentUser, pastEvent, onChange, admin}) => {
     const classes = useStyles();
     const [expanded, setExpanded] = React.useState(null);
     const [attendance, setAttendance] = React.useState([]);
     const [status, setStatus] = React.useState(null);
+    const [deleteEventModal, setDeleteEventModal] = React.useState(false);
+
+
 
     React.useEffect(() => {
         getAttendance();
@@ -423,6 +478,32 @@ const EventList = ({event, index, currentUser, pastEvent}) => {
         endDateTime = endDateTime[1] + ' '+ endDateTime[2] + ' '+  endDateTime[4] + ' ' + endDateTime[5]
     }
 
+    const handleDelete = () => {
+        callApiDeleteEvent()
+            .then(res => {
+                var parsed = JSON.parse(res.express);
+                onChange();
+            })
+    }
+
+    const callApiDeleteEvent = async () => {
+        const url = serverURL + '/api/deleteEvent';
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                //authorization: `Bearer ${this.state.token}`
+            },
+            body: JSON.stringify({
+                eventID: event.id,
+            })
+        });
+
+        const body = await response.json();
+        if (response.status !== 200) throw Error(body.message);
+        return body;
+    }
+
 
     return(
         <Card style={{ margin:'20px 0 30px', padding:'20px 10px 20px 20px'}}>
@@ -432,9 +513,14 @@ const EventList = ({event, index, currentUser, pastEvent}) => {
                 </Grid>
                 <Grid xs={7} style={{borderRight:'1px solid lightgray', display:'flex', flexDirection:'column', justifyContent:'space-between'}}>
                     <Grid>
-                        <Typography color='secondary' style={{fontFamily:"system-ui",letterSpacing:'1.1px', padding: '2px 30px 0px 30px', fontSize: '11pt', fontWeight: 400}}>
-                            {event.start_time_text}
-                        </Typography>
+                        <Grid style={{display:'flex', padding:'0 10px 0 30px', justifyContent:'space-between', alignItems:'center'}}>
+                            <Typography color='secondary' style={{fontFamily:"system-ui",letterSpacing:'1.1px', fontSize: '11pt', fontWeight: 400}}>
+                                {event.start_time_text}
+                            </Typography>
+                            {admin && <>
+                            <LongMenu deleteEvent={()=> setDeleteEventModal(true)}/>
+                            <DeleteDialog open={deleteEventModal} close={()=>{setDeleteEventModal(false)}} onSubmit={handleDelete} title={event.title} /> </>}
+                        </Grid>
                         <Typography style={{padding: '5px 30px', fontSize: '18pt', fontWeight: 600}}>{event.title}</Typography>
                         <Typography style={{padding: '5px 30px', fontSize: '10pt', fontWeight: 400}}>{event.body}</Typography>
                     </Grid>
@@ -603,3 +689,75 @@ const EventFormDialog = ({open, close, clubID, onChange}) => {
         </>
     )
 }
+
+const ITEM_HEIGHT = 48;
+
+const LongMenu = ({deleteEvent}) => {
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  return (
+    <div>
+      <IconButton
+        aria-label="more"
+        id="long-button"
+        aria-controls={open ? 'long-menu' : undefined}
+        aria-expanded={open ? 'true' : undefined}
+        aria-haspopup="true"
+        onClick={handleClick}
+      >
+        <MoreVertIcon />
+      </IconButton>
+      <Menu
+        id="long-menu"
+        MenuListProps={{
+          'aria-labelledby': 'long-button',
+        }}
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        PaperProps={{
+          style: {
+            maxHeight: ITEM_HEIGHT * 4.5,
+            width: '20ch',
+          },
+        }}
+      >
+        <MenuItem onClick={deleteEvent} >
+            <DeleteIcon onClick={deleteEvent} style={{marginRight:'5px'}}/> Delete Event
+        </MenuItem>
+      </Menu>
+    </div>
+  );
+}
+
+
+const DeleteDialog = ({open, close, onSubmit, title}) => {
+
+    if (!open) return null
+    return(
+        <Dialog open={open} close={close}>
+            <Grid container style={{display:'flex', flexDirection:'column', padding:'25px 25px 15px'}}>
+                <Grid item style={{display:'flex', justifyContent:'center'}}>
+                    <img src={caution} style={{height:'70px', marginLeft:'15px'}} />
+                    <Box>
+                        <Typography style={{margin:'10px 20px 5px 20px', fontWeight:'600', letterSpacing:'0.02em'}}>Delete Event</Typography>
+                        <Typography style={{margin:'0 20px 20px 20px'}}>Are you sure you want to delete the following event?</Typography>
+                        <Typography style={{margin:'0 20px 20px 20px'}}>Event title: <b>{title}</b></Typography>
+                    </Box> 
+                </Grid>
+                <Grid style={{display:'flex', flexDirection:'row', justifyContent:'center', padding:'10px 10px 15px 10px'}}>
+                    <Button fullWidth onClick={close} variant='outlined' style={{margin:'0 10px'}}>Cancel</Button>
+                    <Button fullWidth onClick={()=> {onSubmit(); close();}} variant='outlined' style={{margin:'0 10px', background:'#F01C39', color:'white'}}>Delete</Button>   
+                </Grid>
+            </Grid>
+        </Dialog>
+    )
+}
+
