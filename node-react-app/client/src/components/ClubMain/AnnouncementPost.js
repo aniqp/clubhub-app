@@ -204,12 +204,24 @@ export default function AnnouncementPost({admin, club_id, name, announcement, on
                                         <Typography variant="body2" color='primary'>Admin Visibility</Typography>
                                     </Box>
                             </>}
-                            <Typography style={{color:'grey', fontSize:'11pt', letterSpacing:'0.5px'}}>{announcement.time_posted_text}</Typography>
+                            <Typography style={{color:'grey', fontSize:'11pt', letterSpacing:'0.5px'}}>
+                                <div data-testid='timestamp-1'>
+                                {announcement.time_posted_text}
+                                </div>
+                            </Typography>
                         </Grid>
                     </Grid>
                     <Grid style={{padding:'0 20px 20px'}}>
-                        <Typography style={{color:'rgb(55,72,97)', fontSize:'14pt', marginTop:'10px', marginBottom:'5px', fontWeight:'600'}}>{announcement.title}</Typography>
-                        <Typography style={{fontSize:'11pt'}}>{announcement.body}</Typography>
+                        <Typography style={{color:'rgb(55,72,97)', fontSize:'14pt', marginTop:'10px', marginBottom:'5px', fontWeight:'600'}}>
+                            <div data-testid="title-1">
+                                {announcement.title}
+                            </div>
+                        </Typography>
+                        <Typography style={{fontSize:'11pt'}}>
+                            <div data-testid="body-1">
+                                {announcement.body}
+                            </div>
+                        </Typography>
                     </Grid>
                 </Grid>
                 <Grid xs={4}>
