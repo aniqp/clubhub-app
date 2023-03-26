@@ -178,7 +178,7 @@ const Members = ({ name, onChange }) => {
     }
 
     return ( <>
-        <ClubBoardHeader active={"4"}/>
+        <ClubBoardHeader active={"3"}/>
         <Grid container className={classes.root}>
             <Grid item xs={3}>
                 <Card className={classes.memberCount } >

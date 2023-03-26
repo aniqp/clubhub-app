@@ -7,6 +7,7 @@ const bodyParser = require("body-parser");
 var admin = require("firebase-admin");
 
 var serviceAccount = require("./serviceAccountKey.json");
+const { start } = require('repl');
 
 admin.initializeApp({
 	credential: admin.credential.cert(serviceAccount)
@@ -433,6 +434,146 @@ app.post('/api/leaveClub', (req,res) => {
 	});
 	connection.end();
 });
+
+app.post('/api/getPastEvents', (req,res) => {
+	let connection = mysql.createConnection(config);
+	let clubID = req.body.clubID;
+	let todaysDate = req.body.todaysDate;
+
+	let sql = `select * from events where club_id = ? and start_time < ?`
+	const data = [clubID, todaysDate];
+	connection.query(sql, data, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message);
+		}
+		let string = JSON.stringify(results);
+		res.send({ express: string })
+		//console.log(string)
+	});
+
+})
+
+app.post('/api/getUpcomingEvents', (req,res) => {
+	let connection = mysql.createConnection(config);
+	let clubID = req.body.clubID;
+	let todaysDate = req.body.todaysDate;
+
+	let sql = `select * from events where club_id = ? and start_time >= ? order by start_time asc`
+	const data = [clubID, todaysDate];
+	console.log(sql);
+	console.log(data);
+	connection.query(sql, data, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message);
+		}
+		let string = JSON.stringify(results);
+		res.send({ express: string })
+		//console.log(string)
+	});
+})
+
+app.post('/api/addEvent', (req,res) => {
+	let connection = mysql.createConnection(config);
+	let club_id = req.body.clubID;
+	let title = req.body.title;
+	let body = req.body.description;
+	let start_time = req.body.startDateTime;
+	let end_time = req.body.endDateTime;
+	let allDay = req.body.allDay;
+	let location_type = req.body.locationType;
+	let location = req.body.location;
+	let price = req.body.price;
+	let additionalDetails = req.body.details;
+	let placeholderImage = req.body.placeholderImg;
+	let start_time_text = req.body.startDateTimeText;
+	let end_time_text = req.body.endDateTimeText;
+	let time_posted = req.body.timestamp;
+
+	let sql = `insert into events (club_id, title, location, start_time, end_time, body, time_posted, price, allDay, placeholderPhoto, additionalDetails, location_type, start_time_text, end_time_text)
+	values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+	data = [club_id, title, location, start_time, end_time, body, time_posted, price, allDay, placeholderImage, additionalDetails ,location_type, start_time_text, end_time_text]
+	console.log(sql);
+	console.log(data);
+	connection.query(sql, data, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message);
+		}
+		let string = JSON.stringify(results);
+		res.send({ express: string })
+		//console.log(string)
+	});
+})
+
+app.post('/api/editEvent', (req,res) => {
+	let connection = mysql.createConnection(config);
+	
+
+})
+
+app.post('/api/deleteEvent', (req,res) => {
+	let connection = mysql.createConnection(config);
+	
+
+})
+
+app.post('/api/getAttendance', (req, res) => {
+	let connection = mysql.createConnection(config);
+	let eventID = req.body.eventID;
+
+	let sql = `select * from attendance where event_id = ?`
+	const data = [eventID];
+	console.log(sql);
+	console.log(data);
+	connection.query(sql, data, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message);
+		}
+		let string = JSON.stringify(results);
+		res.send({ express: string })
+		//console.log(string)
+	});
+})
+
+app.post('/api/setAttendance', (req, res) => {
+	let connection = mysql.createConnection(config);
+	let eventID = req.body.eventID;
+	let userID = req.body.userID;
+	let status = req.body.attendanceStatus;
+	let name = req.body.name;
+
+	let sql = `INSERT into attendance (event_id, uid, status, name) values (?,?,?,?)`
+	const data = [eventID, userID, status, name];
+	console.log(sql);
+	console.log(data);
+	connection.query(sql, data, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message);
+		}
+		let string = JSON.stringify(results);
+		res.send({ express: string })
+		//console.log(string)
+	});
+})
+
+app.post('/api/changeAttendance', (req, res) => {
+	let connection = mysql.createConnection(config);
+	let eventID = req.body.eventID;
+	let userID = req.body.userID;
+	let status = req.body.attendanceStatus;
+
+	let sql = `UPDATE attendance SET status = ? WHERE uid=? and event_id = ?`
+	const data = [status, userID, eventID];
+	console.log(sql);
+	console.log(data);
+	connection.query(sql, data, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message);
+		}
+		let string = JSON.stringify(results);
+		res.send({ express: string })
+		//console.log(string)
+	});
+})
 
 app.listen(port, () => console.log(`Listening on port ${port}`)); //for the dev version
 //app.listen(port, '129.97.25.211'); //for the deployed version, specify the IP address of the server
