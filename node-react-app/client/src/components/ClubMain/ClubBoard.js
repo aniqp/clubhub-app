@@ -1,9 +1,9 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { makeStyles, IconButton, Grid, Typography,InputAdornment, Card, Button, Menu, MenuItem, Collapse, CardContent, TextField } from "@material-ui/core";
 import { useParams } from 'react-router-dom';
 import ClubBoardHeader from './ClubBoardHeader';
+import Skeleton from '@material-ui/lab/Skeleton';
 import { serverURL } from '../../constants/config';
-// import Members from './Members';
 import AnnouncementPost from './AnnouncementPost';
 import AnnouncementForm from './AnnouncementForm';
 import Events from './Events';
@@ -12,15 +12,20 @@ import comment from '../../images/comment.png';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import img1 from '../../images/announcement/img1.png';
-import Avatar from '@material-ui/core/Avatar';
-import { deepOrange, deepPurple } from '@material-ui/core/colors'
 import { red } from '@material-ui/core/colors';
-
-
-
+import img1 from '../../images/announcements/img1.png'
+import img2 from '../../images/announcements/img2.png'
+import img3 from '../../images/announcements/img3.png'
+import img4 from '../../images/announcements/img4.png'
+import img5 from '../../images/announcements/img5.png'
+import img6 from '../../images/announcements/img6.png'
+import img7 from '../../images/announcements/img7.png'
+import img8 from '../../images/announcements/img8.png'
+import img9 from '../../images/announcements/img9.png'
+import img10 from '../../images/announcements/img10.png'
+import img11 from '../../images/announcements/img11.png'
+import img12 from '../../images/announcements/img12.png'
 import { useUser } from '../Firebase';
-import Announcements from './Announcements';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -40,9 +45,13 @@ const useStyles = makeStyles((theme) => ({
     },
     search:{
         height:'20px'
-    },avatar: {
+    },
+    avatar: {
         backgroundColor: red[500],
-      },
+    },
+    boxshadow:{
+        boxShadow: '0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12)'
+    }
 }));
 
 const ClubBoard = () => {
@@ -208,55 +217,19 @@ const ClubBoard = () => {
         if (response.status !== 200) throw Error(body.message);
         return body;
     }
-    
-    const testData = [
-        { title:'What makes flyers unrivaled',
-        body:'Rectangles are commonly used when drawing and are arguably one of the most used shapes in artwork and design. The Rectangle Tool makes it extremely quick and easy to draw rectangles and squares.Rectangles are commonly used when drawing and are arguably one of the most used shapes in artwork and design.',
-        date:'March 28 2023',
-        time:'8:38 PM',
-        id:1,
-        },
-        {title:"WINTER 2023 VIDEO AUDITIONS EXTENSION",
-        body:"The deadline for auditions for the AcaBella’s extended by 24 hours! Now is your chance to give your submission. We are getting ready for competing in the ICCA’s (International Championship of Collegiate A Cappella) at the end of January! We are looking for amazing human beings like you who are committed and excited to live out your Pitch Perfect dreams.",
-        date:"March 30 2023",
-        time:'2:40 PM',
-        id:2,
-        }
-    ]
-
-    const comments = [
-        {name: "Larissa Troper",
-        comment:'Good to know!',
-        date:'March 29 2023'
-        }
-    ]
-
-    // const temp1 = require('../../images/announcement/img1.png');
-    // const temp2 = require('../../images/announcement/img2.png');
-    const [expanded, setExpanded] = React.useState(null);
-
-
-    const handleExpandClick = (clickedIndex) => {
-        if (expanded === clickedIndex){
-            setExpanded(null)
-        } else {
-            setExpanded(clickedIndex)
-        }
-    };
 
     return(<>
         <ClubBoardHeader active={"1"}/>
         <Grid className={classes.root} sx={{height:'100%'}}>
             <Grid style={{display:'flex'}}>
-                <Grid xs={8} style={{padding:'0 20px'}}>
-                {Object.values(testData).map((announcement, index) => <>
-                <Card style={{maxHeight:'400px', margin:'25px 0 0', borderRadius:'0'}} >
-                    <Grid style={{display:'flex'}}>
-                        <Grid xs={8} style={{display:'flex', flexDirection:'column', justifyContent:'space-between'}}>
-                            <Grid style={{padding:'10px 20px 0', display:'flex', justifyContent:'end'}}>
+                <Grid xs={8} style={{padding:'0 20px'}} >
+                {Object.values(clubAnnouncements).map((announcement, index) => <>
+                <Card style={{maxHeight:'400px', boxShadow:'none', margin:'25px 0 0', borderRadius:'0', background:'none',}} >
+                    <Grid style={{display:'flex'}} className={classes.boxShadow} >
+                        <Grid xs={8} style={{boxShadow: 'rgba(99, 99, 99, 0.2) 2px 8px 8px', background:'#fff', display:'flex', flexDirection:'column', justifyContent:'space-between'}}>
+                            <Grid style={{padding:'20px 20px', display:'flex', justifyContent:'end'}}>
                                 <Grid style={{display:'flex', flexDirection:'column', alignItems:'end'}}>
-                                    <Typography style={{color:'grey', fontSize:'11pt', letterSpacing:'0.5px'}}>{announcement.date}</Typography>
-                                    <Typography style={{color:'grey', fontSize:'11pt', letterSpacing:'0.5px'}}>{announcement.time}</Typography>
+                                    <Typography style={{color:'grey', fontSize:'11pt', letterSpacing:'0.5px'}}>{announcement.time_posted_text}</Typography>
                                 </Grid>
                             </Grid>
                             <Grid style={{padding:'0 20px 20px'}}>
@@ -268,18 +241,9 @@ const ClubBoard = () => {
                                 <LongMenu />
                             </Grid>}
                         </Grid>
-                    {announcement.id === 1 &&
-                        <Grid xs={4} style={{backgroundImage: `url(${img1})`,   
-                        backgroundSize:'cover',
-                        backgroundRepeat: 'no-repeat',
-                        backgroundPosition:'center'
-                        }}></Grid>  }                           
-                    {announcement.id === 2 &&
-                        <Grid xs={4} style={{backgroundImage: `url(${img1})`,   
-                        backgroundSize:'cover',
-                        backgroundRepeat: 'no-repeat',
-                        backgroundPosition:'center'
-                        }}></Grid> }
+                        <Grid xs={4}>
+                            <AnnouncementImage image={announcement.placeholderPhoto} skeletonWidth={200} skeletonHeight={200}/>
+                        </Grid>             
                     </Grid>
                 </Card>
                 </>)}
@@ -296,7 +260,40 @@ const ClubBoard = () => {
 export default ClubBoard;
 
 
+const AnnouncementImage = ({image, skeletonWidth, skeletonHeight}) => {
+    const placeholders = {
+        1:img1,
+        2:img2,
+        3:img3,
+        4:img4,
+        5:img5,
+        6:img6,
+        7:img7,
+        8:img8,
+        9:img9,
+        10:img10,
+        11:img11,
+        12:img12,
+    }
 
+    const classes = useStyles();
+    const [loading, setLoading] = useState(true);
+    return(
+        <div style={{display: "flex", justifyContent: "center", alignItems: "center", }} >
+            <img 
+                src={placeholders[image]} 
+                className={classes.img}
+                style={{display: loading?"none":"block", width:"100%"}} 
+                onLoad={(e)=>{setLoading(false)}} />
+            <Skeleton 
+                variant="rect" 
+                animation="pulse" 
+                width={skeletonWidth} 
+                height={skeletonHeight} 
+                style={{display: !loading&&"none", borderRadius:'12px'}} />
+        </div> 
+    )
+}
 
 
 const ITEM_HEIGHT = 48;

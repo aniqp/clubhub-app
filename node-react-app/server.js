@@ -136,7 +136,7 @@ app.post('/api/getClubAnnouncements', (req,res) => {
 	let connection = mysql.createConnection(config);
 	let clubID = req.body.clubID;
 
-	const sql = `SELECT a.title, a.body, a.time_posted, a.id, a.visibility 
+	const sql = `SELECT a.title, a.body, a.time_posted, a.id, a.visibility, a.placeholderPhoto, a.time_posted_text
 	from announcements as a, clubs as c 
 	where c.id = a.club_id and c.id = ?
 	order by time_posted desc;`;
@@ -161,28 +161,29 @@ app.post('/api/getClubAnnouncements', (req,res) => {
 
 app.post('/api/postAnnouncement', (req, res) => {
     let connection = mysql.createConnection(config);
-    let data = req.body;
+    let announcement = req.body;
 
-    let sql = `INSERT into announcements (club_id, title, body, time_posted, visibility)
-	values(?,?,?,?,?)`
-    let announcement = [data.clubID, data.title, data.body, data.time_posted, data.visibility]
+    let sql = `INSERT into announcements (club_id, title, body, time_posted, visibility, placeholderPhoto, time_posted_text)
+	values(?,?,?,?,?,?,?)`
+    let data = [
+		announcement.clubID, 
+		announcement.title, 
+		announcement.body, 
+		announcement.time_posted, 
+		announcement.visibility, 
+		announcement.placeholderImage,
+		announcement.time_posted_text];
 
-    connection.query(sql, announcement, (error, results, fields) => {
-        if (error) {
-            connection.query(`ROLLBACK`, dataEmpty, (error, results, fields) => {
-                let string = JSON.stringify('Error')
-                res.send({ express: string });
-                connection.end();
-            });
-        } else {
-            connection.query(`COMMIT`, data, (error, results, fields) => {
-                let string = JSON.stringify('Success')
-                res.send({ express: string });
-                connection.end();
-            })
-        };
-    })
-
+	console.log(sql)
+	console.log(data)
+    connection.query(sql, data, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message);
+		}
+		let string = JSON.stringify(results);
+		res.send({ express: string })
+		//console.log(string)
+	});
 })
 
 app.post('/api/deleteAnnouncement', (req, res) => {
@@ -400,7 +401,7 @@ app.post('/api/getAnnouncements', (req,res) => {
 	// let clubID = req.body.clubID;
 	let userID = req.body.userID;
 
-	let sql = `SELECT clubs.name, a.title, a.body, a.time_posted, a.id, a.visibility, memberships.role, clubs.id club_id from announcements a
+	let sql = `SELECT clubs.name, a.title, a.body, a.time_posted, a.id, a.visibility, memberships.role, clubs.id club_id, a.placeholderPhoto from announcements a
 	INNER JOIN memberships on memberships.club_id = a.club_id
 	INNER JOIN clubs on clubs.id = memberships.club_id
 	WHERE memberships.uid = ?

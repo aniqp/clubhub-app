@@ -221,7 +221,7 @@ const MODAL_STYLES = {
     transform:'translate(-50%, -50%)',
     backgroundColor:'#fff',
     padding:'20px',
-    zIndex:1000,
+    zIndex:2000,
     width:'40vw',
 }
 
@@ -232,7 +232,7 @@ const OVERLAY_STYLES = {
     right: 0,
     bottom: 0,
     backgroundColor:'rgba(0,0,0,.7)',
-    zIndex:1000
+    zIndex:2000
 }
 
 const DeleteModal = ({title, body, open, onClose, onSubmit}) => {
