@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import { Button, Card, Typography } from "@material-ui/core";
-import Grid from "@material-ui/core/Grid";
+import { makeStyles, Grid, Button, Card, Typography } from "@material-ui/core";
 import history from '../Navigation/history';
 import { getAuth } from 'firebase/auth';
-import { useUser } from '../Firebase/context';
 import { useSignInWithGoogle } from 'react-firebase-hooks/auth';
-import { useAuthHeader } from '../Firebase/context';
+import { useUser, useAuthHeader } from '../Firebase/context';
 import { serverURL } from '../../constants/config'
 import { toast } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
+
 
 const useStyles = makeStyles((theme) => ({
     li: {
@@ -122,44 +120,36 @@ const ClubCard = ({ club, isMember, onJoin }) => {
         return body;
     }
 
-    return ( <
-        li key = { club.id }
-        className = { classes.li } >
-        <
-        Card variant = "outlined"
-        className = { classes.card } >
-        <
-        Grid item xs = { 8 } >
-        <
-        Typography variant = 'h6'
-        style = {
-            { padding: '0 0 10px 0' } } > { club.name } < /Typography> <
-        Typography style = {
-            { fontSize: '0.8rem' } } > { truncate(club.description) } < /Typography> <
-        /Grid> <
-        Grid item xs = { 3 }
-        className = { classes.exploreBtns } >
-        <
-        Button className = { classes.btn }
-        onClick = {
-            () => history.push(`/clubs/${club.id}`) }
-        color = 'primary'
-        variant = 'outlined' > Club Details < /Button> {
-            isMember.includes(club.id) ? ( <
-                Button disabled className = { classes.btn }
-                color = 'secondary'
-                variant = 'outlined' > Join Club < /Button>
-            ) : ( <
-                Button onClick = {
-                    () => { handleJoinClub(club.id) } }
-                className = { classes.btn }
-                color = 'secondary'
-                variant = 'outlined' > Join Club < /Button>
-            )
-        } <
-        /Grid> <
-        /Card> <
-        /li>
+    return ( 
+        <li key={club.id} className={classes.li} >
+            <Card variant="outlined" className={classes.card} >
+                <Grid item xs={ 8 } >
+                    <Typography variant = 'h6' style={{padding: '0 0 10px 0'}}>{club.name}</Typography> 
+                    <Typography style={{fontSize:'0.8rem'}}>{truncate(club.description)}</Typography> 
+                </Grid> 
+                <Grid item xs = { 3 } className = { classes.exploreBtns } >
+                        <Button 
+                            className={classes.btn}
+                            onClick={() => history.push(`/clubs/${club.id}`)}
+                            color = 'primary'
+                            variant = 'outlined'> 
+                            Club Details 
+                        </Button>
+                    {isMember.includes(club.id) ? (
+                        <Button 
+                        disabled 
+                        className={classes.btn}
+                        color='secondary'
+                        variant='outlined'>Joined</Button>
+                    ) : ( 
+                    <Button 
+                        onClick={() => {handleJoinClub(club.id)}}
+                        className={classes.btn}
+                        color='secondary'
+                        variant='outlined'>Join Club</Button>)} 
+                </Grid> 
+            </Card> 
+        </li>
     )
 
 }
