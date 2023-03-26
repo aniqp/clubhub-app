@@ -11,6 +11,7 @@ import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
 import "react-toastify/dist/ReactToastify.css";
 import GroupsRoundedIcon from '@material-ui/icons/Group';
+import EventForm from './EventForm';
 
 const useStyles = makeStyles({
     root: {
@@ -44,7 +45,7 @@ const useStyles = makeStyles({
         fontSize:'0.9rem',
     },
     card:{
-        margin:'20px 50px'
+        margin:'20px 10px 30px 10px'
     },
     dashboardCard: {
         margin:'15px 0px',
@@ -365,3 +366,12 @@ const EditModal = ({title, body, open, onClose, onSubmit}) => {
     )
 
 }
+
+// const EventFormDialog = () => {
+
+//     return(
+//         <>
+//             <EventForm />
+//         </>
+//     )
+// }

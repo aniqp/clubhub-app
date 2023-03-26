@@ -5,6 +5,7 @@ import profile from '../../images/profile-icon.png';
 import close from '../../images/close-icon.png';
 import publicIcon from '../../images/public-icon.png';
 import privateIcon from '../../images/private-icon.png';
+import event2 from '../../images/announcements.png';
 import { toast } from 'react-toastify'; 
 import "react-toastify/dist/ReactToastify.css";
 
@@ -45,7 +46,22 @@ const useStyles = makeStyles({
     img:{
         height:'45px',
         width:'45px',
-    }, 
+    },
+    sidebarImg:{
+        height:'180px',
+        borderRadius:'12px',
+    },
+    sidebarBtn:{
+        textTransform:'none',
+        background:'#3f51b5',
+        color:'#fff',
+        display:'flex',
+        borderRadius:'18px',
+        padding:'8px 15px',
+        "&:hover":{
+            background:'#5362b8'
+        }
+    },
     radioFont :{
         marginLeft:'10px',
         fontSize:'14px',
@@ -101,7 +117,7 @@ const AnnouncementForm = (props) => {
         let date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate()+' '+leadingZero(today.getHours())+':'+leadingZero(today.getMinutes())+':'+today.getSeconds();
         return date;
     }
-
+    
     const handleSubmit = (data) => {
         callApiPostAnnouncement(data)
         .then(res => {
@@ -132,16 +148,16 @@ const AnnouncementForm = (props) => {
     };
 
     return(
-        <Card className={classes.card} sx={{ maxWidth: 500 }}>
-            <Grid xs={1}>
-                <img className={classes.profile} src={profile} />
-            </Grid>
-            <Grid xs={11}>
-                <Button className={classes.btn} onClick={()=> setPostModalOpen(true)} open={postModalOpen} onClose={()=> setPostModalOpen(false)}>Share an Announcement...</Button>
+        <Grid xs={3} style={{minWidth:'290px', textAlign:'center'}}>
+            <Card style={{display:'flex',flexDirection:'column' ,alignItems:'center', padding:'18px 0'}}>
+                <Typography style={{padding:'5px 20px 15px', fontSize:'14pt', fontWeight:'200'}}>Do you have news to share?</Typography>
+                <Button style={{marginBottom:'10px'}} className={classes.sidebarBtn} onClick={() => setPostModalOpen(true)}>
+                    <Typography>Post Announcement</Typography>
+                </Button>
                 <PostModal classes={classes} open={postModalOpen} onClose={() => setPostModalOpen(false)} onSubmit={handleSubmit} />
-            </Grid>
-
-        </Card>
+                <img src={event2} className={classes.sidebarImg}/>
+            </Card>
+        </Grid>
     )
 }
 
@@ -152,7 +168,7 @@ const MODAL_STYLES = {
     transform:'translate(-50%, -50%)',
     backgroundColor:'#fff',
     padding:'20px',
-    zIndex:1000,
+    zIndex:2000,
     width:'35vw',
     borderRadius:'5px',
 }
@@ -164,7 +180,7 @@ const OVERLAY_STYLES = {
     right: 0,
     bottom: 0,
     backgroundColor:'rgba(0,0,0,.4)',
-    zIndex:1000
+    zIndex:2000
 }
 
 const PostModal = ({ classes, open, onClose, onSubmit }) => {

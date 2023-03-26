@@ -1,18 +1,31 @@
-import React, {Component} from 'react';
-import { makeStyles, Grid, Typography, TextField, InputAdornment } from "@material-ui/core";
+import React from 'react';
+import { makeStyles, IconButton, Grid, Typography,InputAdornment, Card, Button, Menu, MenuItem, Collapse, CardContent, TextField } from "@material-ui/core";
 import { useParams } from 'react-router-dom';
 import ClubBoardHeader from './ClubBoardHeader';
 import { serverURL } from '../../constants/config';
 // import Members from './Members';
 import AnnouncementPost from './AnnouncementPost';
 import AnnouncementForm from './AnnouncementForm';
+import Events from './Events';
 import search from '../../images/search-icon.png';
+import comment from '../../images/comment.png';
+import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import img1 from '../../images/announcement/img1.png';
+import Avatar from '@material-ui/core/Avatar';
+import { deepOrange, deepPurple } from '@material-ui/core/colors'
+import { red } from '@material-ui/core/colors';
+
+
+
 import { useUser } from '../Firebase';
+import Announcements from './Announcements';
 
 
 const useStyles = makeStyles((theme) => ({
     root:{
-        background:'#e7ecef',
+        background:'#f5f5f5',
         minHeight:'100vh'
     },
     textField: {
@@ -27,7 +40,9 @@ const useStyles = makeStyles((theme) => ({
     },
     search:{
         height:'20px'
-    }
+    },avatar: {
+        backgroundColor: red[500],
+      },
 }));
 
 const ClubBoard = () => {
@@ -194,52 +209,85 @@ const ClubBoard = () => {
         return body;
     }
     
+    const testData = [
+        { title:'What makes flyers unrivaled',
+        body:'Rectangles are commonly used when drawing and are arguably one of the most used shapes in artwork and design. The Rectangle Tool makes it extremely quick and easy to draw rectangles and squares.Rectangles are commonly used when drawing and are arguably one of the most used shapes in artwork and design.',
+        date:'March 28 2023',
+        time:'8:38 PM',
+        id:1,
+        },
+        {title:"WINTER 2023 VIDEO AUDITIONS EXTENSION",
+        body:"The deadline for auditions for the AcaBella’s extended by 24 hours! Now is your chance to give your submission. We are getting ready for competing in the ICCA’s (International Championship of Collegiate A Cappella) at the end of January! We are looking for amazing human beings like you who are committed and excited to live out your Pitch Perfect dreams.",
+        date:"March 30 2023",
+        time:'2:40 PM',
+        id:2,
+        }
+    ]
+
+    const comments = [
+        {name: "Larissa Troper",
+        comment:'Good to know!',
+        date:'March 29 2023'
+        }
+    ]
+
+    // const temp1 = require('../../images/announcement/img1.png');
+    // const temp2 = require('../../images/announcement/img2.png');
+    const [expanded, setExpanded] = React.useState(null);
+
+
+    const handleExpandClick = (clickedIndex) => {
+        if (expanded === clickedIndex){
+            setExpanded(null)
+        } else {
+            setExpanded(clickedIndex)
+        }
+    };
 
     return(<>
         <ClubBoardHeader active={"1"}/>
         <Grid className={classes.root} sx={{height:'100%'}}>
-                <Grid container>
-                    <Grid xs={8}>
-                        {admin && <AnnouncementForm clubID={clubID} onSubmit={getClubAnnouncements} />}
-                        {Object.values(filteredAnnouncements).map((announcement, index) => (
-                            <li key={announcement.id} style={{listStyle:'none'}}>
-                                <AnnouncementPost 
-                                    id={announcement.id} 
-                                    name={clubTitle} 
-                                    title={announcement.title} 
-                                    body={announcement.body} 
-                                    timestamp={announcement.time_posted}
-                                    onSubmit={getClubAnnouncements}
-                                    adminStatus={admin}
-                                    visibility={announcement.visibility}
-                                    onDashboard = {false}
-                                    />
-                            </li>
-                        ))}
-                    </Grid>
-                    {clubAnnouncements.length > 0 &&
-                    <Grid xs={4} style={{padding:'25px 0 0 0'}}>
-                        <TextField 
-                            className={classes.textField} 
-                            id="outlined-basic" 
-                            label="Search for Announcement" 
-                            variant="filled"
-                            color="success"
-                            value={searchTerm}
-                            onChange={handleSearchTerm} 
-                            InputProps={{
-                                startAdornment: (
-                                <InputAdornment position="start">
-                                    <img className={classes.search} src={search} />
-                                </InputAdornment>),
-                                className: classes.input}} />
-                    </Grid>}
-                    {clubAnnouncements.length == 0 && 
-                        <Grid container style={{display:'flex', justifyContent:'center', padding:'30px 0'}}>
-                            <Typography variant={'h6'}><b>{noAnnouncementMsg}</b></Typography>
+            <Grid style={{display:'flex'}}>
+                <Grid xs={8} style={{padding:'0 20px'}}>
+                {Object.values(testData).map((announcement, index) => <>
+                <Card style={{maxHeight:'400px', margin:'25px 0 0', borderRadius:'0'}} >
+                    <Grid style={{display:'flex'}}>
+                        <Grid xs={8} style={{display:'flex', flexDirection:'column', justifyContent:'space-between'}}>
+                            <Grid style={{padding:'10px 20px 0', display:'flex', justifyContent:'end'}}>
+                                <Grid style={{display:'flex', flexDirection:'column', alignItems:'end'}}>
+                                    <Typography style={{color:'grey', fontSize:'11pt', letterSpacing:'0.5px'}}>{announcement.date}</Typography>
+                                    <Typography style={{color:'grey', fontSize:'11pt', letterSpacing:'0.5px'}}>{announcement.time}</Typography>
+                                </Grid>
+                            </Grid>
+                            <Grid style={{padding:'0 20px 20px'}}>
+                                <Typography style={{color:'rgb(55,72,97)', fontSize:'14pt',margin:'-20px 0 10px 0', fontWeight:'600'}}>{announcement.title}</Typography>
+                                <Typography style={{fontSize:'11pt'}}>{announcement.body}</Typography>
+                            </Grid>
+                            {admin &&
+                            <Grid style={{background:'rgb(237,240,247)', display:'flex', justifyContent:'end', }}>
+                                <LongMenu />
+                            </Grid>}
                         </Grid>
-                    }
-                </Grid>
+                    {announcement.id === 1 &&
+                        <Grid xs={4} style={{backgroundImage: `url(${img1})`,   
+                        backgroundSize:'cover',
+                        backgroundRepeat: 'no-repeat',
+                        backgroundPosition:'center'
+                        }}></Grid>  }                           
+                    {announcement.id === 2 &&
+                        <Grid xs={4} style={{backgroundImage: `url(${img1})`,   
+                        backgroundSize:'cover',
+                        backgroundRepeat: 'no-repeat',
+                        backgroundPosition:'center'
+                        }}></Grid> }
+                    </Grid>
+                </Card>
+                </>)}
+            </Grid>
+            <Grid xs={4} style={{display:'flex', justifyContent:'center', marginTop:'25px'}}>
+                    {admin && <AnnouncementForm clubID={clubID} onSubmit={getClubAnnouncements} />}
+            </Grid>
+        </Grid>
         </Grid>
     </>)
 
@@ -247,10 +295,57 @@ const ClubBoard = () => {
 
 export default ClubBoard;
 
-// {toggle == '2' && <>Temp</>}
-//             {toggle == '3' && <>Temp</>}
-//             {toggle === '4' && 
-//                 <Typography>
-//                     <Members name={clubTitle} members={members} isAdmin={admin} onChange={getClubMembers} />
-//                 </Typography>}
-//             {toggle == '5' && <>Temp</>}
+
+
+
+
+const ITEM_HEIGHT = 48;
+
+const LongMenu = () => {
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  return (
+    <div>
+      <IconButton
+        aria-label="more"
+        id="long-button"
+        aria-controls={open ? 'long-menu' : undefined}
+        aria-expanded={open ? 'true' : undefined}
+        aria-haspopup="true"
+        onClick={handleClick}
+      >
+        <MoreVertIcon />
+      </IconButton>
+      <Menu
+        id="long-menu"
+        MenuListProps={{
+          'aria-labelledby': 'long-button',
+        }}
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        PaperProps={{
+          style: {
+            maxHeight: ITEM_HEIGHT * 4.5,
+            width: '20ch',
+          },
+        }}
+      >
+          <MenuItem onClick={handleClose}>
+            <EditIcon style={{marginRight:'5px'}} /> Edit Post
+        </MenuItem>
+        <MenuItem  onClick={handleClose}>
+            <DeleteIcon style={{marginRight:'5px'}}/> Delete Post
+            
+        </MenuItem>
+      </Menu>
+    </div>
+  );
+}

@@ -12,8 +12,6 @@ import { Switch, Rote, Link } from 'react-router-dom';
 
 
 
-
-
 const useStyles = makeStyles((theme) => ({
     root: {
         display:'flex',
@@ -33,7 +31,10 @@ const useStyles = makeStyles((theme) => ({
     header:{
         borderBottom:'rgba(121, 121, 121, 0.07) solid 1px',
         background:'#fff',
-        minHeight:'144px',
+        // height:'300px'
+    },
+    headerItems:{
+        // height:'300px',
     },
     clubTitle:{
         fontWeight:'600',
@@ -137,17 +138,14 @@ const ClubBoardHeader = ({active}) => {
                 <ToggleButton value="1" onClick={()=> history.push(`/clubboard/${clubID}/`)}>
                     Announcements
                 </ToggleButton>
-                <ToggleButton value="2">
+                <ToggleButton value="2" onClick={()=> history.push(`/clubboard/${clubID}/events`)}>
                     Events
                 </ToggleButton>
-                <ToggleButton value="3">
-                    Polls
+                <ToggleButton value="3" onClick={()=> history.push(`/clubboard/${clubID}/members`)}>
+                Members
                 </ToggleButton>
-                <ToggleButton value="4" onClick={()=> history.push(`/clubboard/${clubID}/members`)}>
-                    Members
-                </ToggleButton>
-                <ToggleButton value="5">
-                    Photos
+                <ToggleButton value="4">
+                Photos
                 </ToggleButton>
             </StyledToggleButtonGroup>
         </Grid>
