@@ -1,13 +1,7 @@
 import React, {useState} from 'react';
-import { makeStyles, Radio, Button, RadioGroup, FormControlLabel, Switch, MenuItem, Select, Grid, TextField, Typography, InputLabel, Box } from '@material-ui/core';
+import { makeStyles, Dialog,  Radio, IconButton, Button, RadioGroup, FormControlLabel, Switch, MenuItem, Select, Grid, TextField, Typography, InputLabel } from '@material-ui/core';
 import checkmark from '../../images/checkmark.png'
 import dayjs from 'dayjs';
-import customParseFormat from "dayjs/plugin/customParseFormat";
-// import img1 from '../../images/announcements/papertemp1.jpg'
-// import img2 from '../../images/announcements/papertemp2.jpg'
-// import img3 from '../../images/announcements/papertemp3.jpg'
-// import img4 from '../../images/announcements/papertemp4.jpg'
-// import img5 from '../../images/announcements/papertemp5.jpg'
 import img1 from '../../images/events/celebration.png'
 import img2 from '../../images/events/meeting.png'
 import img3 from '../../images/events/celebration2.png'
@@ -18,6 +12,8 @@ import img7 from '../../images/events/conference.png'
 import img8 from '../../images/events/celebration3.png'
 import img9 from '../../images/events/concert.png'
 import img10 from '../../images/events/meeting3.jpg'
+import CloseIcon from '@material-ui/icons/Close';
+import { serverURL } from '../../constants/config';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -41,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
     textField: {
         marginLeft: theme.spacing(1),
         marginRight: theme.spacing(1),
-        width: 200,
+        width: '180px',
     },
     label:{
         color:'grey',
@@ -50,25 +46,42 @@ const useStyles = makeStyles((theme) => ({
         letterSpacing:'1px'
     },
     OutlinedTextField: {
-        // ... your other styles
         "& .MuiOutlinedInput-input": {
-          padding: '10px 0',
-          width:'150px'
+          padding: '10px',
+          width:'180px'
         },
         "& .MuiInputBase-root":{
             justifyContent:'center',
             display:'flex'
         }
+    },OutlinedTextFieldLocation:{
+        "& .MuiOutlinedInput-input": {
+            padding: '10px',
+            width:'120px'
+          },
+          "& .MuiInputBase-root":{
+              justifyContent:'center',
+              display:'flex'
+          }
     },
     dropdown:{
         "& .MuiSelect-root":{
             paddingLeft:'10px',
         }
+    },
+    allDayLabel:{
+        "& .MuiTypography-body1":{
+            fontSize:'11.5pt'
+        }
+    },
+    errorMsg:{
+        fontSize:'10pt',
+        color:'red'
     }
     
   }));
 
-const EventForm = () => {
+const EventForm = ({close, clubID, onChange}) => {
     const classes = useStyles();
     const [characterCountDisplay, setCharacterCountDisplay] = React.useState(310);
     const [title, setTitle] = React.useState('');
@@ -76,52 +89,70 @@ const EventForm = () => {
     const [startDate, setStartDate] = React.useState(dayjs().format("YYYY-MM-DD"));
     const [startTime, setStartTime] = React.useState('');
     const [endDate, setEndDate] = React.useState(dayjs().format("YYYY-MM-DD"));
-    const [endTime, setEndTime] = React.useState('')
-    const [locationType, setLocationType] = React.useState('')
+    const [endTime, setEndTime] = React.useState('');
     const [allDay, setAllDay] = React.useState(false);
+    const [locationType, setLocationType] = React.useState('');
+    const [location, setLocation] = React.useState('');
+    const [price, setPrice] = React.useState(null);
+    const [details, setDetails] = React.useState('');
+    const [placeholderImage, setPlaceholderImage] = React.useState('');
     const [timeDisabled, setTimeDisabled] = React.useState(false);
 
-    dayjs.extend(customParseFormat);
-    const date1 = dayjs(startDate, "YYYY-MM-DD");
-    const date2 = dayjs(endDate, "YYYY-MM-DD");
-    const time1 = dayjs(startTime, "HH:mm");
-    const time2 = dayjs(startTime, "HH:mm");
-    console.log(time1);
+    // ERROR MESSAGES STATES
+    const [titleError, setTitleError] = React.useState(false);
+    const [descriptionError, setDescriptionError] = React.useState(false);
+    const [startDateError, setStartDateError] = React.useState(false);
+    const [startTimeError, setStartTimeError] = React.useState(false);
+    const [endTimeError, setEndTimeError] = React.useState(false);
+    const [locationTypeError, setLocationTypeError] = React.useState(false);
+    const [placeholderImageError, setPlaceholderImageError] = React.useState(false);
 
+    // Title
     const handleTitle = (e) => {
+        setTitleError(false);
         setTitle(e.target.value);
     }
 
+    // Short Description
     const handleDescription = (e) => {
         setDescription(e.target.value);
+        setDescriptionError(false);
         setCharacterCountDisplay(310 - (e.target.value).length)
     }
- 
+
+    // Start Date
     const handleStartDate = (e) => {
+        setStartDateError(false);
         setStartDate(e.target.value);
-        let newDate1 = dayjs(e.target.value,"YYYY-MM-DD")
-        if (newDate1.$d > date2.$d){
+        if (endDate < e.target.value){
             setEndDate(e.target.value);
         }
     }
 
+    // Start Time
     const handleStartTime = (e) => {
+        setStartTimeError(false);
         setStartTime(e.target.value);
     }
 
+    // End Date
     const handleEndDate = (e) => {
         setEndDate(e.target.value);
-        let newDate2 = dayjs(e.target.value,"YYYY-MM-DD")
-        if (newDate2.$d < date1.$d){
+        if (e.target.value < startDate){
             setStartDate(e.target.value);
         }
     }
 
+    // End Time
     const handleEndTime = (e) => {
+        setEndTimeError(false)
         setEndTime(e.target.value);
     }
 
+    // All Day Boolean
     const handleAllDaySwitch = (e) => {
+        setStartTimeError(false);
+        setEndTimeError(false);
         setAllDay(e.target.checked);
         if (e.target.checked){
             setTimeDisabled(true);
@@ -132,71 +163,186 @@ const EventForm = () => {
         }
     }
 
+    // Location Type
     const handleLocationType = (e) => {
+        setLocationTypeError(false);
         setLocationType(e.target.value);
-        console.log(e.target.value);
+        setLocation('');
     }
 
-    // CONVERT 24HR to 12HR TIMESTAMP
-    function convertTime(str) {
-        let result = '';
-        let hour1 = Number(str[0] - '0');
-        let hour2 = Number(str[1] - '0');
-        let hh;
-        if (hour2) {
-            hh = hour1 * 10 + hour2;
-        } else {
-            hh = 0
+    // Location
+    const handleLocation = (e) => {
+        setLocation(e.target.value);
+    }
+
+    // Price
+    const handlePrice = (e) => {
+        setPrice(e.target.value);
+    }
+
+    // Additional Details
+    const handleDetails = (e) => {
+        setDetails(e.target.value);
+    }
+
+    // Placeholder Image
+    const handleRatioBtn = (e) => {
+        setPlaceholderImageError(false);
+        setPlaceholderImage(e.target.value);
+    }
+
+    const handleSubmit = () => {
+        let caughtError = false;
+
+        if (!title){
+            caughtError = true;
+            setTitleError(true);
         }
-        let meridien;
 
-        if (hh < 12) {
-            meridien = 'AM';
-        } else {
-            meridien = 'PM';
+        if (!description) {
+            caughtError = true;
+            setDescriptionError(true);
         }
-        hh %= 12;
 
-        if (hh == 0) {
-            result += '12';
+        if (!startDate) {
+            caughtError = true;
+            setStartDateError(true);
+        }
 
-            for (let i = 2; i < 5; i++){
-                result+=str[i]
+        if (!allDay){
+            if (!startTime){
+                caughtError = true;
+                setStartTimeError(true);
             }
-        } else {
-            result += hh;
-            for (let i = 2; i < 5; i++){
-                result+=str[i]
-            } 
         }
-        result += ' ' + meridien;
-        return result;
+
+        if (endTime) {
+            if (endTime < startTime){
+                caughtError = true;
+                setEndTimeError(true);
+            }     
+        }
+
+        if (!locationType) {
+            caughtError = true;
+            setLocationTypeError(true);
+        }
+
+        if (!placeholderImage) {
+            caughtError = true;
+            setPlaceholderImageError(true);
+        }
+
+        if (!caughtError){
+            let startDateTimeText = ''
+            let endDateTime = null
+            let endDateTimeText = null
+            if (allDay){
+                startDateTimeText = datetimeTextFormat(startDate, '00:00');
+
+                if (endDate){
+                    endDateTimeText = datetimeTextFormat(endDate, '00:00');
+                }
+            } else {
+                startDateTimeText = datetimeTextFormat(startDate, startTime);
+                
+                if(endDate !== startDate){
+                    endDateTime = endDate
+                }
+                if(endTime){
+                    endDateTime += ' ' + endTime;
+                    endDateTimeText = datetimeTextFormat(endDate, endTime);
+                }
+
+            }
+
+            callApiAddEvent(startDateTimeText, endDateTime, endDateTimeText)
+            .then(res => {
+                var parsed = JSON.parse(res.express);
+                onChange();
+                close();
+
+                // Reset form values
+                setTitle('');
+                setDescription('');
+                setStartDate('');
+                setStartTime(dayjs().format("YYYY-MM-DD"));
+                setEndDate('');
+                setEndTime(dayjs().format("YYYY-MM-DD"));
+                setAllDay(false);
+                setLocationType('');
+                setLocation('');
+                setPrice('');
+                setDetails('');
+                setPlaceholderImage('');
+            })
+        }
     }
-    const todaysDate = dayjs().format("YYYY-MM-DD")
+    console.log(convertTime('10:19'))
+    const callApiAddEvent = async (startDateTimeText, endDateTime, endDateTimeText) => {
+        const url = serverURL + '/api/addEvent';
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                //authorization: `Bearer ${this.state.token}`
+            },
+            body: JSON.stringify({
+                clubID: clubID, 
+                title: title,
+                description: description,
+                startDateTime: startDate + ' ' + startTime,
+                endDateTime: endDateTime,
+                allDay: allDay,
+                locationType: locationType,
+                location: location,
+                price: price,
+                details: details,
+                placeholderImg: placeholderImage,
+                startDateTimeText: startDateTimeText,
+                endDateTimeText: endDateTimeText,
+                timestamp: timestamp(),
+            })
+        });
 
+        const body = await response.json();
+        if (response.status !== 200) throw Error(body.message);
+        return body;
+    }
 
-    // console.log(day1.$d>day2.$d);
 
     return(<>
-        <Grid container className={classes.root}>
-            <Grid container style={{margin:'20px', background:'#fff', borderRadius:'5px', width:'600px'}}>
-                <Grid item fullWidth style={{width:'100%', borderBottom:'lightgrey 0.5px solid', margin:'20px'}}>
-                    <Typography style={{fontWeight:'300', fontSize:'20pt', marginBottom:'10px', }}>Create Event</Typography>
-                </Grid>
-                <Grid item style={{width:'100%', margin:'5px 20px'}}>
-                    <InputLabel className={classes.label}>NAME OF EVENT</InputLabel>
-                    <input className={classes.input} placeholder='Title'/> 
-                </Grid>
-                <Grid item style={{width:'100%', margin:'5px 20px 20px'}}>
-                    <InputLabel className={classes.label}>SHORT DESCRIPTION</InputLabel>
-                    <textarea maxlength={310} onChange={handleDescription} className={classes.input} placeholder='Description' multiline rows={3} />                   
-                     <Grid style={{display:'flex', justifyContent:'end', color:'grey'}} >
-                       <Typography style={{fontSize:'8.5pt'}}>{characterCountDisplay}/310 Characters</Typography>
+            <Grid style={{margin:'10px', background:'#fff', borderRadius:'5px'}}>
+                <Grid item style={{borderBottom:'lightgrey 0.5px solid', margin:'20px', display:'flex', justifyContent:'space-between'}}>
+                    <Grid>
+                        <Typography style={{fontWeight:'300', fontSize:'20pt', marginBottom:'10px', }}>Create Event</Typography>
+                    </Grid>
+                    <Grid>
+                        <IconButton onClick={close}>
+                            <CloseIcon />
+                        </IconButton>
                     </Grid>
                 </Grid>
-                <Grid item style={{width:'100%', margin:'5px 20px', display:'flex', alignItems:'center'}}>
+                <Grid item style={{ margin:'5px 20px'}}>
+                    <InputLabel className={classes.label}>NAME OF EVENT</InputLabel>
+                    <input onChange={handleTitle} className={classes.input} placeholder='Title'/> 
+                    {titleError && <Typography className={classes.errorMsg}>Please enter an event title</Typography>}
+                </Grid>
+                <Grid item style={{margin:'10px 20px 20px'}}>
+                    <InputLabel className={classes.label}>SHORT DESCRIPTION</InputLabel>
+                    <textarea maxlength={310} onChange={handleDescription} className={classes.input} placeholder='Description' multiline rows={3} />                   
+                     <Grid style={{display:'flex', justifyContent:'space-between'}} >
+                        <Grid>
+                            {descriptionError && <Typography className={classes.errorMsg}>Please enter an short description</Typography>}
+                        </Grid>
+                        <Grid style={{display:'flex', justifyContent:'end', color:'grey'}} >
+                            <Typography style={{fontSize:'8.5pt'}}>{characterCountDisplay}/310 Characters</Typography>
+                        </Grid>
+                    </Grid>
+                </Grid>
+                <Grid item style={{margin:'5px 20px', display:'flex', alignItems:'center'}}>
                     <Grid item>
-                        <InputLabel className={classes.label} style={{paddingBottom:'10px'}}>
+                        <InputLabel className={classes.label} style={{paddingBottom:'4px'}}>
                             START DATE
                         </InputLabel>
                         <TextField 
@@ -209,10 +355,10 @@ const EventForm = () => {
                             InputLabelProps={{
                                 shrink:true,
                             }} />
-                            
+                            {startDateError && <Typography className={classes.errorMsg}>Please select a start date</Typography>}
                     </Grid>
                     <Grid item>
-                        <InputLabel className={classes.label} style={{paddingBottom:'10px'}}>STARTS AT</InputLabel>
+                        <InputLabel className={classes.label} style={{paddingBottom:'4px'}}>STARTS AT</InputLabel>
                         <TextField
                             type="time"
                             variant='outlined'
@@ -225,17 +371,18 @@ const EventForm = () => {
                                 shrink: true,
                             }}
                         />
+                        {startTimeError && <Typography className={classes.errorMsg}>Please select a start time</Typography>}
                     </Grid>
                     <Grid>
-                    <FormControlLabel style={{paddingLeft:'10px'}}
+                    <FormControlLabel className={classes.allDayLabel} style={{paddingLeft:'10px', fontSize:'11.5pt'}}
                         control={<Switch checked={allDay} color='primary' onChange={handleAllDaySwitch} />}
                         label="All Day"
                     />
                     </Grid>
                 </Grid>
                 <Grid item style={{width:'100%', margin:'5px 20px', display:'flex'}}>
-                    <Grid item>                        
-                        <InputLabel className={classes.label} style={{paddingBottom:'10px'}}>END DATE</InputLabel>
+                    <Grid item style={{paddingTop:'10px'}}>                        
+                        <InputLabel className={classes.label} style={{paddingBottom:'4px'}}>END DATE</InputLabel>
                         <TextField 
                             type='date'
                             variant='outlined'
@@ -247,8 +394,8 @@ const EventForm = () => {
                                 shrink:true,
                             }} />
                     </Grid>
-                    <Grid item>
-                        <InputLabel className={classes.label} style={{paddingBottom:'10px'}}>ENDS AT</InputLabel>
+                    <Grid item style={{paddingTop:'10px'}}>
+                        <InputLabel className={classes.label} style={{paddingBottom:'4px'}}>ENDS AT</InputLabel>
                         <TextField
                             type="time"
                             variant='outlined'
@@ -263,29 +410,36 @@ const EventForm = () => {
                         
                             }}
                         />
+                        {endTimeError && <Typography className={classes.errorMsg}>The end time should not be before the start time</Typography>}
                     </Grid>
                 </Grid>
-
-                {(startDate && startTime) &&
+                {(startDate && startTime && !endTime && (startDate===endDate || !endDate)  && !endTimeError) &&
                 <Grid style={{margin:'5px 20px', display:'flex', alignContent:'center'}}>
                     <img src={checkmark} style={{height:'18px', paddingRight:'5px'}}/>
-                        This event will take place on {startDate} at {convertTime(startTime)} 
+                        This event will take place on {eventConfirmation(startDate)} at {convertTime(startTime)} 
                 </Grid>}
-                {(endDate && startDate !== endDate) && 
+                {(startDate && startTime && endTime && startDate===endDate && !endTimeError) &&
+                <Grid style={{margin:'5px 20px', display:'flex', alignContent:'center'}}>
+                    <img src={checkmark} style={{height:'18px', paddingRight:'5px'}}/>
+                        This event will take place on {eventConfirmation(startDate)} at {convertTime(startTime)} to {convertTime(endTime)}
+                </Grid>}
+                {(endDate && startDate !== endDate && !endTimeError) && 
                 <Grid style={{margin:'5px 20px', display:'flex', alignContent:'center'}}>
                         <img src={checkmark} style={{height:'18px', paddingRight:'5px'}}/>
-                        This event will take place from {startDate} to {endDate}
+                        This event will take place from {eventConfirmation(startDate)} to {eventConfirmation(endDate)} from {convertTime(startTime)} to {convertTime(endTime)}
                 </Grid>}
-                <Grid item style={{width:'100%', margin:'25px 20px 5px', display:'flex', justifyContent:'space-between'}}>
+                <Grid item style={{margin:'25px 20px 5px', display:'flex', justifyContent:'space-between'}}>
                     <Grid xs={4}>
                         <InputLabel className={classes.label} style={{marginBottom:'10px'}}>LOCATION TYPE</InputLabel>
                         <Select
                             variant='outlined'
-                            className={[classes.OutlinedTextField, classes.dropdown]}
-                            onChange={handleLocationType}>
+                            className={[classes.OutlinedTextFieldLocation, classes.dropdown]}
+                            onChange={handleLocationType}
+                            >
                             <MenuItem value={'in-person'}>In-person</MenuItem>
                             <MenuItem value={'online'}>Online</MenuItem>
                         </Select>
+                        {locationTypeError && <Typography className={classes.errorMsg}>Please select a location type</Typography>}
                     </Grid>
                     {locationType === 'online' &&
                         <Grid xs={8} style={{display:'flex', flexDirection:'column'}}>
@@ -295,34 +449,38 @@ const EventForm = () => {
                                 <input placeholder='https://' disabled style={{background:'rgba(55,55,55,0.1)', height:'44px', letterSpacing:'0.5px', padding:'10px', width:'70px',borderRadius:'5px 0 0 5px', border:'1px solid lightgrey', borderRight:0}}/>
                             </Grid>
                             <Grid style={{width:'100%'}}>
-                                <input style={{width:'100%', borderRadius:'0 5px 5px 0',height:'44px', border:'1px solid lightgrey'}}/>
+                                <input onChange={handleLocation} style={{width:'100%', borderRadius:'0 5px 5px 0',height:'44px', border:'1px solid lightgrey'}}/>
                             </Grid>
                         </Grid>
                     </Grid>}
                     {locationType === 'in-person' &&
                     <Grid xs={8}>
                         <InputLabel className={classes.label}>LOCATION</InputLabel>
-                        <input className={classes.input} placeholder='Location'/> 
+                        <input onChange={handleLocation} className={classes.input} placeholder='Location'/> 
                     </Grid>}
                 </Grid>
-                <Grid item style={{width:'100%', margin:'25px 20px 20px', paddingBottom:'20px', borderBottom:'1px dashed lightgray', display:'flex', justifyContent:'space-between'}}>
+                <Grid item style={{width:'100%', margin:'25px 20px 20px', display:'flex', justifyContent:'space-between'}}>
                     <Grid xs={5} style={{display:'flex', flexDirection:'column'}}>
                         <InputLabel className={classes.label}>PRICE (optional)</InputLabel>
                         <Grid style={{display:'flex', width:'100%'}}>
                             <Grid>
-                            <button disabled style={{color:'white', background:'rgb(53,134,247)', height:'44px', letterSpacing:'0.5px', padding:'10px', width:'70px',borderRadius:'5px 0 0 5px', border:'1px solid rgb(53,134,247)', borderRight:0}}>CAD$</button>
+                                <button disabled style={{color:'white', background:'rgb(53,134,247)', height:'44px', letterSpacing:'0.5px', padding:'10px', width:'70px',borderRadius:'5px 0 0 5px', border:'1px solid rgb(53,134,247)', borderRight:0}}>CAD$</button>
                             </Grid>
                             <Grid style={{width:'100%'}}>
-                                <input type='number' style={{paddingLeft:'10px', width:'100%', borderRadius:'0 5px 5px 0',height:'44px', border:'1px solid lightgrey', borderLeft:'0'}}/>
+                                <input onChange={handlePrice} type='number' style={{paddingLeft:'10px', width:'100%', borderRadius:'0 5px 5px 0',height:'44px', border:'1px solid lightgrey', borderLeft:'0'}}/>
                             </Grid>
                         </Grid>
                     </Grid>
+                </Grid>
+                <Grid style={{margin:'25px 20px 20px', paddingBottom:'20px', borderBottom:'1px dashed lightgray',}}>
+                    <InputLabel className={classes.label}>ADD ADDITIONAL DETAILS</InputLabel>
+                    <textarea onChange={handleDetails} className={classes.input} placeholder='Additional Details' multiline rows={6} />                   
                 </Grid>
                 <Grid style={{margin:'5px 20px'}}>
                     <InputLabel className={classes.label}>SELECT A PLACEHOLDER IMAGE</InputLabel>
                     <InputLabel className={classes.label}>This is the main photo that will be displayed in the events page.</InputLabel>
                 </Grid>
-                <RadioGroup style={{display:'flex', flexDirection:'row', overflow:'hidden', margin:'10px'}}>
+                <RadioGroup onChange={handleRatioBtn} style={{display:'flex', flexDirection:'row', overflow:'hidden', margin:'10px'}}>
                     <Grid style={{display:'flex', overflowX:'scroll'}}>
                             <Grid style={{marginLeft:'10px', display:'flex', flexDirection:'column'}}>
                                 <img src={img1} style={{height:'100px'}} />
@@ -385,26 +543,75 @@ const EventForm = () => {
                                 </div>
                             </Grid>
                     </Grid>
+                    {placeholderImageError && <Typography className={classes.errorMsg}>Please select an image</Typography>}
                 </RadioGroup>
-                {/* <Grid style={{margin:'15px 20px 0'}}>
-                    <InputLabel className={classes.label}>UPLOAD ATTACHMENTS</InputLabel>
-                </Grid>
-                <Grid style={{margin:'5px 20px 20px', width:'100%', background:'rgb(247,247,247)', height:'130px', borderRadius:'8px', border:'1px dashed lightgray'}}>
-                    <Grid>
-                        <Button variant="contained" component="label">
-                            Select Files
-                            <input hidden accept="image/*" multiple type="file" />
-                        </Button>
-                    </Grid>
-                </Grid> */}
-                <Grid style={{margin:'5px 20px 20px', width:'100%'}}>
-                    <Button style={{width:'100%', color:'white', background:'rgb(53,134,247)'}}>Create Event
+                <Grid style={{margin:'5px 20px 20px'}}>
+                    <Button onClick={handleSubmit} style={{width:'100%', color:'white', background:'rgb(53,134,247)'}}>Create Event
                     </Button>
-                    
                 </Grid>
             </Grid>
-        </Grid>
     </>)
 }
 
 export default EventForm;
+
+
+function convertTime(timeString) {
+    const [hourString, minute] = timeString.split(":");
+    const hour = +hourString % 24;
+    return (hour % 12 || 12) + ":" + minute + (hour < 12 ? " AM" : " PM");
+}
+
+const datetimeTextFormat = (date, time) => {
+    const weekdays = {
+        Mon:'Mon',
+        Tue:'Tues',
+        Wed:'Wed',
+        Thu:'Thurs',
+        Fri:'Fri',
+        Sat:'Sat',
+        Sun:'Sun'
+    }
+
+    const months = {
+        Jan:'January',
+        Feb:'February',
+        Mar:'March',
+        Apr:'April',
+        May:'May',
+        Jun:'June',
+        Jul:'July',
+        Aug:'August',
+        Sep:'September',
+        Oct:'October',
+        Nov:'November',
+        Dec:'December'
+    }
+
+    let d = date.split('-') 
+    let t = time.split(':')
+    let x = new Date(d[0], d[1]-1, d[2], t[0], t[1]).toString();
+    let text = x.split(' ')
+    return weekdays[text[0]] + ' ' + months[text[1]] + ' ' + text[2] + ' ' + text[3] + ' ' + convertTime(text[4].slice(0,5))    
+}
+
+const eventConfirmation = (date) => {
+
+    let x = datetimeTextFormat(date, '00:00');
+    x = x.split(' ');
+    return x[1] + ' ' + x[2] + ' ' + x[3];
+
+}
+
+const timestamp = () => {
+    let today = new Date();
+    const leadingZero = (n) => {
+        if (n.toString.length == 1){
+            n = '0' + n;
+            return n;
+        }
+        return n;
+    }
+    let date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate()+' '+leadingZero(today.getHours())+':'+leadingZero(today.getMinutes())+':'+today.getSeconds();
+    return date;
+}

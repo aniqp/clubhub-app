@@ -458,7 +458,7 @@ app.post('/api/getUpcomingEvents', (req,res) => {
 	let clubID = req.body.clubID;
 	let todaysDate = req.body.todaysDate;
 
-	let sql = `select * from events where club_id = ? and start_time >= ?`
+	let sql = `select * from events where club_id = ? and start_time >= ? order by start_time asc`
 	const data = [clubID, todaysDate];
 	console.log(sql);
 	console.log(data);
@@ -474,8 +474,34 @@ app.post('/api/getUpcomingEvents', (req,res) => {
 
 app.post('/api/addEvent', (req,res) => {
 	let connection = mysql.createConnection(config);
-	
+	let club_id = req.body.clubID;
+	let title = req.body.title;
+	let body = req.body.description;
+	let start_time = req.body.startDateTime;
+	let end_time = req.body.endDateTime;
+	let allDay = req.body.allDay;
+	let location_type = req.body.locationType;
+	let location = req.body.location;
+	let price = req.body.price;
+	let additionalDetails = req.body.details;
+	let placeholderImage = req.body.placeholderImg;
+	let start_time_text = req.body.startDateTimeText;
+	let end_time_text = req.body.endDateTimeText;
+	let time_posted = req.body.timestamp;
 
+	let sql = `insert into events (club_id, title, location, start_time, end_time, body, time_posted, price, allDay, placeholderPhoto, additionalDetails, location_type, start_time_text, end_time_text)
+	values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+	data = [club_id, title, location, start_time, end_time, body, time_posted, price, allDay, placeholderImage, additionalDetails ,location_type, start_time_text, end_time_text]
+	console.log(sql);
+	console.log(data);
+	connection.query(sql, data, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message);
+		}
+		let string = JSON.stringify(results);
+		res.send({ express: string })
+		//console.log(string)
+	});
 })
 
 app.post('/api/editEvent', (req,res) => {
