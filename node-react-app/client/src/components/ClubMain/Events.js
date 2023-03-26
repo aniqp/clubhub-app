@@ -23,6 +23,7 @@ import { serverURL } from "../../constants/config";
 import { deepOrange, indigo, teal, red, deepPurple, lightGreen } from '@material-ui/core/colors';
 import { useUser } from '../Firebase';
 import EventForm from "./EventForm";
+import ClubBoardHeader from "./ClubBoardHeader";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -195,6 +196,7 @@ const Events = () => {
 
 
     return(<>
+        <ClubBoardHeader active={"2"}/>
         <Grid style={{display:'flex', justifyContent:'space-around', paddingTop:'20px'}}>
             <Grid xs={8}>
                 <Grid>

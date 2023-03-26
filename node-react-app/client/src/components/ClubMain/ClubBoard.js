@@ -1,9 +1,9 @@
 import React from 'react';
-import { makeStyles, IconButton, Grid, Typography, Card, Button, Menu, MenuItem, Collapse, CardContent, TextField } from "@material-ui/core";
+import { makeStyles, IconButton, Grid, Typography,InputAdornment, Card, Button, Menu, MenuItem, Collapse, CardContent, TextField } from "@material-ui/core";
 import { useParams } from 'react-router-dom';
 import ClubBoardHeader from './ClubBoardHeader';
 import { serverURL } from '../../constants/config';
-import Members from './Members';
+// import Members from './Members';
 import AnnouncementPost from './AnnouncementPost';
 import AnnouncementForm from './AnnouncementForm';
 import Events from './Events';
@@ -50,10 +50,11 @@ const ClubBoard = () => {
     // Initialize user and admin status
     const user = useUser();
     const [admin, setAdmin] = React.useState(false);
+    const [noAnnouncementMsg, setNoAnnouncementMsg] = React.useState('')
 
     const { clubID } = useParams();
     const [clubTitle, setClubTitle] = React.useState();
-    const [toggle, setToggle] = React.useState("1");
+    // const [toggle, setToggle] = React.useState("2");
     const [clubAnnouncements, setClubAnnouncements] = React.useState([]);
     const [members, setMembers] = React.useState([]);
     
@@ -71,7 +72,7 @@ const ClubBoard = () => {
     React.useEffect(() => {
         if (user) {
             let userID = user.uid;
-            console.log(userID)
+            // console.log(userID)
             getUserRole(userID);
         } else {
             setAdmin(false);
@@ -80,8 +81,8 @@ const ClubBoard = () => {
 
     React.useEffect(() => {
         getClubAnnouncements();
-        getClubTitle();
-        getClubMembers();
+        // getClubTitle();
+        // getClubMembers();
     }, []);
 
     const getUserRole = (userID) => {
@@ -95,7 +96,7 @@ const ClubBoard = () => {
                 } else {
                     setAdmin(false);
                 }
-                console.log(parsed);
+                // console.log(parsed);
             })
     }
 
@@ -118,44 +119,47 @@ const ClubBoard = () => {
         return body;
     }
 
-    const getClubTitle = () => {
-        callApiGetClubs()
-            .then(res => {
-                var parsed = JSON.parse(res.express);
-                setClubTitle(parsed[0].name)
-            })
-    }
+    // const getClubTitle = () => {
+    //     callApiGetClubs()
+    //         .then(res => {
+    //             var parsed = JSON.parse(res.express);
+    //             setClubTitle(parsed[0].name)
+    //         })
+    // }
 
-    const callApiGetClubs = async () => {
-        const url = serverURL + '/api/getClubs';
-        const response = await fetch(url, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                //authorization: `Bearer ${this.state.token}`
-            },
-            body: JSON.stringify({
-                clubID: clubID
-            })
-        });
-        const body = await response.json();
-        if (response.status !== 200) throw Error(body.message);
-        return body;
-    }
+    // const callApiGetClubs = async () => {
+    //     const url = serverURL + '/api/getClubs';
+    //     const response = await fetch(url, {
+    //         method: "POST",
+    //         headers: {
+    //             "Content-Type": "application/json",
+    //             //authorization: `Bearer ${this.state.token}`
+    //         },
+    //         body: JSON.stringify({
+    //             clubID: clubID
+    //         })
+    //     });
+    //     const body = await response.json();
+    //     if (response.status !== 200) throw Error(body.message);
+    //     return body;
+    // }
 
-    const handleToggle = (event, newToggle) => {
-        if (newToggle !== null) {
-            setToggle(newToggle);
-        }
-    };
+    // const handleToggle = (event, newToggle) => {
+    //     if (newToggle !== null) {
+    //         setToggle(newToggle);
+    //     }
+    // };
 
     // CLUB ANNOUNCEMENTS
     const getClubAnnouncements = () => {
-        console.log('updating announcements');
+        // console.log('updating announcements');
         callApiGetClubAnnouncements()
             .then(res => {
                 var parsed = JSON.parse(res.express);
                 setClubAnnouncements(parsed);
+                if (parsed.length == 0){
+                    setNoAnnouncementMsg('No Announcements')
+                }
             })
     }
 
@@ -179,14 +183,13 @@ const ClubBoard = () => {
 
     // CLUB MEMBERS
     const getClubMembers = () => {
-        console.log('getting members');
+        // console.log('getting members');
         callApiGetClubMembers()
             .then(res => {
                 var parsed = JSON.parse(res.express);
                 setMembers(parsed);
             })
     }
-
 
     const callApiGetClubMembers = async () => {
         const url = serverURL + '/api/getClubMembers';
@@ -242,12 +245,10 @@ const ClubBoard = () => {
     };
 
     return(<>
+        <ClubBoardHeader active={"1"}/>
         <Grid className={classes.root} sx={{height:'100%'}}>
-            <ClubBoardHeader clubID={clubID} clubTitle={clubTitle} toggle={toggle} handleToggle={handleToggle}/>
-            {toggle === '1' && 
-            <>
             <Grid style={{display:'flex'}}>
-            <Grid xs={8} style={{padding:'0 20px'}}>
+                <Grid xs={8} style={{padding:'0 20px'}}>
                 {Object.values(testData).map((announcement, index) => <>
                 <Card style={{maxHeight:'400px', margin:'25px 0 0', borderRadius:'0'}} >
                     <Grid style={{display:'flex'}}>
@@ -284,18 +285,9 @@ const ClubBoard = () => {
                 </>)}
             </Grid>
             <Grid xs={4} style={{display:'flex', justifyContent:'center', marginTop:'25px'}}>
-                 {admin && <AnnouncementForm clubID={clubID} onSubmit={getClubAnnouncements} />}
+                    {admin && <AnnouncementForm clubID={clubID} onSubmit={getClubAnnouncements} />}
             </Grid>
-            </Grid>
-                
-
-            </>}
-            {toggle == '2' && <Events />}
-            {toggle == '3' &&
-                <Typography>
-                    <Members name={clubTitle} members={members} />
-                </Typography>}
-            {toggle == '4' && <>Photos</>}
+        </Grid>
         </Grid>
     </>)
 
@@ -357,63 +349,3 @@ const LongMenu = () => {
     </div>
   );
 }
-
-                   // <Announcements 
-            //     admin={admin} 
-            //     clubAnnouncements={clubAnnouncements}
-            //     filteredAnnouncements={filteredAnnouncements} 
-            //     getClubAnnouncements={getClubAnnouncements}
-            //     clubTitle={clubTitle}/>}  
-            
-            
-            // <Grid container style={{display:'flex', justifyContent:'space-around', paddingTop:'20px'}}>
-            //     <Grid container style={{display:'flex', justifyContent:'space-around'}}>
-            //         <Grid xs={8}>
-            //             <Card style={{padding:'20px'}}>
-            //             <Typography style={{fontSize:'22pt', fontWeight:'300'}}>Upcoming Announcements</Typography>
-            //                 {Object.values(filteredAnnouncements).map((announcement, index) => (
-            //                     <li key={announcement.id} style={{listStyle:'none'}}>
-            //                         <AnnouncementPost 
-            //                             id={announcement.id} 
-            //                             name={clubTitle} 
-            //                             title={announcement.title} 
-            //                             body={announcement.body} 
-            //                             timestamp={announcement.time_posted}
-            //                             onSubmit={getClubAnnouncements}
-            //                             adminStatus={admin}
-            //                             visibility={announcement.visibility}
-            //                             onDashboard = {false}
-            //                             />
-            //                     </li>
-            //                 ))}
-            //             </Card>
-            //         </Grid>
-            //         </Grid>
-                    {/* {clubAnnouncements.length > 0 &&
-                    <Grid xs={4} style={{padding:'25px 0 0 0'}}>
-                        <TextField 
-                            className={classes.textField} 
-                            id="outlined-basic" 
-                            label="Search for Announcement" 
-                            variant="filled"
-                            color="success"
-                            value={searchTerm}
-                            onChange={handleSearchTerm} 
-                            InputProps={{
-                                startAdornment: (
-                                <InputAdornment position="start">
-                                    <img className={classes.search} src={search} />
-                                </InputAdornment>),
-                                className: classes.input}} />
-                    </Grid>} */}
-                //     <Grid xs={4} style={{display:'flex', justifyContent:'center',}}>
-                //         {admin && <AnnouncementForm clubID={clubID} onSubmit={getClubAnnouncements} />}
-                //     </Grid>
-
-                    
-                //     {clubAnnouncements.length == 0 && 
-                //         <Grid container style={{display:'flex', justifyContent:'center', padding:'30px 0'}}>
-                //             <Typography variant={'h6'}><b>No Announcements</b></Typography>
-                //         </Grid>
-                //     }
-                // </Grid>}

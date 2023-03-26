@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Link, styled, Paper, Grid, Typography, Divider, makeStyles } from '@material-ui/core';
+import { styled, Paper, Grid, Typography, Divider, makeStyles } from '@material-ui/core';
 // import { Link } from 'react-router-dom';
 import history from '../Navigation/history';
 import ToggleButton from '@material-ui/lab/ToggleButton';
@@ -7,8 +7,8 @@ import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import Announcements from './Announcements';
 import Members from './Members';
 import { useParams } from 'react-router-dom';
-
-
+import { serverURL } from '../../constants/config';
+import { Switch, Rote, Link } from 'react-router-dom';
 
 
 
@@ -43,7 +43,8 @@ const useStyles = makeStyles((theme) => ({
     titleHeader:{
         display:'flex',
         alignItems:'end',
-        padding:'0 0 50px 10px',
+        margin:'50px'
+        // padding:'0 0 50px 10px',
     },
     toggleGroup: {
         display:'flex',
@@ -80,12 +81,47 @@ const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
     },
   }));
 
-const ClubBoardHeader = ({ clubTitle, toggle, handleToggle }) => {
+const ClubBoardHeader = ({active}) => {
     const classes = useStyles();
+    const { clubID } = useParams();
+    const [clubTitle, setClubTitle] = React.useState();
+    const [toggle, setToggle] = React.useState(active);
+    // const [active, setActive] = React.useState(active);
 
-    // React.useEffect(() => {
-    //     document.body.classList.add('red');
-    // }, [] )
+    React.useEffect(() => {
+        getClubTitle();
+    }, []);
+
+    const handleToggle = (event, newToggle) => {
+        if (newToggle !== null) {
+            setToggle(newToggle);
+        }
+    };
+
+    const getClubTitle = () => {
+        callApiGetClubs()
+            .then(res => {
+                var parsed = JSON.parse(res.express);
+                setClubTitle(parsed[0].name)
+            })
+    }
+
+    const callApiGetClubs = async () => {
+        const url = serverURL + '/api/getClubs';
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                //authorization: `Bearer ${this.state.token}`
+            },
+            body: JSON.stringify({
+                clubID: clubID
+            })
+        });
+        const body = await response.json();
+        if (response.status !== 200) throw Error(body.message);
+        return body;
+    }
 
     return (<>
         <Grid container className={classes.header}>
@@ -99,24 +135,21 @@ const ClubBoardHeader = ({ clubTitle, toggle, handleToggle }) => {
                 value={toggle}
                 exclusive
                 onChange={handleToggle}>
-                <ToggleButton value="1">
+                <ToggleButton value="1" onClick={()=> history.push(`/clubboard/${clubID}/`)}>
                     Announcements
                 </ToggleButton>
-                <ToggleButton value="2">
+                <ToggleButton value="2" onClick={()=> history.push(`/clubboard/${clubID}/events`)}>
                     Events
                 </ToggleButton>
-                <ToggleButton value="3">
+                <ToggleButton value="3" onClick={()=> history.push(`/clubboard/${clubID}/members`)}>
                 Members
                 </ToggleButton>
                 <ToggleButton value="4">
                 Photos
                 </ToggleButton>
-             
             </StyledToggleButtonGroup>
         </Grid>
-        
    </>)
-
 }
 
 export default ClubBoardHeader;

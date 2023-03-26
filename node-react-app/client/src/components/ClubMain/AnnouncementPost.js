@@ -48,8 +48,7 @@ const useStyles = makeStyles({
         margin:'20px 10px 30px 10px'
     },
     dashboardCard: {
-        margin:'20px 50px',
-        width: 400
+        margin:'15px 0px',
     }, 
     cardActions:{
         display:'flex',
@@ -69,7 +68,7 @@ export default function AnnouncementPost(props) {
     const [editModalOpen, setEditModelOpen] = React.useState(false);
     toast.configure();
     const notify = () => {
-        console.log('in')
+        // console.log('in')
         toast.success("Success: Announcement post was edited.", {
             position: toast.POSITION.TOP_RIGHT,
             autoClose: true
@@ -83,7 +82,7 @@ export default function AnnouncementPost(props) {
         }
         callApiEditAnnouncement(data)
             .then(res => {
-                console.log('response')
+                // console.log('response')
                 var parsed = JSON.parse(res.express);
                 props.onSubmit();
                 notify();
@@ -175,7 +174,7 @@ export default function AnnouncementPost(props) {
     // console.log('admin status: ', admin)
     return(<>
         {((props.visibility === 'private' && admin) || (props.visibility === 'public')) &&
-        <Card className={props.onDashboard ? classes.dashboardCard : classes.card }  style={{ margin:'20px 0 30px', padding:'10px'}}sx={{ maxWidth: 500 }}>
+        <Card className={props.onDashboard ? classes.dashboardCard : classes.card }>
             {props.onDashboard &&
             <Link to = {"/clubboard/" + props.club_id} style={{textDecoration: 'none'}}
             >
@@ -368,11 +367,11 @@ const EditModal = ({title, body, open, onClose, onSubmit}) => {
 
 }
 
-const EventFormDialog = () => {
+// const EventFormDialog = () => {
 
-    return(
-        <>
-            <EventForm />
-        </>
-    )
-}
+//     return(
+//         <>
+//             <EventForm />
+//         </>
+//     )
+// }
