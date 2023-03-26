@@ -193,7 +193,8 @@ app.post('/api/deleteAnnouncement', (req, res) => {
     let sql = `DELETE FROM announcements where id = ?`
 
 	const data = [announcementID]
-
+	console.log(sql)
+	console.log(data)
     connection.query(sql, data, (error, results, fields) => {
 		if (error) {
 			return console.error(error.message);
@@ -210,22 +211,25 @@ app.post('/api/editAnnouncement', (req, res) => {
     let announcementID = req.body.id;
 	let newTitle = req.body.newTitle;
 	let newBody = req.body.newBody;
+	let visibility = req.body.visibility;
+	let placeholderPhoto = req.body.placeholderImage;
+
 
 	// console.log(newTitle, newBody)
 
     let sql = `UPDATE announcements
-	SET title = ?, body = ?
+	SET title = ?, body = ?, visibility= ?, placeholderPhoto = ?
 	WHERE id = ?`
 
-	const data = [newTitle, newBody, announcementID]
-
+	const data = [newTitle, newBody, visibility, placeholderPhoto, announcementID]
+	console.log(data);
     connection.query(sql, data, (error, results, fields) => {
 		if (error) {
 			return console.error(error.message);
 		}
 		let string = JSON.stringify(results);
 		res.send({ express: string })
-		console.log(string)
+		// console.log(string)
 	});
 	connection.end();
 
@@ -461,8 +465,7 @@ app.post('/api/getUpcomingEvents', (req,res) => {
 
 	let sql = `select * from events where club_id = ? and start_time >= ? order by start_time asc`
 	const data = [clubID, todaysDate];
-	console.log(sql);
-	console.log(data);
+	
 	connection.query(sql, data, (error, results, fields) => {
 		if (error) {
 			return console.error(error.message);
@@ -493,8 +496,7 @@ app.post('/api/addEvent', (req,res) => {
 	let sql = `insert into events (club_id, title, location, start_time, end_time, body, time_posted, price, allDay, placeholderPhoto, additionalDetails, location_type, start_time_text, end_time_text)
 	values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
 	data = [club_id, title, location, start_time, end_time, body, time_posted, price, allDay, placeholderImage, additionalDetails ,location_type, start_time_text, end_time_text]
-	console.log(sql);
-	console.log(data);
+	
 	connection.query(sql, data, (error, results, fields) => {
 		if (error) {
 			return console.error(error.message);
@@ -523,8 +525,7 @@ app.post('/api/getAttendance', (req, res) => {
 
 	let sql = `select * from attendance where event_id = ?`
 	const data = [eventID];
-	console.log(sql);
-	console.log(data);
+
 	connection.query(sql, data, (error, results, fields) => {
 		if (error) {
 			return console.error(error.message);
@@ -544,8 +545,7 @@ app.post('/api/setAttendance', (req, res) => {
 
 	let sql = `INSERT into attendance (event_id, uid, status, name) values (?,?,?,?)`
 	const data = [eventID, userID, status, name];
-	console.log(sql);
-	console.log(data);
+
 	connection.query(sql, data, (error, results, fields) => {
 		if (error) {
 			return console.error(error.message);
@@ -564,8 +564,7 @@ app.post('/api/changeAttendance', (req, res) => {
 
 	let sql = `UPDATE attendance SET status = ? WHERE uid=? and event_id = ?`
 	const data = [status, userID, eventID];
-	console.log(sql);
-	console.log(data);
+
 	connection.query(sql, data, (error, results, fields) => {
 		if (error) {
 			return console.error(error.message);
@@ -594,13 +593,11 @@ app.post('/api/addAdmin', (req, res) => {
 	// console.log(userID)
 	
     connection.query(sql, data, (error, results, fields) => {
-		console.log(sql)
 		if (error) {
 			return console.error(error.message);
 		}
 		let string = JSON.stringify(results);
 		res.send({ express: string })
-		console.log(string)
 	});
 	connection.end();
 
@@ -624,7 +621,7 @@ app.post('/api/removeAdmin', (req, res) => {
 		}
 		let string = JSON.stringify(results);
 		res.send({ express: string })
-		console.log(string)
+		// console.log(string)
 	});
 	connection.end();
 
@@ -647,8 +644,7 @@ app.post('/api/transferClubOwnership', (req, res) => {
 	set m1.role=m2.role;`
 
 	const data = [newOwnerID, clubID, oldOwnerID, clubID, newRole]
-	console.log(sql)
-	console.log(data)
+
     connection.query(sql, data, (error, results, fields) => {
 		if (error) {
 			return console.error(error.message);

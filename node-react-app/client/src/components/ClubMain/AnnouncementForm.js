@@ -272,6 +272,8 @@ const PostModal = ({ classes, open, onClose, onSubmit }) => {
         setPlaceholderImage(e.target.value);
     }
 
+
+
     if (!open) return null
 
     return(

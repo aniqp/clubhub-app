@@ -13,6 +13,7 @@ import "react-toastify/dist/ReactToastify.css";
 import GroupsRoundedIcon from '@material-ui/icons/Group';
 import EventForm from './EventForm';
 
+
 const useStyles = makeStyles({
     root: {
       padding:'8px',
@@ -251,9 +252,6 @@ const DeleteModal = ({title, body, open, onClose, onSubmit}) => {
             <div style={OVERLAY_STYLES} />
             <div style={MODAL_STYLES}>
                 <Grid container style={{display:'flex', flexDirection:'column'}}>
-                    <Grid item style={{display:'flex', justifyContent:'end'}}>
-                        <Button onClick={onClose}><img src={close} style={{height:'25px'}}></img></Button>
-                    </Grid>
                     <Grid item style={{display:'flex', justifyContent:'center'}}>
                         <b>Are you sure you want to delete the following announcement?</b>
                     </Grid>
@@ -366,12 +364,3 @@ const EditModal = ({title, body, open, onClose, onSubmit}) => {
     )
 
 }
-
-// const EventFormDialog = () => {
-
-//     return(
-//         <>
-//             <EventForm />
-//         </>
-//     )
-// }
