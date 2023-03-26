@@ -23,7 +23,8 @@ const ClubBoard = () => {
     // Initialize user and admin status
     const user = useUser();
     const [admin, setAdmin] = React.useState(false);
-    const [noAnnouncementMsg, setNoAnnouncementMsg] = React.useState('')
+    const [noAnnouncementMsg, setNoAnnouncementMsg] = React.useState('');
+    const [isPermitted, setIsPermitted] = React.useState(false);
 
     const { clubID } = useParams();
     const [clubTitle, setClubTitle] = React.useState();
@@ -133,6 +134,8 @@ const ClubBoard = () => {
                 console.log('members:' + isMember)
                 if (!isMember){
                     history.push(`/`)
+                } else {
+                    setIsPermitted(true);
                 }
             })
     }
@@ -183,10 +186,7 @@ const ClubBoard = () => {
         }
     ]
 
-    // const temp1 = require('../../images/announcement/img1.png');
-    // const temp2 = require('../../images/announcement/img2.png');
     const [expanded, setExpanded] = React.useState(null);
-
 
     const handleExpandClick = (clickedIndex) => {
         if (expanded === clickedIndex){
@@ -195,7 +195,8 @@ const ClubBoard = () => {
             setExpanded(clickedIndex)
         }
     };
-
+    
+    if (!isPermitted) return null;
     return(<>
         <ClubBoardHeader active={"1"}/>
         <Grid className={classes.root} sx={{height:'100%'}}>
