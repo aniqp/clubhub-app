@@ -1,48 +1,21 @@
 import React from 'react';
-import { makeStyles, IconButton, Grid, Typography,InputAdornment, Card, Button, Menu, MenuItem, Collapse, CardContent, TextField } from "@material-ui/core";
+import { makeStyles, IconButton, Grid, Typography, Card, Menu, MenuItem } from "@material-ui/core";
 import { useParams } from 'react-router-dom';
-import ClubBoardHeader from './ClubBoardHeader';
+import { useUser } from '../Firebase';
 import { serverURL } from '../../constants/config';
-// import Members from './Members';
-import AnnouncementPost from './AnnouncementPost';
+import ClubBoardHeader from './ClubBoardHeader';
 import AnnouncementForm from './AnnouncementForm';
-import Events from './Events';
-import search from '../../images/search-icon.png';
-import comment from '../../images/comment.png';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import img1 from '../../images/announcement/img1.png';
-import Avatar from '@material-ui/core/Avatar';
-import { deepOrange, deepPurple } from '@material-ui/core/colors'
-import { red } from '@material-ui/core/colors';
-
-
-
-import { useUser } from '../Firebase';
-import Announcements from './Announcements';
-
+import history from '../Navigation/history';
 
 const useStyles = makeStyles((theme) => ({
     root:{
         background:'#f5f5f5',
         minHeight:'100vh'
-    },
-    textField: {
-        width: '80%',
-        marginLeft: 'auto',
-        marginRight: 'auto',            
-        marginTop: 0,
-        fontWeight: 500
-    },
-    input: {
-        background: 'white'
-    },
-    search:{
-        height:'20px'
-    },avatar: {
-        backgroundColor: red[500],
-      },
+    }
 }));
 
 const ClubBoard = () => {
@@ -54,7 +27,6 @@ const ClubBoard = () => {
 
     const { clubID } = useParams();
     const [clubTitle, setClubTitle] = React.useState();
-    // const [toggle, setToggle] = React.useState("2");
     const [clubAnnouncements, setClubAnnouncements] = React.useState([]);
     const [members, setMembers] = React.useState([]);
     
@@ -82,7 +54,7 @@ const ClubBoard = () => {
     React.useEffect(() => {
         getClubAnnouncements();
         // getClubTitle();
-        // getClubMembers();
+        getClubMembers();
     }, []);
 
     const getUserRole = (userID) => {
@@ -118,37 +90,6 @@ const ClubBoard = () => {
         if (response.status !== 200) throw Error(body.message);
         return body;
     }
-
-    // const getClubTitle = () => {
-    //     callApiGetClubs()
-    //         .then(res => {
-    //             var parsed = JSON.parse(res.express);
-    //             setClubTitle(parsed[0].name)
-    //         })
-    // }
-
-    // const callApiGetClubs = async () => {
-    //     const url = serverURL + '/api/getClubs';
-    //     const response = await fetch(url, {
-    //         method: "POST",
-    //         headers: {
-    //             "Content-Type": "application/json",
-    //             //authorization: `Bearer ${this.state.token}`
-    //         },
-    //         body: JSON.stringify({
-    //             clubID: clubID
-    //         })
-    //     });
-    //     const body = await response.json();
-    //     if (response.status !== 200) throw Error(body.message);
-    //     return body;
-    // }
-
-    // const handleToggle = (event, newToggle) => {
-    //     if (newToggle !== null) {
-    //         setToggle(newToggle);
-    //     }
-    // };
 
     // CLUB ANNOUNCEMENTS
     const getClubAnnouncements = () => {
@@ -188,6 +129,11 @@ const ClubBoard = () => {
             .then(res => {
                 var parsed = JSON.parse(res.express);
                 setMembers(parsed);
+                const isMember = parsed.find((member) => member.uid === user.uid);
+                console.log('members:' + isMember)
+                if (!isMember){
+                    history.push(`/`)
+                }
             })
     }
 
@@ -208,6 +154,12 @@ const ClubBoard = () => {
         if (response.status !== 200) throw Error(body.message);
         return body;
     }
+    // // getClubMembers();
+    // const isMember = members.find((member) => member.uid === user.uid);
+    // console.log('members:' + isMember)
+    // // if (!isMember){
+    // //     history.push(`/`)
+    // // }
     
     const testData = [
         { title:'What makes flyers unrivaled',
