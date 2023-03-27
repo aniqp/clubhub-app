@@ -234,7 +234,7 @@ app.post('/api/getClubMembers', (req,res) => {
 	let connection = mysql.createConnection(config);
 	let clubID = req.body.clubID;
 
-	let sql = `SELECT u.name, m.role 
+	let sql = `SELECT u.uid, u.name, m.role
 	FROM memberships as m, users as u 
 	WHERE m.club_id= ? and m.uid = u.uid
 	order by role desc;`;
