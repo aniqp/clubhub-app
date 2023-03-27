@@ -1,20 +1,13 @@
-import {  } from './Application';
-import {  } from './Application';
-import React, { useEffect, useMemo, useState } from "react";
+import { Application } from './Application';
+import React from "react";
 import {
   Grid,
-  Card,
-  Button,
-  Switch,
-  FormControlLabel
+  Card
 } from "@material-ui/core";
 import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import profile from "../../images/profile-icon.png";
 import membersIcon from "../../images/members.png";
-import { useParams } from "react-router-dom";
-import { useAuthHeader } from "../Firebase";
-import { serverURL } from "../../constants/config";
 
 const useStyles = makeStyles((theme) => ({
   root: {
