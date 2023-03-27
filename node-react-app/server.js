@@ -324,7 +324,37 @@ app.delete('/api/denyUser', (req, res) => {
 		}
 	  });
 	connection.end();
-});
+  function isAdmin(user, clubID) {
+	let connection = mysql.createConnection(config);
+  
+	// Check if user is an admin or owner of the club
+	const adminQuery = `
+	  SELECT role
+	  FROM memberships
+	  WHERE uid=? AND club_id=? AND (role="admin" OR role="owner")
+	  `;
+  
+	let response;
+  
+	connection.query(adminQuery, [user.uid, clubID], (error, results) => {
+	  if (error) {
+		response = { status: false, message: error.message };
+	  }
+	  if (!results.length > 0) {
+		response = {
+		  status: false,
+		  message: "User is not an admin or owner of the club",
+		};
+	  }
+	  response = {
+		status: True,
+		message: "User is an admin or owner of the club",
+	  };
+	});
+	connection.end();
+	return response;
+  }
+  
 
 app.post('/api/getAllClubs', (req, res) => {
 	// Query all clubs from the clubs table
