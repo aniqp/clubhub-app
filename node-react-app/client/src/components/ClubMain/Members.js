@@ -91,10 +91,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Application = ({ members, acceptAll }) => {
+const Application = ({ members }) => {
   const classes = useStyles();
   const { clubID } = useParams();
   const authHeader = useAuthHeader();
+
+  const [acceptAll, setAcceptAll] = useState(false);
 
   const applicants = useMemo(
     () => members?.filter((member) => member.role === "pending") || [],
@@ -165,6 +167,39 @@ const Application = ({ members, acceptAll }) => {
       console.error("Could not deny user. ERROR:", await response.text());
     }
   };
+
+  const getApplicationType = async () => {
+    const request = {
+      method: "GET",
+      headers: {
+        ...authHeader(),
+        Accept: "*/*",
+      },
+    }
+    const URL = serverURL + "/api/getApplicationType/" + clubID;
+    let response
+    try {
+      response = await fetch(URL, request);
+    } catch (error) {
+      console.error(error);
+    }
+
+    if (response.status === 200) {
+      const data = await response.json()
+      console.log("Accept All:", data["acceptAll"]);
+      return data["acceptAll"];
+    } else {
+      console.error("Could not accept user. ERROR:", await response.text());
+      return false;
+    }
+
+  };
+
+  useEffect(() => {
+    (async () => {
+      // console.log(await getApplicationType())
+      setAcceptAll(await getApplicationType())
+  })()}, [])
         ...authHeader(),
         Accept: "*/*",
       },
@@ -192,7 +227,7 @@ const Application = ({ members, acceptAll }) => {
           </Typography>
           <FormControlLabel
             control={
-              <Switch checked={acceptAll} disabled={!!applicants?.length} />
+              <Switch checked={!!acceptAll} disabled={!!applicants?.length} />
             }
             label={!!applicants?.length ? "Must have empty list" : "Accept All"}
           />
