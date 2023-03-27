@@ -12,11 +12,12 @@ import { useUser } from '../Firebase/context'
 import CircularProgress from "@material-ui/core/CircularProgress"
 import ClubBoardHeader from "../ClubMain/ClubBoardHeader";
 import Events from "../ClubMain/Events";
+import { useParams } from 'react-router-dom';
+
 
 export default function PrivateRoute() {
   const user = useUser()
   const [loading, setLoading] = React.useState(true);
-
   React.useEffect(() => {
     if(user) {
       console.log(user.uid)
@@ -39,10 +40,11 @@ export default function PrivateRoute() {
         <Route path="/" exact component={user? Dashboard: Home} />
         <Route path="/explore" component={ExplorePage} />
         <Route path="/clubs/:clubID" exact component = {ClubDetails}/>
-        <Route path="/clubboard/:clubID/" exact component = {ClubBoard}/>
-        <Route path="/clubboard/:clubID/events" exact component = {Events}/>
-        <Route path="/clubboard/:clubID/members" exact component = {Members}/>
+        <Route path="/clubboard/:clubID/" exact component = {user? ClubBoard : Home}/>
+        <Route path="/clubboard/:clubID/events" exact component = {user? Events : Home}/>
+        <Route path="/clubboard/:clubID/members" exact component = {user? Members: Home}/>
         <Route path="/myclubs" exact component={MyClubs}/>
+        <Route path="*" component={user? Dashboard: Home} />
       </Switch>
     </Router>
   );
