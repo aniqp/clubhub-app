@@ -43,9 +43,6 @@ export default function PrivateRoute() {
         <Route path="/explore" component={ExplorePage} />
         <Route path="/clubs/:clubID" exact component = {ClubDetails}/>
         <Route path="/clubboard/:clubID/" exact component = {user? ClubBoardHeader : Home}/>
-        <Route path="/clubboard/:clubID/events" exact component = {user? Events : Home}/>
-        <Route path="/clubboard/:clubID/members" exact component = {user? Members: Home}/>
-        <Route path="/clubboard/:clubID/photos" exact component = {user? ImageUploadAndDisplay : Home}/>
         <Route path="/myclubs" exact component={MyClubs}/>
         <Route path="/*" exact component={user? Dashboard: Home}/>
       </Switch>

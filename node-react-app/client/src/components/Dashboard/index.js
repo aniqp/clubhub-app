@@ -221,10 +221,10 @@ const Dashboard = () => {
                     onDashboard={onDashboard}
                     club_id={announcement.club_id}
                   />
-                ) :<>
-                {(myClubs.length > 0 && announcements.length > 0 ) ? <Typography variant="h6" style={{marginTop: "20px" }}>This club has no recent announcements.</Typography> :
-                <>{myClubs.length > 0 && announcements.length === 0 && <Typography variant="h6" style={{marginTop: "20px" }}>You have no recent announcements.</Typography>}</>}
-              </>}
+                ) :
+                myClubs.length > 1 && announcements.length === 0 && clubAnnouncementSelected? <Typography variant="h6" style={{marginTop: "20px" }}>This club has no recent announcements.</Typography> :
+                myClubs.length > 1 && announcements.length === 0 && <Typography variant="h6" style={{marginTop: "20px" }}>You have no recent announcements.</Typography>
+              }
             </Grid>
           </>
           :<>
