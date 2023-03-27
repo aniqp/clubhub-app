@@ -178,7 +178,7 @@ export const Application = ({ members, refetchMembers }) => {
   };
 
   return (
-    <Grid xs={2} item>
+    <Grid xs={3} item>
       <Grid container direction="column">
         <Card className={classes.application}>
           <Typography>
@@ -199,7 +199,7 @@ export const Application = ({ members, refetchMembers }) => {
         </Card>
         {!acceptAll &&
           applicants?.map((app) => (
-            <Card xs={2} key={app.name} className={classes.applicant}>
+            <Card xs={3} key={app.name} className={classes.applicant}>
               <Typography>{app.name}</Typography>
               <Button className={classes.deny} onClick={() => denyUser(app)}>
                 Deny
