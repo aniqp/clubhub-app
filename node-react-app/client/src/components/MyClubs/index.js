@@ -34,6 +34,8 @@ const MyClubs = () => {
 
   const classes = useStyles();
 
+  const [myClubsEmpty, setMyClubsEmpty] = useState(false)
+
   useEffect(() => {
     if (user) {
       console.log('User ID:', user.uid);
@@ -46,11 +48,8 @@ const MyClubs = () => {
 
   useEffect(() => {
     if (myClubs) {
-      console.log('myClubs state has been updated:', myClubs);
     }
   }, [myClubs]);
-
-  console.log('myClubs outside of useEffect: ' + myClubs)
 
   const getMyClubs = () => {
     callApiGetMyClubs()
@@ -59,6 +58,9 @@ const MyClubs = () => {
             var parsed = JSON.parse(res.express);
             console.log("callApiGetClubs: ", parsed);
             setMyClubs(parsed)
+            if(parsed.length == 0) {
+              setMyClubsEmpty(true)
+            }
             console.log('setMyClubs:' + myClubs)
         })
   }
@@ -87,7 +89,7 @@ const callApiGetMyClubs = async () => {
       <Grid container style={{ display: 'flex', flexDirection: 'column' }}>
       <Typography className = {classes.title} variant = "h4"> My Clubs </Typography>
       <br></br>
-        <MyClubCard clubs = {myClubs} onChange={getMyClubs} />
+      {myClubsEmpty === false ? <MyClubCard clubs = {myClubs} onChange={getMyClubs} /> : <Typography variant = "h5">You aren't a part of a club yet. Join one to get started!</Typography>}
       </Grid>
     </div>
   );

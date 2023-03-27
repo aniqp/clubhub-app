@@ -9,6 +9,8 @@ import TransferOwnership from './members/dialogs/TransferOwner';
 import { useParams } from 'react-router-dom';
 import { serverURL } from '../../constants/config';
 import ClubBoardHeader from './ClubBoardHeader';
+import history from "../Navigation/history";
+
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -110,6 +112,8 @@ const Members = ({ name, onChange }) => {
     const [members, setMembers] = React.useState([]);
     const [currentUserRole, setCurrentUserRole] = React.useState('');
     const [isAdmin, setIsAdmin] = React.useState(false);
+    const [isPermitted, setIsPermitted] = React.useState(false);
+
 
 
     React.useEffect(() => {
@@ -148,6 +152,20 @@ const Members = ({ name, onChange }) => {
             .then(res => {
                 var parsed = JSON.parse(res.express);
                 setMembers(parsed);
+
+                if (parsed.length > 0 && user){
+                    let x = parsed.find((member) => member.uid === user.uid)
+
+                    if (!x){
+                        history.push('/')
+                    } else {
+                        setIsPermitted(true);
+                    }
+                }
+
+                if (parsed.length == 0){
+                    history.push('/')
+                }
             })
     }
 
@@ -174,6 +192,7 @@ const Members = ({ name, onChange }) => {
         setCurrentUserRole(role);
     }
 
+    if (!isPermitted) return null;
     return ( <>
         <ClubBoardHeader active={"3"}/>
         <Grid container className={classes.root}>
