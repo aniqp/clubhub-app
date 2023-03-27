@@ -409,7 +409,7 @@ app.post("/api/acceptUser", async (req, res) => {
   app.put("/api/changeApplicationType", async (req, res) => {
 	const currentUser = req["currentUser"];
 	const clubID = req.body["clubID"];
-	const newType = req.body["applicationType"];
+	const newType = !req.body["applicationType"];
   
 	// Check if is admin/owner of this club
 	const admin = await isAdmin(currentUser, clubID);
@@ -421,8 +421,8 @@ app.post("/api/acceptUser", async (req, res) => {
 	// change application type for this club
 	const query = `
 	UPDATE clubs
-	SET application_type=?
-	WHERE club_id=?`;
+	SET hold_applications=?
+	WHERE id=?`;
 	
 	const data = [newType, clubID];
 	
@@ -432,7 +432,7 @@ app.post("/api/acceptUser", async (req, res) => {
 		res.status(500).send(error.message);
 	  } else {
 		// Return a success message
-		res.status(200).send("Application type changed to " + newType);
+		res.status(200).send("Application type changed to " + (newType ? "Hold Applications" : "Accept All"));
 	  }
 	});
 	connection.end();
