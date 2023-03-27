@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import {
   Typography,
@@ -6,9 +6,10 @@ import {
   Card,
   FormControlLabel,
   Button,
+  Switch,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { useAuthHeader } from "../Firebase/"
+import { useAuthHeader } from "../Firebase/";
 
 const useStyles = makeStyles((theme) => ({
   applicant: {
