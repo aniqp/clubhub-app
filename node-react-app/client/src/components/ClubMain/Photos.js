@@ -2,15 +2,17 @@ import React, { useState, useEffect, useRef } from "react";
 import { storage } from "../Firebase/firebase";
 import {
   ref,
+  uploadBytes,
   uploadBytesResumable,
   getDownloadURL,
   listAll,
   deleteObject,
+  getMetadata
 } from "firebase/storage";
 import ClubBoardHeader from './ClubBoardHeader';
 import { useParams } from 'react-router-dom';
 import { v4 } from "uuid"
-import { Grid, ImageList, ImageListItem, Button, Typography, Modal, Card, CardContent, Box, Checkbox } from '@material-ui/core'
+import { Grid, ImageList, ImageListItem, Button, Typography, Modal, Card, CardContent, Box, Checkbox, Fab, CircularProgress } from '@material-ui/core'
 import Alert from '@material-ui/lab/Alert'
 import SpeedDial from "@material-ui/lab/SpeedDial";
 import SpeedDialAction from "@material-ui/lab/SpeedDialAction";
@@ -22,6 +24,7 @@ import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import KeyboardReturnIcon from '@material-ui/icons/KeyboardReturn'
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import CheckCircleOutlinedIcon from '@material-ui/icons/CheckCircleOutlined';
+import InputIcon from '@material-ui/icons/Input';
 
 const ImageUploadAndDisplay = () => {
 
@@ -35,7 +38,13 @@ const ImageUploadAndDisplay = () => {
   const [deleteMenu, setDeleteMenu] = useState(false)
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
   const [selectMenu, setSelectMenu] = useState(false)
-  const [selectedImage, setSelectedImage] = useState(null)
+  const [checkedImages, setCheckedImages] = useState([])
+  const [showMoveButton, setShowMoveButton] = useState(false)
+  const [exploreImages, setExploreImages] = useState([])
+  const [selectImagesModal, setSelectImagesModal] = useState(false)
+  // const [selectedImage, setSelectedImage] = useState(null)
+
+  console.log(checkedImages)
 
   const fileInputRef = useRef(null);
   const handleFileSelect = () => {
@@ -85,12 +94,54 @@ const ImageUploadAndDisplay = () => {
     }
   };
 
+  const handleCheckChange = (event, image) => {
+    let tempCheckedImages = checkedImages.slice()
+    if (event.target.checked) {
+      tempCheckedImages.push(image)
+    }
+    else {
+      tempCheckedImages = tempCheckedImages.filter((storedImage) => storedImage !== image)
+    }
+    setCheckedImages(tempCheckedImages)
+  }
+
+  const handleExploreUpload = async () => {
+    const listRef = ref(storage, `images/${clubID}/explore`);
+    const list = await listAll(listRef);
+    if (checkedImages.length > 0) {
+      await Promise.all(list.items.map((fileRef) => deleteObject(fileRef)));
+    }
+
+    for (let i = 0; i < checkedImages.length; i++) {
+      const checkedImage = ref(storage, checkedImages[i]);
+      const checkedImageMetadata = await getMetadata(checkedImage)
+      const checkedImageName = checkedImageMetadata.name
+      const checkedImageUrl = await getDownloadURL(checkedImage)
+      const targetRef = ref(storage, `images/${clubID}/explore/${checkedImageName}`);
+
+      const response = await fetch(checkedImageUrl)
+      const imageData = await response.blob()
+
+      await uploadBytes(targetRef, imageData)
+    }
+  }
+
   const deleteImage = async (imageUrl) => {
     const imageName = getImageNameFromUrl(imageUrl);
     const imageRef = ref(storage, `${imageName}`);
+    const exploreFileName = decodeURIComponent(imageUrl.split('/').pop().split('?')[0]).split("clubboard/")[1];
+    const exploreFileRef = ref(storage, `images/${clubID}/explore/${exploreFileName}`)
     await deleteObject(imageRef);
+    await deleteObject(exploreFileRef)
     setImages((prevState) => prevState.filter((url) => url !== imageUrl));
   };
+
+  const formatFileName = async (item) => {
+    const downloadUrl = await getDownloadURL(item);
+    const filePath = decodeURIComponent(downloadUrl.split('/').pop().split('?')[0]);
+    const fileName = filePath.split("explore/")[1]
+    return fileName;
+  }
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -102,11 +153,29 @@ const ImageUploadAndDisplay = () => {
     fetchImages();
   }, [clubID]);
 
+  useEffect(() => {
+    const fetchExploreImages = async () => {
+      const listRef = ref(storage, `images/${clubID}/explore`);
+      const list = await listAll(listRef);
+      // const imageUrlStrings = await Promise.all(list.items.map((item) => item.name))
+      const checkedImageUrls = await Promise.all(list.items.map(async (item) => {
+        const downloadUrl = await getDownloadURL(item);
+        const fileName = decodeURIComponent(downloadUrl.split('/').pop().split('?')[0]).split("explore/")[1];
+        const clubboardFileRef = ref(storage, `images/${clubID}/clubboard/${fileName}`)
+        const clubboardDownloadUrl = await getDownloadURL(clubboardFileRef)
+        return clubboardDownloadUrl
+      }));
+      setCheckedImages(checkedImageUrls)
+    };
+    fetchExploreImages();
+  }, [selectImagesModal, selectMenu, clubID]);
+
+
   return (
     <div>
       <ClubBoardHeader active={"5"} />
       <Grid container style={{ padding: '30px 30px' }}>
-        <Grid item xs={8} style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end' }}>
+        <Grid item xs={7} style={{ display: 'flex', justifyContent: 'start', alignItems: 'flex-end' }}>
           <ImageGrid
             images={images}
             deleteImage={deleteImage}
@@ -114,9 +183,37 @@ const ImageUploadAndDisplay = () => {
             openDeleteModal={openDeleteModal}
             setOpenDeleteModal={setOpenDeleteModal}
             selectMenu={selectMenu}
+            checkedImages={checkedImages}
+            setCheckedImages={setCheckedImages}
+            handleCheckChange={handleCheckChange}
+            exploreImages={exploreImages}
+            formatFileName={formatFileName}
           />
         </Grid>
-        <Grid item xs={4} style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end', paddingBottom: '30px' }}>
+        {/* if an image has been checked, show the option to display it on the explore page */}
+        <Grid item xs={3} style={{ display: 'flex', justifyContent: 'center' }}>
+          {checkedImages.length > 0 && selectMenu &&
+            <Fab size="large" variant="extended" color="secondary" aria-label="set explore page images"
+              onClick={() => {
+                if (checkedImages.length <= 3) {
+                  handleExploreUpload();
+                  setCheckedImages([]);
+                  setSelectMenu(false);
+                  setSelectImagesModal(true);
+                  setTimeout(() => {
+                    setSelectImagesModal(false)
+                    setSelectMenu(false)
+                  }, 5000)
+                } else {
+                  console.log("array too long");
+                }
+              }}>
+              Display
+              <InputIcon style={{ paddingLeft: '5px' }} />
+            </Fab>
+          }
+        </Grid>
+        <Grid item xs={2} style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end', paddingBottom: '30px' }}>
           <ImageModal
             openModal={openModal}
             setImage={setImage}
@@ -139,9 +236,27 @@ const ImageUploadAndDisplay = () => {
             deleteMenu={deleteMenu}
             selectMenu={selectMenu}
             setSelectMenu={setSelectMenu}
+            setCheckedImages={setCheckedImages}
           />
         </Grid>
       </Grid>
+      <Modal
+        open={selectImagesModal}>
+        <Card>
+          <CardContent>
+            <Grid container style={{ display: 'flex', justifyContent: 'center' }}>
+              <Grid container item xs={12} justifyContent='center'>
+                <Typography style={{ display: 'flex', justifyContent: 'center' }}>
+                  Uploading Images to Explore Page...
+                </Typography>
+              </Grid>
+              <Grid container item xs={12} justifyContent='center'>
+                <CircularProgress />
+              </Grid>
+            </Grid>
+          </CardContent>
+        </Card>
+      </Modal>
     </div >
   );
 }
@@ -157,45 +272,34 @@ const ImageGrid = (props) => {
   };
 
   return (<>
-    <ImageList cols={3} gap={4} rowHeight={300} style={{ alignItems: 'center' }}>
+    <ImageList cols={3} gap={4} rowHeight={300} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', minWidth: '200px' }}>
       {props.images.map((image, index) => (
-        <ImageListItem key={index} style={{ objectFit: 'cover' }}>
+        <ImageListItem key={index} style={{ objectFit: 'cover', minWidth: '200px' }}>
           <img src={image} alt="Club" onMouseOver={(e) => e.currentTarget.style.filter = 'brightness(70%)'}
             onMouseOut={(e) => e.currentTarget.style.filter = 'brightness(100%)'}
             style={{ borderRadius: '16px', objectFit: 'cover', width: '100%', height: '100%', cursor: 'pointer' }}
-            onClick={() => setSelectedImage(image)}
+            onClick={() => { setSelectedImage(image); console.log(typeof (image)) }}
           />
           {props.deleteMenu &&
             <div>
               <button
                 style={{
-                  position: "absolute",
-                  top: 0,
-                  right: 0,
-                  background: "red",
-                  color: "white",
-                  borderRadius: "50%",
-                  border: "none",
-                  cursor: "pointer",
+                  position: "absolute", top: 0, right: 0, background: "red", color: "white", borderRadius: "50%", border: "none", cursor: "pointer",
                 }}
                 onClick={() => {
                   props.setOpenDeleteModal(true);
                   setImageDeleted(image)
-                }
-                }
-              >
+                }}>
                 X
               </button>
             </div>
           }
-          {props.selectMenu && <Checkbox ariaLabel='Checkbox' color="primary" icon={<CheckCircleOutlinedIcon />} checkedIcon={<CheckCircleIcon />}
+          {props.selectMenu && <Checkbox ariaLabel='Checkbox' color="primary" icon={<CheckCircleOutlinedIcon />}
+            checkedIcon={<CheckCircleIcon />}
+            onChange={(event) => props.handleCheckChange(event, image)}
+            checked={props.checkedImages.includes(image)}
             style={{
-              position: "absolute",
-              top: 0,
-              right: 0,
-              borderRadius: "50%",
-              border: "none",
-              cursor: "pointer",
+              position: "absolute", top: 0, right: 0, borderRadius: "50%", border: "none", cursor: "pointer",
             }}
           />}
         </ImageListItem>
