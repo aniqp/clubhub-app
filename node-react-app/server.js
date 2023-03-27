@@ -402,6 +402,37 @@ app.post("/api/acceptUser", async (req, res) => {
 	return res.status(200).json({data: {acceptAll: acceptAll}});
   });
   
+  app.put("/api/changeApplicationType", async (req, res) => {
+	const currentUser = req["currentUser"];
+	const clubID = req.body["clubID"];
+	const newType = req.body["applicationType"];
+  
+	// Check if is admin/owner of this club
+	const admin = await isAdmin(currentUser, clubID);
+	if (!admin.status) {
+	  return res.status(400).send(admin.message);
+	}
+  
+	let connection = mysql.createConnection(config);
+	// change application type for this club
+	const query = `
+	UPDATE clubs
+	SET application_type=?
+	WHERE club_id=?`;
+	
+	const data = [newType, clubID];
+	
+	connection.query(query, data, (error, results) => {
+	  if (error) {
+		// Return an error if the query failed
+		res.status(500).send(error.message);
+	  } else {
+		// Return a success message
+		res.status(200).send("Application type changed to " + newType);
+	  }
+	});
+	connection.end();
+  });
 
 app.post('/api/getAllClubs', (req, res) => {
 	// Query all clubs from the clubs table
