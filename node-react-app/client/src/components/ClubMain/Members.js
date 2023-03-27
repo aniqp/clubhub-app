@@ -244,8 +244,8 @@ const Members = ({ name, onChange }) => {
                             </TableBody>))} 
                         </Table> 
                     </TableContainer>}
-                    <Application/>
             </Grid>        
+            <Application members={members} refetchMembers={getClubMembers}/>
         </Grid>
         </>)
 }
