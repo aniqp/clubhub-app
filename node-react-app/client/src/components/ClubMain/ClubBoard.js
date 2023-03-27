@@ -243,7 +243,7 @@ const ClubBoard = () => {
             {toggle == '2' && <>Temp</>}
             {toggle == '3' && <>Temp</>}
             {toggle === '4' && 
-                    <Members name={clubTitle} members={members} isAdmin={admin} acceptAll={acceptAll}/>}
+                    <Members name={clubTitle} members={members} isAdmin={admin} acceptAll={acceptAll} refetchMembers={getClubMembers}/>}
             {toggle == '5' && <>Temp</>}
         </Grid>
     </>)
