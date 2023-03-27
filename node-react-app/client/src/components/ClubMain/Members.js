@@ -124,7 +124,7 @@ const Members = ({ name, onChange }) => {
         if (members.length > 0){
             setCurrentUserRole(members.find((member) => member.uid == user.uid).role)
             
-            if (currentUserRole !== 'user'){
+            if (["owner", "admin"].includes(currentUserRole)){
                 setIsAdmin(true);
             } else {
                 setIsAdmin(false);
