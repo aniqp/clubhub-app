@@ -83,6 +83,13 @@ const Announcements = () => {
                 if (parsed.length == 0){
                     setNoAnnouncementMsg('NO ANNOUNCEMENTS YET')
                 }
+                if (parsed.length > 0) {
+                    let x = parsed.find((announcement)=> announcement.visibility === 'public')
+                    if (!x){
+                        console.log('in')
+                        setNoAnnouncementMsg('NO ANNOUNCEMENTS YET')
+                    }
+                }
             })
     }
 
@@ -104,11 +111,12 @@ const Announcements = () => {
         return body;
     }
 
+    
     return(<>
         <ClubBoardHeader active={"1"}/>
             <Grid className={[classes.root]} sx={{height:'100%'}}>
                 <Grid style={{display:'flex'}}>
-                    {clubAnnouncements.length > 0 ?
+                    {(clubAnnouncements.length > 0 && noAnnouncementMsg === '') ?
                     <Grid xs={8} style={{padding:'0 20px'}} >
                         {Object.values(clubAnnouncements).map((announcement, index) => <>
                             <AnnouncementPost onDashboard={false} admin={admin} announcement={announcement} onChange={getClubAnnouncements}/>

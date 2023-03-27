@@ -423,6 +423,31 @@ app.post('/api/getAnnouncements', (req,res) => {
 	});
 });
 
+app.post('/api/getDashboardEvents', (req,res) => {
+
+	let connection = mysql.createConnection(config);
+	// let clubID = req.body.clubID;
+	let userID = req.body.userID;
+
+	let sql = `SELECT clubs.name, e.club_id, e.title, e.id, e.location, e.start_time, e.end_time, e.body, e.price, e.allDay, e.placeholderPhoto, e.start_time_text, e.end_time_text, memberships.role, clubs.id club_id  from events e
+	INNER JOIN memberships on memberships.club_id = e.club_id
+	INNER JOIN clubs on clubs.id = memberships.club_id
+	WHERE memberships.uid = ?
+	AND DATE(e.time_posted) >= DATE(DATE_SUB(NOW(), INTERVAL 12 WEEK))
+	order by e.start_time asc`;
+
+	const data = userID
+
+	connection.query(sql, data, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message);
+		}
+		let string = JSON.stringify(results);
+		res.send({ express: string })
+		//console.log(string)
+	});
+});
+
 app.post('/api/leaveClub', (req,res) => {
 	let connection = mysql.createConnection(config);
 	let clubID = req.body.clubId;
@@ -465,7 +490,8 @@ app.post('/api/getUpcomingEvents', (req,res) => {
 
 	let sql = `select * from events where club_id = ? and start_time >= ? order by start_time asc`
 	const data = [clubID, todaysDate];
-	
+	console.log(sql);
+	console.log(data);
 	connection.query(sql, data, (error, results, fields) => {
 		if (error) {
 			return console.error(error.message);

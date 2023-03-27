@@ -1,8 +1,8 @@
-import React, {useEffect, useState} from "react";
-import history from '../Navigation/history';
+import React, {useState} from "react";
 import { useParams } from 'react-router-dom';
-import { makeStyles, Menu, MenuItem, IconButton, Box, Card, Grid, Button, Typography, Collapse, CardContent, Tooltip, Dialog } from "@material-ui/core";
+import { makeStyles, Menu, MenuItem, IconButton, Box, Card, Grid, Button, ButtonGroup, Typography, Collapse, CardContent, Tooltip, Dialog } from "@material-ui/core";
 import Skeleton from '@material-ui/lab/Skeleton';
+import { Pagination } from "@material-ui/lab";
 import sidebar from '../../images/events/sidebar.jpg'
 import PeopleIcon from '@material-ui/icons/People';
 import img1 from '../../images/events/celebration.png'
@@ -28,6 +28,8 @@ import ClubBoardHeader from "./ClubBoardHeader";
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import DeleteIcon from '@material-ui/icons/Delete';
 import caution from '../../images/caution-icon.png';
+import { Link } from "react-router-dom";
+import EventPost from "./EventPost";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -261,13 +263,13 @@ const Events = () => {
                     <Typography style={{fontSize:'22pt', fontWeight:'300'}}>Upcoming Events</Typography>
                         {upcomingEvents.length > 0 ? <>
                         {Object.values(upcomingEvents).map((event, index) => 
-                            <EventList event={event} admin={admin} index={index} currentUser={user} pastEvent={false} onChange={getEvents}/>
+                            <EventPost event={event} admin={admin} index={index} currentUser={user} pastEvent={false} onChange={getEvents}/>
                         )}</> : <>
                         {!isLoadingUpcomingEvents &&
                         <Grid style={{display:'flex', justifyContent:'center', padding:'50px'}}>
                             <Typography style={{color: '#C0C0C0', letterSpacing: '0.5px', fontSize: '14pt'}}>NO UPCOMING EVENTS</Typography>
                         </Grid>
-                        }</>}
+                        }</>}  
                     </Card>
                 </Grid>
                 <Grid style={{marginTop:'50px'}}>
@@ -276,7 +278,7 @@ const Events = () => {
                         {pastEvents.length > 0 ? 
                         <> 
                         {Object.values(pastEvents).map((event, index) => 
-                            <EventList event={event} admin={admin} index={index} currentUser={user} pastEvent={true}/>
+                            <EventPost event={event} admin={admin} index={index} currentUser={user} pastEvent={true} onChange={getEvents}/>
                         )}
                         </> : <> {!isLoadingPastEvents &&
                         <Grid style={{display:'flex', justifyContent:'center', padding:'50px'}}>
@@ -342,333 +344,360 @@ const EventImage = ({image, skeletonWidth, skeletonHeight}) => {
     )
 }
 
-const EventList = ({event, index, currentUser, pastEvent, onChange, admin}) => {
-    const classes = useStyles();
-    const [expanded, setExpanded] = React.useState(null);
-    const [attendance, setAttendance] = React.useState([]);
-    const [status, setStatus] = React.useState(null);
+// const EventPost = ({event, index, currentUser, pastEvent, onChange, admin}) => {
+//     const classes = useStyles();
+//     const [expanded, setExpanded] = React.useState(null);
+//     const [attendance, setAttendance] = React.useState([]);
+//     const [status, setStatus] = React.useState(null);
 
-    const [deleteEventModal, setDeleteEventModal] = React.useState(false);
-    const [attendanceModal, setAttendanceModal] = React.useState(false);
+//     const [deleteEventModal, setDeleteEventModal] = React.useState(false);
+//     const [attendanceModal, setAttendanceModal] = React.useState(false);
 
-    React.useEffect(() => {
-        getAttendance();
-    }, [])
+//     React.useEffect(() => {
+//         getAttendance();
+//     }, [])
 
-    const getAttendance = () => {
-        callApiGetAttendance()
-            .then(res => {
-                var parsed = JSON.parse(res.express);
-                setAttendance(parsed);
-                if (parsed.length > 0){
-                    let user = parsed.find((member) => member.uid === currentUser.uid);
-                    let status = user.status
-                    if (status){
-                        setStatus(status)
-                    } else {
-                        setStatus(null);
-                    }
-                }
-            })
-    }
+//     const getAttendance = () => {
+//         callApiGetAttendance()
+//             .then(res => {
+//                 var parsed = JSON.parse(res.express);
+//                 setAttendance(parsed);
+//                 if (parsed.length > 0){
+//                     let user = parsed.find((member) => member.uid === currentUser.uid);
+//                     let status = user.status
+//                     if (status){
+//                         setStatus(status)
+//                     } else {
+//                         setStatus(null);
+//                     }
+//                 }
+//             })
+//     }
     
-    const callApiGetAttendance = async () => {
-        const url = serverURL + '/api/getAttendance';
-        const response = await fetch(url, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                //authorization: `Bearer ${this.state.token}`
-            },
-            body: JSON.stringify({
-                eventID: event.id,
-            })
-        });
-        const body = await response.json();
-        if (response.status !== 200) throw Error(body.message);
-        return body;
-    }
+//     const callApiGetAttendance = async () => {
+//         const url = serverURL + '/api/getAttendance';
+//         const response = await fetch(url, {
+//             method: "POST",
+//             headers: {
+//                 "Content-Type": "application/json",
+//                 //authorization: `Bearer ${this.state.token}`
+//             },
+//             body: JSON.stringify({
+//                 eventID: event.id,
+//             })
+//         });
+//         const body = await response.json();
+//         if (response.status !== 200) throw Error(body.message);
+//         return body;
+//     }
     
-    const getStatus = () => {
-        if (attendance.length > 0){
-            console.log('in')
-            let user = attendance.find((member) => member.uid === currentUser.uid);
-            let status = user.status
-            return status || null
-        }
-        return null
-    }
+//     const getStatus = () => {
+//         if (attendance.length > 0){
+//             console.log('in')
+//             let user = attendance.find((member) => member.uid === currentUser.uid);
+//             let status = user.status
+//             return status || null
+//         }
+//         return null
+//     }
 
-    const handleEvent = (e) => {
-        // console.log(currentUser);
-        // let name = currentUser.displayName
-        // console.log(name)
-        if (status) {
-            callApiChangeAttendance(e.currentTarget.value)
-            .then(res => {
-                var parsed = JSON.parse(res.express);
-                getAttendance();
-            })
+//     const handleEvent = (e) => {
+//         if (status) {
+//             callApiChangeAttendance(e.currentTarget.value)
+//             .then(res => {
+//                 var parsed = JSON.parse(res.express);
+//                 getAttendance();
+//             })
 
-        } else {
-            callApiSetAttendance(e.currentTarget.value)
-            .then(res => {
-                var parsed = JSON.parse(res.express);
-                getAttendance();
-            })
-        }
+//         } else {
+//             callApiSetAttendance(e.currentTarget.value)
+//             .then(res => {
+//                 var parsed = JSON.parse(res.express);
+//                 getAttendance();
+//             })
+//         }
     
-    }
+//     }
 
-    const callApiSetAttendance = async (newStatus) => {
-        const url = serverURL + '/api/setAttendance';
-        const response = await fetch(url, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                //authorization: `Bearer ${this.state.token}`
-            },
-            body: JSON.stringify({
-                eventID: event.id,
-                userID: currentUser.uid,
-                attendanceStatus: newStatus,
-                name: currentUser.displayName,
-            })
-        });
+//     const callApiSetAttendance = async (newStatus) => {
+//         const url = serverURL + '/api/setAttendance';
+//         const response = await fetch(url, {
+//             method: "POST",
+//             headers: {
+//                 "Content-Type": "application/json",
+//                 //authorization: `Bearer ${this.state.token}`
+//             },
+//             body: JSON.stringify({
+//                 eventID: event.id,
+//                 userID: currentUser.uid,
+//                 attendanceStatus: newStatus,
+//                 name: currentUser.displayName,
+//             })
+//         });
 
-        const body = await response.json();
-        if (response.status !== 200) throw Error(body.message);
-        return body;
-    }
+//         const body = await response.json();
+//         if (response.status !== 200) throw Error(body.message);
+//         return body;
+//     }
 
-    const callApiChangeAttendance = async (newStatus) => {
-        const url = serverURL + '/api/changeAttendance';
-        const response = await fetch(url, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                //authorization: `Bearer ${this.state.token}`
-            },
-            body: JSON.stringify({
-                eventID: event.id,
-                userID: currentUser.uid,
-                attendanceStatus: newStatus,
-            })
-        });
+//     const callApiChangeAttendance = async (newStatus) => {
+//         const url = serverURL + '/api/changeAttendance';
+//         const response = await fetch(url, {
+//             method: "POST",
+//             headers: {
+//                 "Content-Type": "application/json",
+//                 //authorization: `Bearer ${this.state.token}`
+//             },
+//             body: JSON.stringify({
+//                 eventID: event.id,
+//                 userID: currentUser.uid,
+//                 attendanceStatus: newStatus,
+//             })
+//         });
 
-        const body = await response.json();
-        if (response.status !== 200) throw Error(body.message);
-        return body;
-    }
+//         const body = await response.json();
+//         if (response.status !== 200) throw Error(body.message);
+//         return body;
+//     }
     
-    const attending = attendance.filter((member) => member.status === 'going');
-    const maybeAttending = attendance.filter((member) => member.status === 'maybe');
-    const notAttending = attendance.filter((member) => member.status === 'not going');
+//     const attending = attendance.filter((member) => member.status === 'going');
+//     const maybeAttending = attendance.filter((member) => member.status === 'maybe');
+//     const notAttending = attendance.filter((member) => member.status === 'not going');
 
-    const handleExpandClick = (clickedIndex) => {
-        if (expanded === clickedIndex){
-            setExpanded(null)
-        } else {
-            setExpanded(clickedIndex)
-        }
-    };
+//     const handleExpandClick = (clickedIndex) => {
+//         if (expanded === clickedIndex){
+//             setExpanded(null)
+//         } else {
+//             setExpanded(clickedIndex)
+//         }
+//     };
 
     
-    let startDateTime = event.start_time_text.split(' ');
-    startDateTime = startDateTime[1] + ' '+ startDateTime[2] + ' '+  startDateTime[4] + ' ' + startDateTime[5]
+//     let startTimeText = event.start_time_text.split(' ');
+//     let start_date = startTimeText[1] + ' ' + startTimeText[2]
+//     let start_time = ''
+//     if (!event.allDay){
+//         start_time = startTimeText[4] + ' ' + startTimeText[5]
+//     } else {
+//         start_date = start_date + ' ' + startTimeText[3]
+//     }
 
-    let endDateTime = ''
-    if (event.end_time_text){
-        let endDateTime = event.start_time_text.split(' ');
-        endDateTime = endDateTime[1] + ' '+ endDateTime[2] + ' '+  endDateTime[4] + ' ' + endDateTime[5]
-    }
+//     let endTimeText = ''
+//     let end_date = ''
+//     let end_time = ''
+//     if (event.end_time_text){
+//         endTimeText = event.start_time_text.split(' ');
+//         end_date = endTimeText[1] + ' '+ endTimeText[2] 
+//         end_time = endTimeText[4] + ' ' + endTimeText[5]
+//     }
 
-    const handleDelete = () => {
-        callApiDeleteEvent()
-            .then(res => {
-                var parsed = JSON.parse(res.express);
-                onChange();
-            })
-    }
+//     const handleDelete = () => {
+//         callApiDeleteEvent()
+//             .then(res => {
+//                 var parsed = JSON.parse(res.express);
+//                 onChange();
+//             })
+//     }
 
-    const callApiDeleteEvent = async () => {
-        const url = serverURL + '/api/deleteEvent';
-        const response = await fetch(url, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                //authorization: `Bearer ${this.state.token}`
-            },
-            body: JSON.stringify({
-                eventID: event.id,
-            })
-        });
+//     const callApiDeleteEvent = async () => {
+//         const url = serverURL + '/api/deleteEvent';
+//         const response = await fetch(url, {
+//             method: "POST",
+//             headers: {
+//                 "Content-Type": "application/json",
+//                 //authorization: `Bearer ${this.state.token}`
+//             },
+//             body: JSON.stringify({
+//                 eventID: event.id,
+//             })
+//         });
 
-        const body = await response.json();
-        if (response.status !== 200) throw Error(body.message);
-        return body;
-    }
+//         const body = await response.json();
+//         if (response.status !== 200) throw Error(body.message);
+//         return body;
+//     }
 
+//     let allDayTime = event.start_time_text.split(' ');
+//     allDayTime = allDayTime[0] + ' ' + allDayTime[1] + ' ' + allDayTime[2] + ' ' + allDayTime[3]
 
-    return(
-        <Card style={{ margin:'20px 0 30px', padding:'20px 10px 20px 20px'}}>
-            <Grid style={{display:'flex'}}>
-                <Grid sx={3}>
-                    <EventImage image={event.placeholderPhoto} skeletonWidth={280} skeletonHeight = {180}/>
-                </Grid>
+//     return(
+//         <Card style={{ margin:'20px 0 30px', padding:'20px 10px 20px 20px'}}>
+//             <Grid style={{display:'flex'}}>
+//                 <Grid sx={3}>
+//                     <EventImage image={event.placeholderPhoto} skeletonWidth={280} skeletonHeight = {180}/>
+//                 </Grid>
 
-                <Grid xs={7} style={{borderRight:'1px solid lightgray', display:'flex', flexDirection:'column', justifyContent:'space-between'}}>
-                    <Grid>
-                        <Grid style={{display:'flex', padding:'0 10px 0 30px', justifyContent:'space-between', alignItems:'center'}}>
-                            <Typography color='secondary' style={{fontFamily:"system-ui",letterSpacing:'1.1px', fontSize: '11pt', fontWeight: 400}}>
-                                {event.start_time_text}
-                            </Typography>
-                            {admin && <>
-                            <LongMenu deleteEvent={()=> setDeleteEventModal(true)}/>
-                            <DeleteDialog open={deleteEventModal} close={()=>{setDeleteEventModal(false)}} onSubmit={handleDelete} title={event.title} /> </>}
-                        </Grid>
-                        <Typography style={{padding: '5px 30px', fontSize: '18pt', fontWeight: 600}}>{event.title}</Typography>
-                        <Typography style={{padding: '5px 30px', fontSize: '10pt', fontWeight: 400}}>{event.body}</Typography>
-                    </Grid>
+//                 <Grid xs={7} style={{borderRight:'1px solid lightgray', display:'flex', flexDirection:'column', justifyContent:'space-between'}}>
+//                     <Grid>
+//                         <Grid style={{display:'flex', padding:'0 10px 0 30px', justifyContent:'space-between', alignItems:'center'}}>
+//                             <Typography color='secondary' style={{fontFamily:"system-ui",letterSpacing:'1.1px', fontSize: '11pt', fontWeight: 400}}>
+//                                 {event.allDay ? <>{allDayTime}</> : <>{event.start_time_text}</>}
+//                             </Typography>
+//                             {admin && <>
+//                             <LongMenu deleteEvent={()=> setDeleteEventModal(true)}/>
+//                             <DeleteDialog open={deleteEventModal} close={()=>{setDeleteEventModal(false)}} onSubmit={handleDelete} title={event.title} /> </>}
+//                         </Grid>
+//                         <Typography style={{padding: '5px 30px', fontSize: '18pt', fontWeight: 600}}>{event.title}</Typography>
+//                         <Typography style={{padding: '5px 30px', fontSize: '10pt', fontWeight: 400}}>{event.body}</Typography>
+//                     </Grid>
 
-                    <Grid style={{display:'flex', justifyContent:'end', padding:'0 30px'}}>
-                        <Button onClick={() => {handleExpandClick(index)}} style={{textTransform:'none', margin:'5px 0'}}>
-                            <b style={{color:'rgba(0, 0, 0, 0.54)', letterSpacing:'0.5px', fontSize:'9.5pt'}}>
-                               {expanded === null && <>MORE</>}{expanded !== null && <>LESS</>} DETAILS
-                            </b>
-                            {expanded === null && <ExpandMoreIcon color="action"/>}
-                            {expanded !== null && <ExpandLessIcon color="action"/>}
-                        </Button>
-                    </Grid>
-                </Grid>
-                <Grid xs={2} style={{ paddingLeft:'10px', display:'flex', flexDirection:'column', alignItems:'end', justifyContent:'space-between'}}>
-                    <Grid style={{display:'flex', flexDirection:'column', marginRight:'10px'}}>
-                        <Typography style={{display: 'flex', paddingLeft:'10px', paddingBottom: '6px',fontSize: '10.5pt',color: 'grey'}}>
-                            {!pastEvent && <>{(status) ? <>Your status:</> : <>Set your status:</> }</>}
-                        </Typography>
-                        {!pastEvent && <>
-                        <Button 
-                            value={"going"}
-                            disabled={pastEvent}
-                            onClick={handleEvent}
-                            className={[status === 'going' && classes.activeBtn1, (status && status !== 'going') && classes.inactiveBtn, ]} 
-                            style={{fontSize:'10.5pt', width:'130px', textTransform:'none', margin:'5px', borderRadius:'20px'}} 
-                            variant='outlined' 
-                            color='primary'>
-                            Attending{!status && <>?</>}
-                        </Button>
-                        <Button value={"maybe"}
-                            disabled={pastEvent}
-                            onClick={handleEvent} className={[status === 'maybe' && classes.activeBtn1,(status && status !== 'maybe') && classes.inactiveBtn]} style={{fontSize:'10.5pt',width:'130px',textTransform:'none', margin:'5px', borderRadius:'20px'}} variant='outlined' color='primary'>
-                            Might Attend{!status && <>?</>}
-                        </Button>
-                        <Button value={"not going"}
-                            disabled={pastEvent}
-                            onClick={handleEvent} className={[status === 'not going' && classes.activeBtn1, (status && status !== 'not going') && classes.inactiveBtn]} style={{fontSize:'10.5pt',width:'130px',textTransform:'none', margin:'5px', borderRadius:'20px'}} variant='outlined' color='primary'>
-                            Not Attending{!status && <>?</>}
-                        </Button> </>}
-                        {pastEvent && <>
-                            <Button
-                                disabled
-                                className={[status === 'going' ? classes.activeBtn2 : classes.hidden]} 
-                                style={{fontSize:'10.5pt', width:'130px', textTransform:'none', margin:'5px', borderRadius:'20px'}} 
-                                variant='outlined' 
-                                color='primary'>
-                                Attended
-                            </Button>
-                            <Button
-                                disabled
-                                className={[status !== 'going' ? classes.activeBtn2 : classes.hidden]} 
-                                style={{fontSize:'10.5pt',width:'130px',textTransform:'none', margin:'5px', borderRadius:'20px'}} 
-                                variant='outlined' 
-                                color='primary'>
-                                Did not attend
-                            </Button>
-                        </>}
-                    </Grid>
-                </Grid>
-            </Grid>
-            <Collapse in={expanded === index} timeout="auto" unmountOnExit>
-                <CardContent style={{borderTop:'1px solid lightgrey', marginTop:'20px'}}>
-                    <Grid style={{display:'flex'}}>
-                        <Grid xs={4} style={{paddingRight:'15px'}}>
-                            <Typography className={classes.detailsHeader}>Additional Event Info</Typography>
-                            <Typography paragraph>{event.additionalDetails}</Typography>
-                        </Grid>
-                        <Grid xs={4} style={{display:'flex', flexDirection:'column', padding:'0 15px', borderLeft:'1px lightgrey solid', borderRight:'1px lightgrey solid'}}>
-                            <Grid style={{display:'flex',justifyContent:'space-between', marginBottom:'15px'}}>
-                                <Grid style={{display:'flex', flexDirection:'column', margin: '0 0 0 10px'}}>
-                                    <Typography className={classes.detailsHeader}>Start Date/Time</Typography>
-                                    <Typography style={{marginRight:'3px'}}>{startDateTime}</Typography>
-                                </Grid>
-                                {event.end_time_text &&
-                                <Grid style={{display:'flex', flexDirection:'column',  borderLeft: '1px solid lightgrey', margin: '0 0px 0 10px'}}>
-                                    <Typography className={classes.detailsHeader}>End Date/Time</Typography>
-                                    <Typography>{endDateTime}</Typography>
-                                </Grid>}
-                            </Grid>
-                            <Grid style={{display:'flex', flexDirection:'column', marginLeft:'10px', marginBottom:'15px'}}>
-                                <Typography className={classes.detailsHeader}>Type of Event</Typography>
-                                <Grid style={{display:'flex'}}>
-                                    {event.location_type === 'online' &&
-                                    <Typography style={{fontSize:'11pt', borderRadius:'14px', background:'#FF6B6B', padding:'5px 10px', marginRight:'5px', color:'white'}}>Online</Typography>}
-                                    {event.location_type === 'in-person' &&
-                                    <Typography style={{fontSize:'11pt', borderRadius:'14px', background:'#7A86CC', padding:'5px 10px', marginRight:'5px', color:'white'}}>In-person</Typography>}
-                                    {event.allDay == 1 &&
-                                     <Typography style={{fontSize:'11pt', borderRadius:'14px', background:'#5FB49C', padding:'5px 10px', color:'white', marginRight:'5px'}}>All Day</Typography>}
-                                </Grid>
-                            </Grid>
-                            <Grid style={{display:'flex', flexDirection:'column', marginLeft:'10px', marginBottom:'15px'}}>
-                                <Typography className={classes.detailsHeader}>Location</Typography>
-                                {event.location_type === 'online' &&
-                                <Typography><a>{event.location}</a></Typography>}
-                                {event.location_type === 'in-person' && 
-                                <Typography style={{fontSize:'11pt'}}>{event.location}</Typography>}
-                            </Grid>
-                            {event.price &&
-                            <Grid style={{display:'flex', flexDirection:'column', marginLeft:'10px'}}>
-                                <Typography className={classes.detailsHeader}>Price</Typography>
-                                <Typography style={{fontSize:'11pt'}}>${event.price}</Typography>
-                            </Grid>}
-                        </Grid>
-                        <Grid xs={4} style={{padding:'0 15px', display:'flex', flexDirection:'column'}}>
-                            <Grid style={{display:'flex'}}>
-                                <PeopleIcon color="action"  />
-                                <Typography style={{color:'rgba(0, 0, 0, 0.54)', padding:'0 0 10px 10px'}}>{attendance.length} member{attendance.length != 1 && <>s</>} responded</Typography>
-                            </Grid>
-                            {attending.length > 0 &&
-                            <Grid>
-                                <Typography className={classes.detailsHeader}>Going</Typography>
-                                <AvatarGroupList list={attending} />
-                            </Grid>}
-                            {maybeAttending.length > 0 && 
-                            <Grid>
-                                <Typography className={classes.detailsHeader}>Maybe</Typography>
-                                <AvatarGroupList list={maybeAttending} />
-                            </Grid>}
-                            {notAttending.length > 0 &&
-                            <Grid>
-                                <Typography className={classes.detailsHeader}>Not Going</Typography>
-                                <AvatarGroupList list={notAttending} />
-                            </Grid>}
-                            {attendance.length > 0 && <>
-                            <Button variant="outlined" color="primary" style={{textTransform:'none', margin:'20px 0'}} onClick={()=>{setAttendanceModal(true)}}>See Attendance List</Button>
-                            <AttendanceModal open={attendanceModal} close={()=>{setAttendanceModal(false)}} going={attending} maybe={maybeAttending} notGoing={notAttending}/>
-                            </>}
-                        </Grid>  
-                    </Grid>
-                </CardContent>
-            </Collapse>
-        </Card>
-        )
+//                     <Grid style={{display:'flex', justifyContent:'end', padding:'0 30px'}}>
+//                         <Button onClick={() => {handleExpandClick(index)}} style={{textTransform:'none', margin:'5px 0'}}>
+//                             <b style={{color:'rgba(0, 0, 0, 0.54)', letterSpacing:'0.5px', fontSize:'9.5pt'}}>
+//                                {expanded === null && <>MORE</>}{expanded !== null && <>LESS</>} DETAILS
+//                             </b>
+//                             {expanded === null && <ExpandMoreIcon color="action"/>}
+//                             {expanded !== null && <ExpandLessIcon color="action"/>}
+//                         </Button>
+//                     </Grid>
+//                 </Grid>
+//                 <Grid xs={2} style={{ paddingLeft:'10px', marginLeft:'10px', display:'flex', flexDirection:'column', alignItems:'end', justifyContent:'space-between'}}>
+//                     <Grid style={{display:'flex', flexDirection:'column', marginRight:'10px'}}>
+//                         <Typography style={{display: 'flex', paddingLeft:'10px', paddingBottom: '6px',fontSize: '10.5pt',color: 'grey'}}>
+//                             {!pastEvent && <>{(status) ? <>Your status:</> : <>Set your status:</> }</>}
+//                         </Typography>
+//                         {!pastEvent && <>
+//                         <Button 
+//                             value={"going"}
+//                             disabled={pastEvent}
+//                             onClick={handleEvent}
+//                             className={[status === 'going' && classes.activeBtn1, (status && status !== 'going') && classes.inactiveBtn, ]} 
+//                             style={{fontSize:'10.5pt', width:'130px', textTransform:'none', margin:'5px', borderRadius:'20px'}} 
+//                             variant='outlined' 
+//                             color='primary'>
+//                             Attending{!status && <>?</>}
+//                         </Button>
+//                         <Button value={"maybe"}
+//                             disabled={pastEvent}
+//                             onClick={handleEvent} className={[status === 'maybe' && classes.activeBtn1,(status && status !== 'maybe') && classes.inactiveBtn]} style={{fontSize:'10.5pt',width:'130px',textTransform:'none', margin:'5px', borderRadius:'20px'}} variant='outlined' color='primary'>
+//                             Might Attend{!status && <>?</>}
+//                         </Button>
+//                         <Button value={"not going"}
+//                             disabled={pastEvent}
+//                             onClick={handleEvent} className={[status === 'not going' && classes.activeBtn1, (status && status !== 'not going') && classes.inactiveBtn]} style={{fontSize:'10.5pt',width:'130px',textTransform:'none', margin:'5px', borderRadius:'20px'}} variant='outlined' color='primary'>
+//                             Not Attending{!status && <>?</>}
+//                         </Button> </>}
+//                         {pastEvent && <>
+//                             <Button
+//                                 disabled
+//                                 className={[status === 'going' ? classes.activeBtn2 : classes.hidden]} 
+//                                 style={{fontSize:'10.5pt', width:'130px', textTransform:'none', margin:'5px', borderRadius:'20px'}} 
+//                                 variant='outlined' 
+//                                 color='primary'>
+//                                 Attended
+//                             </Button>
+//                             <Button
+//                                 disabled
+//                                 className={[status !== 'going' ? classes.activeBtn2 : classes.hidden]} 
+//                                 style={{fontSize:'10.5pt',width:'130px',textTransform:'none', margin:'5px', borderRadius:'20px'}} 
+//                                 variant='outlined' 
+//                                 color='primary'>
+//                                 Did not attend
+//                             </Button>
+//                         </>}
+//                     </Grid>
+//                 </Grid>
+//             </Grid>
+//             <Collapse in={expanded === index} timeout="auto" unmountOnExit>
+//                 <CardContent style={{borderTop:'1px solid lightgrey', marginTop:'20px'}}>
+//                     <Grid style={{display:'flex'}}>
+//                         <Grid xs={4} style={{paddingRight:'15px'}}>
+//                             <Typography className={classes.detailsHeader}>Additional Event Info</Typography>
+//                             <Typography paragraph>{event.additionalDetails}</Typography>
+//                         </Grid>
+//                         <Grid xs={4} style={{display:'flex', flexDirection:'column', padding:'0 15px', borderLeft:'1px lightgrey solid', borderRight:'1px lightgrey solid'}}>
+//                             <Grid style={{display:'flex',justifyContent:'space-between', marginBottom:'15px'}}>
+//                                 <Grid style={{display:'flex', flexDirection:'column', margin: '0 0 0 10px'}}>
+//                                     <Typography className={classes.detailsHeader}>Start Date/Time</Typography>
+//                                     <Typography>{start_date}</Typography>
+//                                     <Typography>{start_time}</Typography>
+//                                 </Grid>
+//                                 {(event.end_time_text && event.allDay == '0') &&
+//                                 <Grid style={{display:'flex', paddingLeft:'20px', flexDirection:'column',  borderLeft: '1px solid lightgrey', margin: '0 0px 0 10px'}}>
+//                                     <Typography className={classes.detailsHeader}>End Date/Time</Typography>
+//                                     <Typography>{end_date}</Typography>
+//                                     <Typography>{end_time}</Typography>
+
+//                                 </Grid>}
+//                             </Grid>
+//                             <Grid style={{display:'flex', flexDirection:'column', marginLeft:'10px', marginBottom:'15px'}}>
+//                                 <Typography className={classes.detailsHeader}>Type of Event</Typography>
+//                                 <Grid style={{display:'flex'}}>
+//                                     {event.location_type === 'online' &&
+//                                     <Typography style={{fontSize:'11pt', borderRadius:'14px', background:'#FF6B6B', padding:'5px 10px', marginRight:'5px', color:'white'}}>Online</Typography>}
+//                                     {event.location_type === 'in-person' &&
+//                                     <Typography style={{fontSize:'11pt', borderRadius:'14px', background:'#7A86CC', padding:'5px 10px', marginRight:'5px', color:'white'}}>In-person</Typography>}
+//                                     {event.allDay == 1 &&
+//                                      <Typography style={{fontSize:'11pt', borderRadius:'14px', background:'#5FB49C', padding:'5px 10px', color:'white', marginRight:'5px'}}>All Day</Typography>}
+//                                 </Grid>
+//                             </Grid>
+//                             <Grid style={{display:'flex', flexDirection:'column', marginLeft:'10px', marginBottom:'15px'}}>
+//                                 <Typography className={classes.detailsHeader}>Location</Typography>
+//                                 {event.location_type === 'online' &&
+//                                 <Typography>
+//                                     <Link target="_blank" to={'http://www.'+event.location}>
+//                                         {event.location}
+//                                     </Link>
+//                                 </Typography>}
+//                                 {event.location_type === 'in-person' && 
+//                                 <Typography style={{fontSize:'11pt'}}>{event.location}</Typography>}
+//                             </Grid>
+//                             {event.price &&
+//                             <Grid style={{display:'flex', flexDirection:'column', marginLeft:'10px'}}>
+//                                 <Typography className={classes.detailsHeader}>Price</Typography>
+//                                 <Typography style={{fontSize:'11pt'}}>${event.price}</Typography>
+//                             </Grid>}
+//                         </Grid>
+//                         <Grid xs={4} style={{padding:'0 15px', display:'flex', flexDirection:'column'}}>
+//                             <Grid style={{display:'flex'}}>
+//                                 <PeopleIcon color="action"  />
+//                                 <Typography style={{color:'rgba(0, 0, 0, 0.54)', padding:'0 0 10px 10px'}}>{attendance.length} member{attendance.length != 1 && <>s</>} responded</Typography>
+//                             </Grid>
+//                             {attending.length > 0 &&
+//                             <Grid>
+//                                 <Typography className={classes.detailsHeader}>Going</Typography>
+//                                 <AvatarGroupList list={attending} />
+//                             </Grid>}
+//                             {maybeAttending.length > 0 && 
+//                             <Grid>
+//                                 <Typography className={classes.detailsHeader}>Maybe</Typography>
+//                                 <AvatarGroupList list={maybeAttending} />
+//                             </Grid>}
+//                             {notAttending.length > 0 &&
+//                             <Grid>
+//                                 <Typography className={classes.detailsHeader}>Not Going</Typography>
+//                                 <AvatarGroupList list={notAttending} />
+//                             </Grid>}
+//                             {attendance.length > 0 && <>
+//                             <Button variant="outlined" color="primary" style={{textTransform:'none', margin:'20px 0'}} onClick={()=>{setAttendanceModal(true)}}>See Attendance List</Button>
+//                             <AttendanceModal open={attendanceModal} close={()=>{setAttendanceModal(false)}} going={attending} maybe={maybeAttending} notGoing={notAttending}/>
+//                             </>}
+//                         </Grid>  
+//                     </Grid>
+//                 </CardContent>
+//             </Collapse>
+//         </Card>
+//         )
         
-}
+// }
 
 const AvatarGroupList = ({list}) => {
+    const getColour = (name) =>{
+        if (name.length <= 6 ) {
+            return indigo[300];
+        } else if (name.length > 6 && name.legnth <= 8){
+            return deepOrange[300];
+        } else if (name.length > 8 && name.legnth <= 12){
+            return lightGreen[300];
+        } else if (name.length > 12 && name.length <= 16){
+            return red[300];
+        } else if (name.length > 16 && name.length <= 20){
+            return deepPurple[300];
+        } 
+        return teal[300];
+    }
     const classes = useStyles();
-    const colours = [indigo[300], deepOrange[300], deepPurple[300], teal[300], lightGreen[300], red[300]];
-    const getColour = () => colours[Math.floor(Math.random() * colours.length)];
-    
+
     const initials = (name) => {
         let x = name.split(' ');
         let firstInitial = x[0][0];
@@ -681,7 +710,7 @@ const AvatarGroupList = ({list}) => {
             {Object.values(list).map((member) =>
                 <Tooltip title={member.name}>
                     <Avatar 
-                    style={{backgroundColor: getColour()}}>
+                    style={{backgroundColor: getColour(member.name)}}>
                         {initials(member.name)}
                     </Avatar>
                 </Tooltip>
@@ -740,8 +769,8 @@ const LongMenu = ({deleteEvent}) => {
           },
         }}
       >
-        <MenuItem onClick={deleteEvent} >
-            <DeleteIcon onClick={deleteEvent} style={{marginRight:'5px'}}/> Delete Event
+        <MenuItem onClick={()=>{deleteEvent(); handleClose();}} >
+            <DeleteIcon onClick={()=>{deleteEvent(); handleClose();}} style={{marginRight:'5px'}}/> Delete Event
         </MenuItem>
       </Menu>
     </div>
@@ -777,7 +806,6 @@ const AttendanceModal = ({open, close, going, notGoing, maybe}) => {
     const [activeBtn, setActiveBtn] = React.useState('1');
 
     const handleClick = (e) => {
-        // console.log(e);
         setActiveBtn(e.currentTarget.value);
     };
 
@@ -826,9 +854,20 @@ const AttendanceModal = ({open, close, going, notGoing, maybe}) => {
 
 const ButtonListItem = ({list, emptyMessage}) => {
     const classes = useStyles();
-    const colours = [indigo[300], deepOrange[300], deepPurple[300], teal[300], lightGreen[300], red[300]];
-    const getColour = () => colours[Math.floor(Math.random() * colours.length)];
-    
+    const getColour = (name) =>{
+        if (name.length <= 6 ) {
+            return indigo[300];
+        } else if (name.length > 6 && name.legnth <= 8){
+            return deepOrange[300];
+        } else if (name.length > 8 && name.legnth <= 12){
+            return lightGreen[300];
+        } else if (name.length > 12 && name.length <= 16){
+            return red[300];
+        } else if (name.length > 16 && name.length <= 20){
+            return deepPurple[300];
+        } 
+        return teal[300];
+    }
     const initials = (name) => {
         let x = name.split(' ');
         let firstInitial = x[0][0];
@@ -852,7 +891,7 @@ const ButtonListItem = ({list, emptyMessage}) => {
         {Object.values(currentUsers).map((member, index) => 
             <Grid style={{display:'flex', padding:'10px 5px', alignItems:'center', borderBottom:'1px solid rgba(0, 0, 0, 0.12)'}}>
                 <Avatar 
-                    style={{backgroundColor: getColour()}}>
+                    style={{backgroundColor: getColour(member.name)}}>
                     {initials(member.name)}
                 </Avatar>
                 <Typography style={{paddingLeft:'10px'}}>
