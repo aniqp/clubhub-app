@@ -175,21 +175,12 @@ const AnnouncementForm = (props) => {
     };
 
     return(
-<<<<<<< HEAD
         <Grid xs={3} style={{minWidth:'290px', textAlign:'center'}}>
             <Card style={{display:'flex',flexDirection:'column' ,alignItems:'center', padding:'18px 0'}}>
                 <Typography style={{padding:'5px 20px 15px', fontSize:'14pt', fontWeight:'200'}}>Do you have news to share?</Typography>
                 <Button style={{marginBottom:'10px'}} className={classes.sidebarBtn} onClick={() => setPostModalOpen(true)}>
                     <Typography>Post Announcement</Typography>
                 </Button>
-=======
-        <Card className={classes.card} sx={{ maxWidth: 500 }}>
-            <Grid xs={1} item>
-                <img className={classes.profile} src={profile} />
-            </Grid>
-            <Grid xs={11} item>
-                <Button className={classes.btn} onClick={()=> setPostModalOpen(true)} open={postModalOpen} onClose={()=> setPostModalOpen(false)}>Share an Announcement...</Button>
->>>>>>> join-flow
                 <PostModal classes={classes} open={postModalOpen} onClose={() => setPostModalOpen(false)} onSubmit={handleSubmit} />
                 <img src={event2} className={classes.sidebarImg}/>
             </Card>
