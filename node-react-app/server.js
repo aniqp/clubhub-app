@@ -410,7 +410,7 @@ app.post("/api/acceptUser", async (req, res) => {
 	}
 	console.log("type: " + JSON.stringify(type.data))
 	const acceptAll = !type.data["hold_applications"];
-	return res.status(200).json({data: {acceptAll: acceptAll}});
+	return res.status(200).json({acceptAll: acceptAll});
   });
   
   app.put("/api/changeApplicationType", async (req, res) => {
@@ -524,6 +524,7 @@ async function getApplicationType(clubID) {
 	  connection.end();
 	}
 )};
+
 app.post('/api/joinClub', async (req,res) => {
 	let data = req.body;
 
