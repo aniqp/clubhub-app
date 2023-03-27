@@ -305,7 +305,7 @@ const ImageUploadAndDisplay = () => {
 
   return (
     <div>
-      <ClubBoardHeader active={"4"} />
+      {/* <ClubBoardHeader active={"4"} /> */}
       <Grid container style={{ padding: '30px 30px' }}>
         <Grid item xs={7} style={{ display: 'flex', justifyContent: 'start', alignItems: 'flex-end' }}>
           <ImageGrid

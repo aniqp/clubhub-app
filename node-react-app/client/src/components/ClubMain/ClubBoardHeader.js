@@ -9,7 +9,9 @@ import Members from './Members';
 import { useParams } from 'react-router-dom';
 import { serverURL } from '../../constants/config';
 import { Switch, Rote, Link } from 'react-router-dom';
+import Events from './Events';
 
+import ImageUploadAndDisplay from './Photos';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -81,11 +83,11 @@ const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
     },
   }));
 
-const ClubBoardHeader = ({active}) => {
+const ClubBoardHeader = () => {
     const classes = useStyles();
     const { clubID } = useParams();
     const [clubTitle, setClubTitle] = React.useState();
-    const [toggle, setToggle] = React.useState(active);
+    const [toggle, setToggle] = React.useState('1');
     // const [active, setActive] = React.useState(active);
 
     React.useEffect(() => {
@@ -133,9 +135,22 @@ const ClubBoardHeader = ({active}) => {
             <StyledToggleButtonGroup
                 className={classes.toggleGroup}
                 value={toggle}
+                default={'1'}
                 exclusive
                 onChange={handleToggle}>
-                <ToggleButton value="1" onClick={()=> history.push(`/clubboard/${clubID}/`)}>
+                    <ToggleButton value="1">
+                        Announcements
+                        </ToggleButton>
+                        <ToggleButton value="2">
+                        Events
+                        </ToggleButton>
+                        <ToggleButton value="3">
+                        Members
+                        </ToggleButton>
+                        <ToggleButton value="4">
+                        Photos
+                        </ToggleButton>
+                {/* <ToggleButton value="1" onClick={()=> history.push(`/clubboard/${clubID}/`)}>
                     Announcements
                 </ToggleButton>
                 <ToggleButton value="2" onClick={()=> history.push(`/clubboard/${clubID}/events`)}>
@@ -146,10 +161,16 @@ const ClubBoardHeader = ({active}) => {
                 </ToggleButton>
                 <ToggleButton value="4" onClick={()=> history.push(`/clubboard/${clubID}/photos`)}>
                   Photos
-                </ToggleButton>
+                </ToggleButton> */}
             </StyledToggleButtonGroup>
+            {toggle === '1' && <Announcements />}
+            {toggle === '2' && <Events />}
+            {toggle === '3' && <Members />}
+            {toggle === '4' && <ImageUploadAndDisplay />}
+
         </Grid>
    </>)
 }
 
 export default ClubBoardHeader;
+

@@ -259,7 +259,7 @@ const EventPost = ({ event, index, currentUser, pastEvent, onChange, admin, onDa
     let end_date = ''
     let end_time = ''
     if (event.end_time_text) {
-        endTimeText = event.start_time_text.split(' ');
+        endTimeText = event.end_time_text.split(' ');
         end_date = endTimeText[1] + ' ' + endTimeText[2]
         end_time = endTimeText[4] + ' ' + endTimeText[5]
     }

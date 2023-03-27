@@ -48,7 +48,7 @@ const ClubCard = ({ club, isMember, isPending, onJoin }) => {
     const notify = (pending) => {
         if (pending) {
             console.log('in pending')
-            toast.info("Success: Club join request sent.", {
+            toast.info("Club join request was sent.", {
                 position: toast.POSITION.TOP_RIGHT,
                 autoClose: true
             });
@@ -129,7 +129,7 @@ const ClubCard = ({ club, isMember, isPending, onJoin }) => {
         if (response.status !== 200) throw Error(body.message);
         return body;
     }
-
+    console.log('isPending: ' + isPending);
     return ( 
         <li key={club.id} className={classes.li} >
             <Card variant="outlined" className={classes.card} >

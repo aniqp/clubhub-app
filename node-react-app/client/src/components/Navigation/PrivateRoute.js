@@ -14,8 +14,11 @@ import ImageUploadAndDisplay from "../ClubMain/Photos";
 import Events from "../ClubMain/Events";
 import Announcements from "../ClubMain/Announcements";
 
+
 export default function PrivateRoute() {
   const user = useUser()
+  const location = useLocation();
+  console.log(location.pathname)
   const [loading, setLoading] = React.useState(true);
   React.useEffect(() => {
     if(user) {
@@ -39,7 +42,7 @@ export default function PrivateRoute() {
         <Route path="/" exact component={user? Dashboard: Home} />
         <Route path="/explore" component={ExplorePage} />
         <Route path="/clubs/:clubID" exact component = {ClubDetails}/>
-        <Route path="/clubboard/:clubID/" exact component = {user? Announcements : Home}/>
+        <Route path="/clubboard/:clubID/" exact component = {user? ClubBoardHeader : Home}/>
         <Route path="/clubboard/:clubID/events" exact component = {user? Events : Home}/>
         <Route path="/clubboard/:clubID/members" exact component = {user? Members: Home}/>
         <Route path="/clubboard/:clubID/photos" exact component = {user? ImageUploadAndDisplay : Home}/>
@@ -49,3 +52,14 @@ export default function PrivateRoute() {
     </Router>
   );
 }
+
+{/* <Route
+path="/admin"
+render={({ match: { url } }) => (
+  <>
+    <Route path={`${url}/`} component={Backend} exact />
+    <Route path={`${url}/home`} component={Dashboard} />
+    <Route path={`${url}/users`} component={UserPage} />
+  </>
+)}
+/> */}

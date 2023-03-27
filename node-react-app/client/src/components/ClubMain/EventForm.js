@@ -219,7 +219,7 @@ const EventForm = ({close, clubID, onChange}) => {
         }
 
         if (endTime) {
-            if (endTime < startTime){
+            if (endTime < startTime && endDate == startDate){
                 caughtError = true;
                 setEndTimeError(true);
             }     
@@ -468,7 +468,6 @@ const EventForm = ({close, clubID, onChange}) => {
                             <Grid style={{width:'100%'}}>
                                 <input onChange={handleLocation} style={{width:'100%', borderRadius:'0 5px 5px 0',height:'44px', border:'1px solid lightgrey'}}/>
                                 {(locationType.length > 0 && locationError) && <Typography className={classes.errorMsg}>Please enter the event's location</Typography>}
-
                             </Grid>
                         </Grid>
                     </Grid>}

@@ -194,7 +194,7 @@ const Members = ({ name, onChange }) => {
 
     if (!isPermitted) return null;
     return ( <>
-        <ClubBoardHeader active={"3"}/>
+        {/* <ClubBoardHeader active={"3"}/> */}
         <Grid container className={classes.root}>
             <Grid item xs={3}>
                 <Card className={classes.memberCount } >
