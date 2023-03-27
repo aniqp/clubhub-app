@@ -163,7 +163,7 @@ const Announcements = () => {
             <Grid className={[classes.root]} sx={{height:'100%'}}>
                 <Grid style={{display:'flex'}}>
                     {(clubAnnouncements.length > 0 && noAnnouncementMsg === '') ?
-                    <Grid xs={8} style={{padding:'0 20px'}} >
+                    <Grid xs={8} style={{padding:'0 0 0 50px'}} >
                         {Object.values(clubAnnouncements).map((announcement, index) => <>
                             <AnnouncementPost onDashboard={false} admin={admin} announcement={announcement} onChange={getClubAnnouncements}/>
                         </>)}

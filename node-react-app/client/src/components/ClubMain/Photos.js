@@ -45,50 +45,93 @@ const ImageUploadAndDisplay = () => {
   const [admin, setAdmin] = useState(false)
   // const [selectedImage, setSelectedImage] = useState(null)
   const [isPermitted, setIsPermitted] = React.useState(false);
+  const [photosEmpty, setPhotosEmpty] = useState(false)
 
+  React.useEffect(() => {
+    if (user) {
+      let userID = user.uid;
+      // console.log(userID)
+      getUserRole(userID);
+    } else {
+      setAdmin(false);
+    }
+  }, [user]);
 
-  React.useEffect(()=>{
-    getClubMembers();
-  },[])
+  React.useEffect(() => {
+    getClubMembers()
+  })
 
-  // CLUB MEMBERS
   const getClubMembers = () => {
-      // console.log('getting members');
-      callApiGetClubMembers()
-          .then(res => {
-              var parsed = JSON.parse(res.express);
-              if (parsed.length > 0 && user){
-                  let x = parsed.find((member) => member.uid === user.uid)
+    // console.log('getting members');
+    callApiGetClubMembers()
+      .then(res => {
+        var parsed = JSON.parse(res.express);
+        if (parsed.length > 0 && user) {
+          let x = parsed.find((member) => member.uid === user.uid)
 
-                  if (!x){
-                      history.push('/')
-                  } else {
-                      setIsPermitted(true);
-                  }
-              }
-              if (parsed.length == 0){
-                history.push('/')
-            }
-          })
+          if (!x) {
+            history.push('/')
+          } else {
+            setIsPermitted(true);
+          }
+        }
+        if (parsed.length == 0) {
+          history.push('/')
+        }
+      })
   }
 
 
   const callApiGetClubMembers = async () => {
-      const url = serverURL + '/api/getClubMembers';
-      const response = await fetch(url, {
-          method: "POST",
-          headers: {
-              "Content-Type": "application/json",
-              //authorization: `Bearer ${this.state.token}`
-          },
-          body: JSON.stringify({
-              clubID: clubID
-          })
-      });
+    const url = serverURL + '/api/getClubMembers';
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        //authorization: `Bearer ${this.state.token}`
+      },
+      body: JSON.stringify({
+        clubID: clubID
+      })
+    });
 
-      const body = await response.json();
-      if (response.status !== 200) throw Error(body.message);
-      return body;
+    const body = await response.json();
+    if (response.status !== 200) throw Error(body.message);
+    return body;
+  }
+
+  const getUserRole = (userID) => {
+    callApiGetUserRole(userID)
+      .then(res => {
+        var parsed = JSON.parse(res.express);
+        if (parsed.length >= 1) {
+          if (parsed[0].role === 'owner' || parsed[0].role === 'admin') {
+            setAdmin(true);
+          }
+        } else {
+          setAdmin(false);
+        }
+        // console.log(parsed);
+      })
+  }
+
+  const callApiGetUserRole = async (userID) => {
+    const url = serverURL + '/api/getCurrentUserRole';
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        //authorization: `Bearer ${this.state.token}`
+      },
+      body: JSON.stringify({
+        clubID: clubID,
+        userID: userID,
+      })
+    });
+
+    const body = await response.json();
+    if (response.status !== 200) throw Error(body.message);
+    return body;
   }
 
   console.log(checkedImages)
@@ -232,6 +275,9 @@ const ImageUploadAndDisplay = () => {
       const list = await listAll(listRef);
       const imageUrls = await Promise.all(list.items.map((item) => getDownloadURL(item)));
       setImages(imageUrls);
+      if (imageUrls.length === 0) {
+        setPhotosEmpty(true)
+      }
     };
     fetchImages();
   }, [clubID]);
@@ -253,10 +299,13 @@ const ImageUploadAndDisplay = () => {
     fetchExploreImages();
   }, [selectImagesModal, selectMenu, clubID]);
 
-  if (!isPermitted) return null;
+  if(!isPermitted) {
+    return null
+  }
+
   return (
     <div>
-      <ClubBoardHeader active={"5"} />
+      <ClubBoardHeader active={"4"} />
       <Grid container style={{ padding: '30px 30px' }}>
         <Grid item xs={7} style={{ display: 'flex', justifyContent: 'start', alignItems: 'flex-end' }}>
           <ImageGrid
@@ -271,6 +320,7 @@ const ImageUploadAndDisplay = () => {
             handleCheckChange={handleCheckChange}
             exploreImages={exploreImages}
             formatFileName={formatFileName}
+            photosEmpty={photosEmpty}
           />
         </Grid>
         {/* if an image has been checked, show the option to display it on the explore page */}
@@ -358,39 +408,41 @@ const ImageGrid = (props) => {
   };
 
   return (<>
-    <ImageList cols={3} gap={4} rowHeight={300} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', minWidth: '200px' }}>
-      {props.images.map((image, index) => (
-        <ImageListItem key={index} style={{ objectFit: 'cover', minWidth: '200px' }}>
-          <img src={image} alt="Club" onMouseOver={(e) => e.currentTarget.style.filter = 'brightness(70%)'}
-            onMouseOut={(e) => e.currentTarget.style.filter = 'brightness(100%)'}
-            style={{ borderRadius: '16px', objectFit: 'cover', width: '100%', height: '100%', cursor: 'pointer' }}
-            onClick={() => { setSelectedImage(image) }}
-          />
-          {props.deleteMenu &&
-            <div>
-              <button
-                style={{
-                  position: "absolute", top: 0, right: 0, background: "red", color: "white", borderRadius: "50%", border: "none", cursor: "pointer",
-                }}
-                onClick={() => {
-                  props.setOpenDeleteModal(true);
-                  setImageDeleted(image);
-                }}>
-                X
-              </button>
-            </div>
-          }
-          {props.selectMenu && <Checkbox ariaLabel='Checkbox' color="primary" icon={<CheckCircleOutlinedIcon />}
-            checkedIcon={<CheckCircleIcon />}
-            onChange={(event) => props.handleCheckChange(event, image)}
-            checked={props.checkedImages.includes(image)}
-            style={{
-              position: "absolute", top: 0, right: 0, borderRadius: "50%", border: "none", cursor: "pointer",
-            }}
-          />}
-        </ImageListItem>
-      ))}
-    </ImageList>
+    {props.photosEmpty === false ?
+      <ImageList cols={3} gap={4} rowHeight={300} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', minWidth: '200px' }}>
+        {props.images.map((image, index) => (
+          <ImageListItem key={index} style={{ objectFit: 'cover', minWidth: '200px' }}>
+            <img src={image} alt="Club" onMouseOver={(e) => e.currentTarget.style.filter = 'brightness(70%)'}
+              onMouseOut={(e) => e.currentTarget.style.filter = 'brightness(100%)'}
+              style={{ borderRadius: '16px', objectFit: 'cover', width: '100%', height: '100%', cursor: 'pointer' }}
+              onClick={() => { setSelectedImage(image) }}
+            />
+            {props.deleteMenu &&
+              <div>
+                <button
+                  style={{
+                    position: "absolute", top: 0, right: 0, background: "red", color: "white", borderRadius: "50%", border: "none", cursor: "pointer",
+                  }}
+                  onClick={() => {
+                    props.setOpenDeleteModal(true);
+                    setImageDeleted(image);
+                  }}>
+                  X
+                </button>
+              </div>
+            }
+            {props.selectMenu && <Checkbox ariaLabel='Checkbox' color="primary" icon={<CheckCircleOutlinedIcon />}
+              checkedIcon={<CheckCircleIcon />}
+              onChange={(event) => props.handleCheckChange(event, image)}
+              checked={props.checkedImages.includes(image)}
+              style={{
+                position: "absolute", top: 0, right: 0, borderRadius: "50%", border: "none", cursor: "pointer",
+              }}
+            />}
+          </ImageListItem>
+        ))}
+      </ImageList>
+      : <Typography variant="h5">This club has no photos.</Typography>}
     <ConfirmImageDeleteModal
       openDeleteModal={props.openDeleteModal}
       setOpenDeleteModal={props.setOpenDeleteModal}

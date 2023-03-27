@@ -136,7 +136,7 @@ const MyClubCard = (props) => {
                                 <Typography style={{ fontSize: '0.8rem' }}>{truncate(club.description)}</Typography>
                             </CardContent>
                             <CardActions style={{display:'flex', justifyContent:'space-between'}}>
-                                <Button style={{ border: '1.5px solid' }} onClick={() => history.push(`/clubboard/${club.id}`)} color='primary' variant='outlined' >View Board</Button>
+                                <Button style={{ border: '1.5px solid' }} onClick={() => {history.push(`/clubboard/${club.id}`); window.scrollTo(0, 0)}} color='primary' variant='outlined' >View Board</Button>
                                 <Button style={{ border: '1.5px solid' }} onClick={() =>{handleLeaveClub(club.id, club.name)}} color='secondary' variant='outlined'>Leave Club</Button>
                                 <LeaveClubModal key={club.id} clubData={leaveClub} open={leaveClubsModalOpen} onClose={() => setLeaveClubsModalOpen(false)} onSubmit={()=> handleClick(leaveClub.id, user.uid, leaveClub.name)}/>
                             </CardActions>
