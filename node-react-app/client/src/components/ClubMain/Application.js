@@ -180,7 +180,8 @@ export const Application = ({ members, refetchMembers }) => {
   return (
     <Grid xs={3} item>
       <Grid container direction="column">
-        <Card className={classes.application}>
+        {!acceptAll &&
+        (<Card className={classes.application}>
           <Typography>
             Application Type: {acceptAll ? "Accept All" : "Hold All"}
           </Typography>
@@ -196,7 +197,7 @@ export const Application = ({ members, refetchMembers }) => {
               !!applicants?.length ? "Empty List to change type" : "Accept All"
             }
           />
-        </Card>
+        </Card>)}
         {!acceptAll &&
           applicants?.map((app) => (
             <Card xs={3} key={app.name} className={classes.applicant}>
