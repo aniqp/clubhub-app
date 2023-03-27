@@ -106,6 +106,7 @@ const ExplorePage = () => {
 
   // CHECKING CLUB MEMBERSHIPS FOR USER
   const [listOfClubs, setListOfClubs] = React.useState([]);
+  const [listOfPendingClubs, setListOfPendingClubs] = React.useState([]);
   const user = useUser();
   // console.log(user);
 
@@ -119,12 +120,11 @@ const ExplorePage = () => {
       let userID = user.uid;
       callApiClubMembership(userID)
         .then(res => {
-            var parsed = JSON.parse(res.express);
-            let memberships = []
-            for (let i = 0; i < parsed.length; i++){
-              memberships.push(parsed[i].club_id)
-            }
+            const parsed = JSON.parse(res.express);
+            const memberships = parsed.map((club) => club.club_id);
+            const pending = parsed.filter((club) => club.role === "pending").map((club) => club.club_id);
             setListOfClubs(memberships);
+            setListOfPendingClubs(pending);
         })
     } else {
       setListOfClubs([]); 
@@ -191,7 +191,7 @@ const ExplorePage = () => {
       <Grid container style={{ display:'flex', flexDirection:'column'}}>
         <ul style={{padding:'0'}}>
             {currentClubs.map((club) => (
-              <ClubCard club={club} isMember={listOfClubs} onJoin={getMemberships}/>
+              <ClubCard club={club} isMember={listOfClubs} isPending={listOfPendingClubs} onJoin={getMemberships}/>
             ))}
         </ul>
       </Grid>

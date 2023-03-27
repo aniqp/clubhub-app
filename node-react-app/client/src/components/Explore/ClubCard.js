@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-const ClubCard = ({ club, isMember, onJoin }) => {
+const ClubCard = ({ club, isMember, isPending, onJoin }) => {
     const classes = useStyles();
     const user = useUser();
 
@@ -140,7 +140,7 @@ const ClubCard = ({ club, isMember, onJoin }) => {
                         disabled 
                         className={classes.btn}
                         color='secondary'
-                        variant='outlined'>Joined</Button>
+                        variant='outlined'>{isPending.includes(club.id)? "Pending Approval": "Joined"}</Button>
                     ) : ( 
                     <Button 
                         onClick={() => {handleJoinClub(club.id)}}

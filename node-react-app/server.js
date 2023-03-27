@@ -471,7 +471,7 @@ app.post('/api/checkMembership', (req,res) => {
 	// let clubID = req.body.clubID;
 	let userID = req.body.userID;
 
-	let sql = `select club_id from memberships where uid = ?`;
+	let sql = `select club_id, role from memberships where uid = ?`;
 
 	const data = [userID];
 	
@@ -534,6 +534,9 @@ app.post('/api/joinClub', async (req,res) => {
 
 	const applicationType = await getApplicationType(clubID)
 	if (!applicationType.status) {
+		let string = JSON.stringify('Error')
+		// res.send({ express: string });
+		console.log(applicationType.message)
 		return res.status(400).send({express: applicationType.message});
 	}
 	const acceptAll = !applicationType.data["hold_applications"];
@@ -554,8 +557,8 @@ app.post('/api/joinClub', async (req,res) => {
         } else {
             connection.query(`COMMIT`, data, (error, results, fields) => {
                 let string = JSON.stringify('Success')
-                res.send({ express: string });            })
-        };
+                res.send({ express: string });            
+			})};
     })
 
 	connection.end();
