@@ -182,7 +182,7 @@ export const Application = ({ members, refetchMembers }) => {
       <Grid container direction="column">
         <Card className={classes.application}>
           <Typography>
-            Application Type: {acceptAll ? "Accept All" : "Hold Applications"}
+            Application Type: {acceptAll ? "Accept All" : "Hold All"}
           </Typography>
           <FormControlLabel
             control={
