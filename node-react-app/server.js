@@ -353,7 +353,11 @@ app.post("/api/acceptUser", async (req, res) => {
   async function isAdmin(user, clubID) {
 	let connection = mysql.createConnection(config);  
 	return new Promise((resolve, reject) => {
-	let response = {status: false, message: "Unknown error"};	  
+	let response = {status: false, message: "Unknown error"};
+	if (!user) {
+	  response = { status: false, message: "No user provided" };
+	  resolve(response);
+	}	  
 	// Check if user is an admin or owner of the club
 	const adminQuery = `
 	  SELECT role
