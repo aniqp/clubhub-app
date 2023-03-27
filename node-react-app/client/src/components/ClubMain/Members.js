@@ -1,11 +1,9 @@
-import React, { useState } from 'react';
-import { makeStyles, Checkbox, Radio, RadioGroup, FormControlLabel, TextField, InputAdornment, Box, Dialog, DialogTitle, DialogContent, DialogActions, Paper, Typography, Button, Grid, Card, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
+import React from 'react';
+import { Application } from './Application';
+import { makeStyles, Paper, Typography, Button, Grid, Card, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
 import profile from '../../images/profile-icon.png';
 import membersIcon from '../../images/members.png';
 import { useUser } from '../Firebase';
-import search from '../../images/search-icon.png';
-import info from '../../images/info-icon.png';
-import { Pagination } from "@material-ui/lab";
 import ManageAdmin from './members/dialogs/ManageAdmin';
 import TransferOwnership from './members/dialogs/TransferOwner';
 import { useParams } from 'react-router-dom';
@@ -245,7 +243,8 @@ const Members = ({ name, onChange }) => {
                                 </TableRow> 
                             </TableBody>))} 
                         </Table> 
-                    </TableContainer>} 
+                    </TableContainer>}
+                    <Application/>
             </Grid>        
         </Grid>
         </>)
