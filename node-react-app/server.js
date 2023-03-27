@@ -617,6 +617,7 @@ app.post('/api/getAnnouncements', (req,res) => {
 	INNER JOIN memberships on memberships.club_id = a.club_id
 	INNER JOIN clubs on clubs.id = memberships.club_id
 	WHERE memberships.uid = ?
+	AND memberships.role != 'pending'
 	AND DATE(a.time_posted) >= DATE(DATE_SUB(NOW(), INTERVAL 1 WEEK))`;
 
 	const data = userID

@@ -222,7 +222,8 @@ const Dashboard = () => {
                     club_id={announcement.club_id}
                   />
                 ) :
-                <Typography variant="h6" style={{marginTop: "20px" }}>This club has no recent announcements.</Typography>
+                myClubs.length > 0 && announcements.length > 0? <Typography variant="h6" style={{marginTop: "20px" }}>This club has no recent announcements.</Typography> :
+                myClubs.length > 0 && announcements.length === 0 && <Typography variant="h6" style={{marginTop: "20px" }}>You have no recent announcements.</Typography>
               }
             </Grid>
           </>
@@ -261,13 +262,13 @@ const SideBar = (props) => {
       variant="permanent"
       style={{
         zIndex: 0,
-        maxWidth: "25px",
+        maxWidth: "250px",
         flexShrink: 0,
         minWidth:'244px'
       }}
     >
       <Toolbar />
-      <Box sx={{ overflow: 'auto' }} textAlign="center">
+      <Box sx={{ overflow: 'auto', maxWidth: '250px' }} textAlign="center">
         <Typography variant="h6" style={{ marginTop: "25px", fontFamily: 'Biryani, sans-serif', fontWeight: 600 }}>My Clubs</Typography>
         {props.myClubs.map((text, index) => (
           <MyClubs
@@ -277,6 +278,9 @@ const SideBar = (props) => {
             text={text}
           />
         ))}
+        {props.myClubs.length === 0 && 
+          <Typography style = {{maxWidth:"225px", paddingTop: '10px'}}>You haven't joined any clubs yet. Check out the explore page to get started!</Typography>
+        }
       </Box>
     </Drawer>
   )
