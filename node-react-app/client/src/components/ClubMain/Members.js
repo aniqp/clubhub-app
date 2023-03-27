@@ -130,33 +130,10 @@ const Members = ({ name, onChange }) => {
         }
     }, [members, currentUserRole]);
 
-const Members = ({ name, onChange }) => {
-    const user = useUser();
-    const { clubID } = useParams();
-    const [members, setMembers] = React.useState([]);
-    const [currentUserRole, setCurrentUserRole] = React.useState('');
-    const [isAdmin, setIsAdmin] = React.useState(false);
+    
+    const [openOwnerDialog, setOpenOwnerDialog] = React.useState(false);
+    const [openAdminDialog, setOpenAdminDialog] = React.useState(false);
 
-
-    React.useEffect(() => {
-        getClubMembers();
-    }, []);
-
-    React.useEffect(() => {
-        if (members.length > 0){
-            setCurrentUserRole(members.find((member) => member.uid == user.uid).role)
-            
-            if (currentUserRole !== 'user'){
-                setIsAdmin(true);
-            } else {
-                setIsAdmin(false);
-            }
-        }
-    }, [members, currentUserRole]);
-
-
-
-const Members = ({name, members}) => {
     const classes = useStyles();
 
     const handleClose = (event, reason) => {
