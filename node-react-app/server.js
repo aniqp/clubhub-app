@@ -534,7 +534,7 @@ app.post('/api/joinClub', async (req,res) => {
 
 	const applicationType = await getApplicationType()
 	if (!applicationType.status) {
-		return res.status(400).send(applicationType.message);
+		return res.status(400).send({express: applicationType.message});
 	}
 	const acceptAll = !applicationType.data["hold_applications"];
 
