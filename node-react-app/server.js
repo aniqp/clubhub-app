@@ -136,7 +136,7 @@ app.post('/api/getClubAnnouncements', (req,res) => {
 	let connection = mysql.createConnection(config);
 	let clubID = req.body.clubID;
 
-	const sql = `SELECT a.title, a.body, a.time_posted, a.id, a.visibility 
+	const sql = `SELECT a.title, a.body, a.time_posted, a.id, a.visibility, a.placeholderPhoto, a.time_posted_text
 	from announcements as a, clubs as c 
 	where c.id = a.club_id and c.id = ?
 	order by time_posted desc;`;
@@ -161,28 +161,29 @@ app.post('/api/getClubAnnouncements', (req,res) => {
 
 app.post('/api/postAnnouncement', (req, res) => {
     let connection = mysql.createConnection(config);
-    let data = req.body;
+    let announcement = req.body;
 
-    let sql = `INSERT into announcements (club_id, title, body, time_posted, visibility)
-	values(?,?,?,?,?)`
-    let announcement = [data.clubID, data.title, data.body, data.time_posted, data.visibility]
+    let sql = `INSERT into announcements (club_id, title, body, time_posted, visibility, placeholderPhoto, time_posted_text)
+	values(?,?,?,?,?,?,?)`
+    let data = [
+		announcement.clubID, 
+		announcement.title, 
+		announcement.body, 
+		announcement.time_posted, 
+		announcement.visibility, 
+		announcement.placeholderImage,
+		announcement.time_posted_text];
 
-    connection.query(sql, announcement, (error, results, fields) => {
-        if (error) {
-            connection.query(`ROLLBACK`, dataEmpty, (error, results, fields) => {
-                let string = JSON.stringify('Error')
-                res.send({ express: string });
-                connection.end();
-            });
-        } else {
-            connection.query(`COMMIT`, data, (error, results, fields) => {
-                let string = JSON.stringify('Success')
-                res.send({ express: string });
-                connection.end();
-            })
-        };
-    })
-
+	console.log(sql)
+	console.log(data)
+    connection.query(sql, data, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message);
+		}
+		let string = JSON.stringify(results);
+		res.send({ express: string })
+		//console.log(string)
+	});
 })
 
 app.post('/api/deleteAnnouncement', (req, res) => {
@@ -192,7 +193,8 @@ app.post('/api/deleteAnnouncement', (req, res) => {
     let sql = `DELETE FROM announcements where id = ?`
 
 	const data = [announcementID]
-
+	console.log(sql)
+	console.log(data)
     connection.query(sql, data, (error, results, fields) => {
 		if (error) {
 			return console.error(error.message);
@@ -209,22 +211,25 @@ app.post('/api/editAnnouncement', (req, res) => {
     let announcementID = req.body.id;
 	let newTitle = req.body.newTitle;
 	let newBody = req.body.newBody;
+	let visibility = req.body.visibility;
+	let placeholderPhoto = req.body.placeholderImage;
+
 
 	// console.log(newTitle, newBody)
 
     let sql = `UPDATE announcements
-	SET title = ?, body = ?
+	SET title = ?, body = ?, visibility= ?, placeholderPhoto = ?
 	WHERE id = ?`
 
-	const data = [newTitle, newBody, announcementID]
-
+	const data = [newTitle, newBody, visibility, placeholderPhoto, announcementID]
+	console.log(data);
     connection.query(sql, data, (error, results, fields) => {
 		if (error) {
 			return console.error(error.message);
 		}
 		let string = JSON.stringify(results);
 		res.send({ express: string })
-		console.log(string)
+		// console.log(string)
 	});
 	connection.end();
 
@@ -400,7 +405,7 @@ app.post('/api/getAnnouncements', (req,res) => {
 	// let clubID = req.body.clubID;
 	let userID = req.body.userID;
 
-	let sql = `SELECT clubs.name, a.title, a.body, a.time_posted, a.id, a.visibility, memberships.role, clubs.id club_id from announcements a
+	let sql = `SELECT clubs.name, a.title, a.body, a.time_posted, a.id, a.visibility, memberships.role, clubs.id club_id, a.placeholderPhoto, a.time_posted_text from announcements a
 	INNER JOIN memberships on memberships.club_id = a.club_id
 	INNER JOIN clubs on clubs.id = memberships.club_id
 	WHERE memberships.uid = ?
@@ -460,8 +465,7 @@ app.post('/api/getUpcomingEvents', (req,res) => {
 
 	let sql = `select * from events where club_id = ? and start_time >= ? order by start_time asc`
 	const data = [clubID, todaysDate];
-	console.log(sql);
-	console.log(data);
+	
 	connection.query(sql, data, (error, results, fields) => {
 		if (error) {
 			return console.error(error.message);
@@ -492,8 +496,7 @@ app.post('/api/addEvent', (req,res) => {
 	let sql = `insert into events (club_id, title, location, start_time, end_time, body, time_posted, price, allDay, placeholderPhoto, additionalDetails, location_type, start_time_text, end_time_text)
 	values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
 	data = [club_id, title, location, start_time, end_time, body, time_posted, price, allDay, placeholderImage, additionalDetails ,location_type, start_time_text, end_time_text]
-	console.log(sql);
-	console.log(data);
+	
 	connection.query(sql, data, (error, results, fields) => {
 		if (error) {
 			return console.error(error.message);
@@ -527,8 +530,7 @@ app.post('/api/getAttendance', (req, res) => {
 
 	let sql = `select * from attendance where event_id = ?`
 	const data = [eventID];
-	console.log(sql);
-	console.log(data);
+
 	connection.query(sql, data, (error, results, fields) => {
 		if (error) {
 			return console.error(error.message);
@@ -548,8 +550,7 @@ app.post('/api/setAttendance', (req, res) => {
 
 	let sql = `INSERT into attendance (event_id, uid, status, name) values (?,?,?,?)`
 	const data = [eventID, userID, status, name];
-	console.log(sql);
-	console.log(data);
+
 	connection.query(sql, data, (error, results, fields) => {
 		if (error) {
 			return console.error(error.message);
@@ -568,8 +569,7 @@ app.post('/api/changeAttendance', (req, res) => {
 
 	let sql = `UPDATE attendance SET status = ? WHERE uid=? and event_id = ?`
 	const data = [status, userID, eventID];
-	console.log(sql);
-	console.log(data);
+
 	connection.query(sql, data, (error, results, fields) => {
 		if (error) {
 			return console.error(error.message);
@@ -598,13 +598,11 @@ app.post('/api/addAdmin', (req, res) => {
 	// console.log(userID)
 	
     connection.query(sql, data, (error, results, fields) => {
-		console.log(sql)
 		if (error) {
 			return console.error(error.message);
 		}
 		let string = JSON.stringify(results);
 		res.send({ express: string })
-		console.log(string)
 	});
 	connection.end();
 
@@ -628,7 +626,7 @@ app.post('/api/removeAdmin', (req, res) => {
 		}
 		let string = JSON.stringify(results);
 		res.send({ express: string })
-		console.log(string)
+		// console.log(string)
 	});
 	connection.end();
 
@@ -651,8 +649,7 @@ app.post('/api/transferClubOwnership', (req, res) => {
 	set m1.role=m2.role;`
 
 	const data = [newOwnerID, clubID, oldOwnerID, clubID, newRole]
-	console.log(sql)
-	console.log(data)
+
     connection.query(sql, data, (error, results, fields) => {
 		if (error) {
 			return console.error(error.message);

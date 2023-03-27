@@ -174,16 +174,11 @@ const Dashboard = () => {
               {filteredAnnouncements.length !== 0 ?
                 filteredAnnouncements.map((announcement, index) =>
                   <AnnouncementPost
-                    key={announcement.id}
-                    id={announcement.id}
+                    admin={isAdmin(announcement)}
+                    announcement={announcement}
                     name={announcement.name}
-                    title={announcement.title}
-                    body={announcement.body}
-                    timestamp={announcement.time_posted}
-                    adminStatus={isAdmin(announcement)}
                     onDashboard={onDashboard}
                     club_id={announcement.club_id}
-                    visibility={announcement.visibility}
                   />
                 ) :
                 <Typography variant="h6" style={{marginTop: "20px" }}>This club has no recent announcements.</Typography>
