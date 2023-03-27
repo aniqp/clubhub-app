@@ -504,16 +504,21 @@ app.post('/api/addEvent', (req,res) => {
 	});
 })
 
-app.post('/api/editEvent', (req,res) => {
-	let connection = mysql.createConnection(config);
-	
-
-})
-
 app.post('/api/deleteEvent', (req,res) => {
 	let connection = mysql.createConnection(config);
-	
+	let eventID = req.body.eventID;
 
+	let sql = `delete from events where id = ?`
+
+	data = [eventID]
+	connection.query(sql, data, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message);
+		}
+		let string = JSON.stringify(results);
+		res.send({ express: string })
+		//console.log(string)
+	});
 })
 
 app.post('/api/getAttendance', (req, res) => {
