@@ -417,9 +417,9 @@ const EventPost = ({event, index, currentUser, pastEvent, onChange, admin, onDas
                                 <Typography className={classes.detailsHeader}>Location</Typography>
                                 {event.location_type === 'online' &&
                                 <Typography>
-                                    <Link target="_blank" to={'http://www.'+event.location}>
+                                    <a target = "blank" href= {'http://' + event.location}>
                                         {event.location}
-                                    </Link>
+                                    </a>
                                 </Typography>}
                                 {event.location_type === 'in-person' && 
                                 <Typography style={{fontSize:'11pt'}}>{event.location}</Typography>}
