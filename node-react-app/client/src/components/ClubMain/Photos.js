@@ -45,7 +45,7 @@ const ImageUploadAndDisplay = () => {
   const [admin, setAdmin] = useState(false)
   // const [selectedImage, setSelectedImage] = useState(null)
   const [isPermitted, setIsPermitted] = React.useState(false);
-
+  const [photosEmpty, setPhotosEmpty] = useState(false)
 
   React.useEffect(()=>{
     getClubMembers();
@@ -232,6 +232,9 @@ const ImageUploadAndDisplay = () => {
       const list = await listAll(listRef);
       const imageUrls = await Promise.all(list.items.map((item) => getDownloadURL(item)));
       setImages(imageUrls);
+      if(imageUrls.length === 0) {
+        setPhotosEmpty(true)
+      }
     };
     fetchImages();
   }, [clubID]);
@@ -256,7 +259,7 @@ const ImageUploadAndDisplay = () => {
   if (!isPermitted) return null;
   return (
     <div>
-      <ClubBoardHeader active={"5"} />
+      <ClubBoardHeader active={"4"} />
       <Grid container style={{ padding: '30px 30px' }}>
         <Grid item xs={7} style={{ display: 'flex', justifyContent: 'start', alignItems: 'flex-end' }}>
           <ImageGrid
@@ -271,6 +274,7 @@ const ImageUploadAndDisplay = () => {
             handleCheckChange={handleCheckChange}
             exploreImages={exploreImages}
             formatFileName={formatFileName}
+            photosEmpty = {photosEmpty}
           />
         </Grid>
         {/* if an image has been checked, show the option to display it on the explore page */}
@@ -358,6 +362,7 @@ const ImageGrid = (props) => {
   };
 
   return (<>
+    {props.photosEmpty === false?
     <ImageList cols={3} gap={4} rowHeight={300} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', minWidth: '200px' }}>
       {props.images.map((image, index) => (
         <ImageListItem key={index} style={{ objectFit: 'cover', minWidth: '200px' }}>
@@ -391,6 +396,7 @@ const ImageGrid = (props) => {
         </ImageListItem>
       ))}
     </ImageList>
+  : <Typography variant = "h5">This club has no photos.</Typography>}
     <ConfirmImageDeleteModal
       openDeleteModal={props.openDeleteModal}
       setOpenDeleteModal={props.setOpenDeleteModal}
