@@ -20,6 +20,7 @@ import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import CheckCircleOutlinedIcon from '@material-ui/icons/CheckCircleOutlined';
 import InputIcon from '@material-ui/icons/Input';
 import { toast } from 'react-toastify';
+import { useUser } from '../Firebase';
 import "react-toastify/dist/ReactToastify.css";
 import history from "../Navigation/history";
 import { serverURL } from '../../constants/config';
@@ -44,6 +45,8 @@ const ImageUploadAndDisplay = () => {
   const [showMoveButton, setShowMoveButton] = useState(false)
   const [exploreImages, setExploreImages] = useState([])
   const [selectImagesModal, setSelectImagesModal] = useState(false)
+  const [admin, setAdmin] = useState(false)
+  const user = useUser();
   // const [selectedImage, setSelectedImage] = useState(null)
   const [isPermitted, setIsPermitted] = React.useState(false);
 
@@ -313,16 +316,18 @@ const ImageUploadAndDisplay = () => {
             incorrectFileAlert={incorrectFileAlert}
             setIncorrectFileAlert={setIncorrectFileAlert}
           />
-          <ImageSpeedDial
-            setOpenSpeedDial={setOpenSpeedDial}
-            openSpeedDial={openSpeedDial}
-            setOpenModal={setOpenModal}
-            setDeleteMenu={setDeleteMenu}
-            deleteMenu={deleteMenu}
-            selectMenu={selectMenu}
-            setSelectMenu={setSelectMenu}
-            setCheckedImages={setCheckedImages}
-          />
+          {admin &&
+            <ImageSpeedDial
+              setOpenSpeedDial={setOpenSpeedDial}
+              openSpeedDial={openSpeedDial}
+              setOpenModal={setOpenModal}
+              setDeleteMenu={setDeleteMenu}
+              deleteMenu={deleteMenu}
+              selectMenu={selectMenu}
+              setSelectMenu={setSelectMenu}
+              setCheckedImages={setCheckedImages}
+            />
+          }
         </Grid>
       </Grid>
       <Modal
