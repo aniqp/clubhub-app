@@ -532,7 +532,7 @@ app.post('/api/joinClub', async (req,res) => {
 	let clubID = req.body.clubID;
 	let userID = req.body.userID;
 
-	const applicationType = await getApplicationType()
+	const applicationType = await getApplicationType(clubID)
 	if (!applicationType.status) {
 		return res.status(400).send({express: applicationType.message});
 	}
