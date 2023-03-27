@@ -431,7 +431,42 @@ app.post('/api/checkMembership', (req,res) => {
 
 });
 
-app.post('/api/joinClub', (req,res) => {
+async function getApplicationType(clubID) {
+	let connection = mysql.createConnection(config);
+	return new Promise((resolve, reject) => {
+	  let response = { status: false, message: "Unknown error" };
+	  if (!clubID) {
+		response = { status: false, message: "No club ID provided" };
+		resolve(response);
+	  }
+	  // Check if user is an admin or owner of the club
+	  const adminQuery = `
+		SELECT hold_applications
+		FROM clubs
+		WHERE id=?
+		`;
+	  connection.query(adminQuery, [clubID], (error, results) => {
+		if (error) {
+		  console.error(error.message);
+		  response = { status: false, message: error.message };
+		}
+		if (!results?.length > 0) {
+		  response = {
+			status: false,
+			message: "No club found",
+		  };
+		} else {
+		  response = {
+			status: true,
+			message: "Club found",
+			data: results[0],
+		  };
+		}
+		resolve(response);
+	  });
+	  connection.end();
+	}
+)};
 	let data = req.body;
 
 	let connection = mysql.createConnection(config);
