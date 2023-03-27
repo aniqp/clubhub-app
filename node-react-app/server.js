@@ -517,16 +517,25 @@ async function getApplicationType(clubID) {
 	  connection.end();
 	}
 )};
+app.post('/api/joinClub', async (req,res) => {
 	let data = req.body;
 
 	let connection = mysql.createConnection(config);
 	let clubID = req.body.clubID;
 	let userID = req.body.userID;
 
-	let sql = `insert into memberships(uid, club_id, role)
-	values(?, ?, 'user')`;
+	const applicationType = await getApplicationType()
+	if (!applicationType.status) {
+		return res.status(400).send(applicationType.message);
+	}
+	const acceptAll = !applicationType.data["hold_applications"];
 
-	const values = [userID, clubID];
+	const role = acceptAll ? "user" : "pending";
+
+	let sql = `insert into memberships(uid, club_id, role)
+	values(?, ?, ?)`;
+
+	const values = [userID, clubID, role];
 	
 	connection.query(sql, values, (error, results, fields) => {
         if (error) {
