@@ -234,8 +234,8 @@ const Application = ({ members }) => {
         </Card>
         {!acceptAll &&
           applicants?.map((app) => (
-            <Card key={app.name} className={classes.applicant}>
-              <span>{app.name}</span>
+            <Card xs={2} key={app.name} className={classes.applicant}>
+              <Typography>{app.name}</Typography>
               <Button className={classes.deny} onClick={() => denyUser(app)}>
                 Deny
               </Button>
