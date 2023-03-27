@@ -261,7 +261,7 @@ const Dashboard = () => {
                     club_id={event.club_id}
                   />
                 ) :
-                myClubs.length > 0 && events.length > 0 ? <Typography variant="h6" style={{ marginTop: "20px" }}>This club has no upcoming events.</Typography> :
+                myClubs.length > 0 && filteredEvents.length === 0 && clubEventSelected ? <Typography variant="h6" style={{ marginTop: "20px" }}>This club has no upcoming events.</Typography> :
                   myClubs.length > 0 && events.length === 0 && <Typography variant="h6" style={{ marginTop: "20px" }}>You have no upcoming events.</Typography>
               }
             </Grid>
