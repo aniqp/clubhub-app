@@ -45,12 +45,21 @@ const ClubCard = ({ club, isMember, isPending, onJoin }) => {
     };
 
     toast.configure();
-    const notify = () => {
+    const notify = (pending) => {
+        if (pending) {
+            console.log('in pending')
+            toast.info("Success: Club join request sent.", {
+                position: toast.POSITION.TOP_RIGHT,
+                autoClose: true
+            });
+            return;
+        }
         console.log('in')
         toast.success("Success: Club was joined.", {
             position: toast.POSITION.TOP_RIGHT,
             autoClose: true
         });
+        return;
     }
 
     // Non-users will be redirected to sign in when trying to join a club 
@@ -85,7 +94,8 @@ const ClubCard = ({ club, isMember, isPending, onJoin }) => {
                 .then(res => {
                     console.log('club join successful')
                     onJoin();
-                    notify()
+                    console.log(res)
+                    notify((JSON.parse(res.express) === 'Pending'));
                 })
         } else {
             console.log('not signed in')

@@ -556,7 +556,7 @@ app.post('/api/joinClub', async (req,res) => {
             });
         } else {
             connection.query(`COMMIT`, data, (error, results, fields) => {
-                let string = JSON.stringify('Success')
+                let string = JSON.stringify(acceptAll ? 'Success' : 'Pending')
                 res.send({ express: string });            
 			})};
     })
