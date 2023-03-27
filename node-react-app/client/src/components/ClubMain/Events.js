@@ -289,6 +289,7 @@ const Events = () => {
                 </Grid>
             </Grid>
             <Grid xs={3} style={{maxWidth:'290px', textAlign:'center'}}>
+                {admin &&
                 <Card style={{display:'flex',flexDirection:'column' ,alignItems:'center'}}>
                     <Typography style={{padding:'20px', fontSize:'14pt', fontWeight:'200'}}>Do you have an event coming up?</Typography>
                     <Button 
@@ -301,7 +302,7 @@ const Events = () => {
                     <Grid style={{padding:'10px', display:'flex', justifyContent:'center', flexDirection:'column'}}>
                         <EventImage image={11} skeletonWidth={250} skeletonHeight = {160}/>
                     </Grid>
-                </Card>
+                </Card>}
             </Grid>
         </Grid>
     </>)
