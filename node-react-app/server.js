@@ -324,32 +324,39 @@ app.delete('/api/denyUser', (req, res) => {
 		}
 	  });
 	connection.end();
-  function isAdmin(user, clubID) {
-	let connection = mysql.createConnection(config);
   
+  async function isAdmin(user, clubID) {
+	let connection = mysql.createConnection(config);  
+	return new Promise((resolve, reject) => {
+	let response = {status: false, message: "Unknown error"};	  
 	// Check if user is an admin or owner of the club
 	const adminQuery = `
 	  SELECT role
 	  FROM memberships
 	  WHERE uid=? AND club_id=? AND (role="admin" OR role="owner")
 	  `;
-  
-	let response;
-  
 	connection.query(adminQuery, [user.uid, clubID], (error, results) => {
 	  if (error) {
+		console.error(error.message);
 		response = { status: false, message: error.message };
-	  }
+		}
 	  if (!results.length > 0) {
+		console.log("user is not admin")
 		response = {
 		  status: false,
 		  message: "User is not an admin or owner of the club",
 		};
-	  }
-	  response = {
-		status: True,
-		message: "User is an admin or owner of the club",
-	  };
+	} else {
+		  console.log("user is admin")
+		  response = {
+			  status: true,
+			  message: "User is an admin or owner of the club",
+			};
+	}
+	resolve(response)
+	});
+	connection.end();
+  })};
 	});
 	connection.end();
 	return response;
