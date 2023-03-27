@@ -550,14 +550,11 @@ app.post('/api/joinClub', async (req,res) => {
             connection.query(`ROLLBACK`, (error, results, fields) => {
                 let string = JSON.stringify('Error')
                 res.send({ express: string });
-                connection.end();
             });
         } else {
             connection.query(`COMMIT`, data, (error, results, fields) => {
                 let string = JSON.stringify('Success')
-                res.send({ express: string });
-                connection.end();
-            })
+                res.send({ express: string });            })
         };
     })
 
