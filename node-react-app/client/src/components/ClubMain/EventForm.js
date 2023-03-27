@@ -315,7 +315,9 @@ const EventForm = ({close, clubID, onChange}) => {
             <Grid style={{margin:'10px', background:'#fff', borderRadius:'5px'}}>
                 <Grid item style={{borderBottom:'lightgrey 0.5px solid', margin:'20px', display:'flex', justifyContent:'space-between'}}>
                     <Grid>
-                        <Typography style={{fontWeight:'300', fontSize:'20pt', marginBottom:'10px', }}>Create Event</Typography>
+                        <div data-testid='event-form-title'>
+                            <Typography style={{fontWeight:'300', fontSize:'20pt', marginBottom:'10px', }}>Create Event</Typography>
+                        </div>
                     </Grid>
                     <Grid>
                         <IconButton onClick={close}>
@@ -325,12 +327,12 @@ const EventForm = ({close, clubID, onChange}) => {
                 </Grid>
                 <Grid item style={{ margin:'5px 20px'}}>
                     <InputLabel className={classes.label}>NAME OF EVENT</InputLabel>
-                    <input onChange={handleTitle} className={classes.input} placeholder='Title'/> 
+                    <input data-testid='title-input' onChange={handleTitle} className={classes.input} placeholder='Title'/> 
                     {titleError && <Typography className={classes.errorMsg}>Please enter an event title</Typography>}
                 </Grid>
                 <Grid item style={{margin:'10px 20px 20px'}}>
                     <InputLabel className={classes.label}>SHORT DESCRIPTION</InputLabel>
-                    <textarea maxlength={310} onChange={handleDescription} className={classes.input} placeholder='Description' multiline rows={3} />                   
+                    <textarea data-testid='body-input' maxLength={310} onChange={handleDescription} className={classes.input} placeholder='Description' multiline rows={3} />                   
                      <Grid style={{display:'flex', justifyContent:'space-between'}} >
                         <Grid>
                             {descriptionError && <Typography className={classes.errorMsg}>Please enter an short description</Typography>}
@@ -352,9 +354,7 @@ const EventForm = ({close, clubID, onChange}) => {
                             onChange={handleStartDate}
                             className={[classes.textField, classes.OutlinedTextField]}
                             style={{marginLeft:0}}
-                            InputLabelProps={{
-                                shrink:true,
-                            }} />
+                            />
                             {startDateError && <Typography className={classes.errorMsg}>Please select a start date</Typography>}
                     </Grid>
                     <Grid item>
@@ -429,7 +429,7 @@ const EventForm = ({close, clubID, onChange}) => {
                         This event will take place from {eventConfirmation(startDate)} to {eventConfirmation(endDate)} from {convertTime(startTime)} to {convertTime(endTime)}
                 </Grid>}
                 <Grid item style={{margin:'25px 20px 5px', display:'flex', justifyContent:'space-between'}}>
-                    <Grid xs={4}>
+                    <Grid item xs={4}>
                         <InputLabel className={classes.label} style={{marginBottom:'10px'}}>LOCATION TYPE</InputLabel>
                         <Select
                             variant='outlined'
@@ -442,7 +442,7 @@ const EventForm = ({close, clubID, onChange}) => {
                         {locationTypeError && <Typography className={classes.errorMsg}>Please select a location type</Typography>}
                     </Grid>
                     {locationType === 'online' &&
-                        <Grid xs={8} style={{display:'flex', flexDirection:'column'}}>
+                        <Grid item xs={8} style={{display:'flex', flexDirection:'column'}}>
                         <InputLabel className={classes.label}>MEETING URL</InputLabel>
                         <Grid style={{display:'flex', width:'100%'}}>
                             <Grid>
@@ -454,13 +454,13 @@ const EventForm = ({close, clubID, onChange}) => {
                         </Grid>
                     </Grid>}
                     {locationType === 'in-person' &&
-                    <Grid xs={8}>
+                    <Grid item xs={8}>
                         <InputLabel className={classes.label}>LOCATION</InputLabel>
                         <input onChange={handleLocation} className={classes.input} placeholder='Location'/> 
                     </Grid>}
                 </Grid>
                 <Grid item style={{width:'100%', margin:'25px 20px 20px', display:'flex', justifyContent:'space-between'}}>
-                    <Grid xs={5} style={{display:'flex', flexDirection:'column'}}>
+                    <Grid item xs={5} style={{display:'flex', flexDirection:'column'}}>
                         <InputLabel className={classes.label}>PRICE (optional)</InputLabel>
                         <Grid style={{display:'flex', width:'100%'}}>
                             <Grid>
@@ -545,7 +545,7 @@ const EventForm = ({close, clubID, onChange}) => {
                     </Grid>
                     {placeholderImageError && <Typography className={classes.errorMsg}>Please select an image</Typography>}
                 </RadioGroup>
-                <Grid style={{margin:'5px 20px 20px'}}>
+                <Grid style={{margin:'5pfx 20px 20px'}}>
                     <Button onClick={handleSubmit} style={{width:'100%', color:'white', background:'rgb(53,134,247)'}}>Create Event
                     </Button>
                 </Grid>
