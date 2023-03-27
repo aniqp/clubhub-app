@@ -10,6 +10,7 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { useAuthHeader } from "../Firebase/";
+import { serverURL } from "../../constants/config";
 
 const useStyles = makeStyles((theme) => ({
   applicant: {
@@ -35,32 +36,30 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const Application = ({
-  members,
-  refetchMembers
-}) => {
+export const Application = ({ members, refetchMembers }) => {
   const classes = useStyles();
-  const {
-    clubID
-  } = useParams();
+  const { clubID } = useParams();
   const authHeader = useAuthHeader();
   const [acceptAll, setAcceptAll] = useState(false);
-  const applicants = useMemo(() => members?.filter(member => member.role === "pending") || [], [members]); // const applicants = [{ name: "George", role: "pending" }];
+  const applicants = useMemo(
+    () => members?.filter((member) => member.role === "pending") || [],
+    [members]
+  ); // const applicants = [{ name: "George", role: "pending" }];
 
-  const acceptUser = async user => {
+  const acceptUser = async (user) => {
     console.log("Trying to accept user", user);
     const data = {
       user,
-      clubID
+      clubID,
     };
     const request = {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         ...authHeader(),
-        Accept: "*/*"
+        Accept: "*/*",
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
     };
     const URL = serverURL + "/api/acceptUser"; // Fetch accept user api
 
@@ -76,24 +75,24 @@ export const Application = ({
       console.log(await response.text());
       refetchMembers();
     } else {
-      console.error("Could not accept user. ERROR:", (await response.text()));
+      console.error("Could not accept user. ERROR:", await response.text());
     }
   };
 
-  const denyUser = async user => {
+  const denyUser = async (user) => {
     console.log("Trying to deny user", user);
     const data = {
       user,
-      clubID
+      clubID,
     };
     const request = {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
         ...authHeader(),
-        Accept: "*/*"
+        Accept: "*/*",
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
     };
     const URL = serverURL + "/api/denyUser"; // Fetch deny user api
 
@@ -109,16 +108,14 @@ export const Application = ({
       console.log(await response.text());
       refetchMembers();
     } else {
-      console.error("Could not deny user. ERROR:", (await response.text()));
+      console.error("Could not deny user. ERROR:", await response.text());
     }
   };
 
   const getApplicationType = async () => {
     const request = {
       method: "GET",
-      headers: { ...authHeader(),
-        Accept: "*/*"
-      }
+      headers: { ...authHeader(), Accept: "*/*" },
     };
     const URL = serverURL + "/api/getApplicationType/" + clubID;
     let response;
@@ -134,7 +131,7 @@ export const Application = ({
       console.log("Accept All:", data["acceptAll"]);
       return data["acceptAll"];
     } else {
-      console.error("Could not accept user. ERROR:", (await response.text()));
+      console.error("Could not accept user. ERROR:", await response.text());
       return false;
     }
   };
@@ -142,7 +139,7 @@ export const Application = ({
   useEffect(() => {
     (async () => {
       // console.log(await getApplicationType())
-      setAcceptAll((await getApplicationType()));
+      setAcceptAll(await getApplicationType());
     })();
   }, []);
 
@@ -151,16 +148,16 @@ export const Application = ({
     setAcceptAll(applicationType);
     const data = {
       clubID,
-      applicationType
+      applicationType,
     };
     const request = {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
         ...authHeader(),
-        Accept: "*/*"
+        Accept: "*/*",
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
     };
     const URL = serverURL + "/api/changeApplicationType";
     let response;
@@ -175,32 +172,48 @@ export const Application = ({
       console.log(await response.text());
       setAcceptAll(applicationType);
     } else {
-      console.error("Could not accept user. ERROR:", (await response.text()));
-      setAcceptAll(cur => !cur);
+      console.error("Could not accept user. ERROR:", await response.text());
+      setAcceptAll((cur) => !cur);
     }
   };
 
-  return <Grid xs={2} item>
+  return (
+    <Grid xs={2} item>
       <Grid container direction="column">
         Application
         <Card className={classes.application}>
           <Typography>
             Application Type: {acceptAll ? "Accept All" : "Hold Applications"}
           </Typography>
-          <FormControlLabel control={<Switch checked={!!acceptAll} disabled={!!applicants?.length} onChange={changeApplicationType} />} label={!!applicants?.length ? "Empty List to change type" : "Accept All"} />
+          <FormControlLabel
+            control={
+              <Switch
+                checked={!!acceptAll}
+                disabled={!!applicants?.length}
+                onChange={changeApplicationType}
+              />
+            }
+            label={
+              !!applicants?.length ? "Empty List to change type" : "Accept All"
+            }
+          />
         </Card>
-        {!acceptAll && applicants?.map(app => <Card xs={2} key={app.name} className={classes.applicant}>
+        {!acceptAll &&
+          applicants?.map((app) => (
+            <Card xs={2} key={app.name} className={classes.applicant}>
               <Typography>{app.name}</Typography>
               <Button className={classes.deny} onClick={() => denyUser(app)}>
                 Deny
               </Button>
-              <Button className={classes.accept} onClick={() => acceptUser(app)}>
+              <Button
+                className={classes.accept}
+                onClick={() => acceptUser(app)}
+              >
                 Accept
               </Button>
-            </Card>)}
+            </Card>
+          ))}
       </Grid>
-    </Grid>;
+    </Grid>
+  );
 };
-  
-
-  
