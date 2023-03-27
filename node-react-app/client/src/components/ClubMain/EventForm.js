@@ -95,7 +95,7 @@ const EventForm = ({close, clubID, onChange}) => {
     const [location, setLocation] = React.useState('');
     const [price, setPrice] = React.useState(null);
     const [details, setDetails] = React.useState('');
-    const [placeholderImage, setPlaceholderImage] = React.useState('');
+    const [placeholderImage, setPlaceholderImage] = React.useState('1');
     const [timeDisabled, setTimeDisabled] = React.useState(false);
 
     // ERROR MESSAGES STATES
@@ -106,6 +106,7 @@ const EventForm = ({close, clubID, onChange}) => {
     const [endTimeError, setEndTimeError] = React.useState(false);
     const [locationTypeError, setLocationTypeError] = React.useState(false);
     const [placeholderImageError, setPlaceholderImageError] = React.useState(false);
+    const [locationError, setLocationError] = React.useState(false);
 
     // Title
     const handleTitle = (e) => {
@@ -172,6 +173,7 @@ const EventForm = ({close, clubID, onChange}) => {
 
     // Location
     const handleLocation = (e) => {
+        setLocationError(false);
         setLocation(e.target.value);
     }
 
@@ -228,6 +230,11 @@ const EventForm = ({close, clubID, onChange}) => {
             setLocationTypeError(true);
         }
 
+        if (!location) {
+            caughtError = true;
+            setLocationError(true);
+        }
+
         if (!placeholderImage) {
             caughtError = true;
             setPlaceholderImageError(true);
@@ -237,12 +244,18 @@ const EventForm = ({close, clubID, onChange}) => {
             let startDateTimeText = ''
             let endDateTime = null
             let endDateTimeText = null
+            let start_time = startTime;
             if (allDay){
-                startDateTimeText = datetimeTextFormat(startDate, '00:00');
+                console.log('all day')
+                console.log(startTime)
+                start_time = '23:59'
+                startDateTimeText = datetimeTextFormat(startDate, '23:59');
 
                 if (endDate){
-                    endDateTimeText = datetimeTextFormat(endDate, '00:00');
+                    endDateTimeText = datetimeTextFormat(endDate, '23:59');
                 }
+                console.log(startTime)
+
             } else {
                 startDateTimeText = datetimeTextFormat(startDate, startTime);
                 
@@ -250,13 +263,17 @@ const EventForm = ({close, clubID, onChange}) => {
                     endDateTime = endDate
                 }
                 if(endTime){
-                    endDateTime += ' ' + endTime;
+                    if (endDate){
+                        endDateTime = endDate + ' ' + endTime
+                    } else {
+                        endDateTime = startDate + ' ' + endTime
+                    }
                     endDateTimeText = datetimeTextFormat(endDate, endTime);
                 }
 
             }
 
-            callApiAddEvent(startDateTimeText, endDateTime, endDateTimeText)
+            callApiAddEvent(startDateTimeText, endDateTime, endDateTimeText, start_time)
             .then(res => {
                 var parsed = JSON.parse(res.express);
                 onChange();
@@ -278,9 +295,9 @@ const EventForm = ({close, clubID, onChange}) => {
             })
         }
     }
-    console.log(convertTime('10:19'))
-    const callApiAddEvent = async (startDateTimeText, endDateTime, endDateTimeText) => {
+    const callApiAddEvent = async (startDateTimeText, endDateTime, endDateTimeText, start_time) => {
         const url = serverURL + '/api/addEvent';
+        console.log(startTime)
         const response = await fetch(url, {
             method: "POST",
             headers: {
@@ -291,7 +308,7 @@ const EventForm = ({close, clubID, onChange}) => {
                 clubID: clubID, 
                 title: title,
                 description: description,
-                startDateTime: startDate + ' ' + startTime,
+                startDateTime: startDate + ' ' + start_time,
                 endDateTime: endDateTime,
                 allDay: allDay,
                 locationType: locationType,
@@ -423,7 +440,7 @@ const EventForm = ({close, clubID, onChange}) => {
                     <img src={checkmark} style={{height:'18px', paddingRight:'5px'}}/>
                         This event will take place on {eventConfirmation(startDate)} at {convertTime(startTime)} to {convertTime(endTime)}
                 </Grid>}
-                {(endDate && startDate !== endDate && !endTimeError) && 
+                {(endDate && startDate !== endDate && !endTimeError && endTime && startTime && startDate) && 
                 <Grid style={{margin:'5px 20px', display:'flex', alignContent:'center'}}>
                         <img src={checkmark} style={{height:'18px', paddingRight:'5px'}}/>
                         This event will take place from {eventConfirmation(startDate)} to {eventConfirmation(endDate)} from {convertTime(startTime)} to {convertTime(endTime)}
@@ -450,6 +467,8 @@ const EventForm = ({close, clubID, onChange}) => {
                             </Grid>
                             <Grid style={{width:'100%'}}>
                                 <input onChange={handleLocation} style={{width:'100%', borderRadius:'0 5px 5px 0',height:'44px', border:'1px solid lightgrey'}}/>
+                                {(locationType.length > 0 && locationError) && <Typography className={classes.errorMsg}>Please enter the event's location</Typography>}
+
                             </Grid>
                         </Grid>
                     </Grid>}
@@ -457,6 +476,7 @@ const EventForm = ({close, clubID, onChange}) => {
                     <Grid item xs={8}>
                         <InputLabel className={classes.label}>LOCATION</InputLabel>
                         <input onChange={handleLocation} className={classes.input} placeholder='Location'/> 
+                        {(locationType.length > 0 && locationError) && <Typography className={classes.errorMsg}>Please enter the event's location</Typography>}
                     </Grid>}
                 </Grid>
                 <Grid item style={{width:'100%', margin:'25px 20px 20px', display:'flex', justifyContent:'space-between'}}>
@@ -480,66 +500,66 @@ const EventForm = ({close, clubID, onChange}) => {
                     <InputLabel className={classes.label}>SELECT A PLACEHOLDER IMAGE</InputLabel>
                     <InputLabel className={classes.label}>This is the main photo that will be displayed in the events page.</InputLabel>
                 </Grid>
-                <RadioGroup onChange={handleRatioBtn} style={{display:'flex', flexDirection:'row', overflow:'hidden', margin:'10px'}}>
+                <RadioGroup value={placeholderImage} onChange={handleRatioBtn} style={{display:'flex', flexDirection:'row', overflow:'hidden', margin:'10px'}}>
                     <Grid style={{display:'flex', overflowX:'scroll'}}>
                             <Grid style={{marginLeft:'10px', display:'flex', flexDirection:'column'}}>
                                 <img src={img1} style={{height:'100px'}} />
                                 <div style={{display:'flex', justifyContent:'center', width:'100%'}}>
-                                    <Radio value={'1'}/>
+                                    <Radio value='1'/>
                                 </div>
                             </Grid>
                             <Grid style={{marginLeft:'10px', display:'flex', flexDirection:'column'}}>
                                 <img src={img2} style={{height:'100px'}} />
                                 <div style={{display:'flex', justifyContent:'center', width:'100%'}}>
-                                    <Radio value={'2'}/>
+                                    <Radio value='2'/>
                                 </div>
                             </Grid>
                             <Grid style={{marginLeft:'10px', display:'flex', flexDirection:'column'}}>
                                 <img src={img3} style={{height:'100px'}} />
                                 <div style={{display:'flex', justifyContent:'center', width:'100%'}}>
-                                    <Radio value={'3'}/>
+                                    <Radio value='3'/>
                                 </div>
                             </Grid>
                             <Grid style={{marginLeft:'10px', display:'flex', flexDirection:'column'}}>
                                 <img src={img4} style={{height:'100px'}} />
                                 <div style={{display:'flex', justifyContent:'center', width:'100%'}}>
-                                    <Radio value={'4'}/>
+                                    <Radio value='4'/>
                                 </div>
                             </Grid>
                             <Grid style={{marginLeft:'10px', display:'flex', flexDirection:'column'}}>
                                 <img src={img5} style={{height:'100px'}} />
                                 <div style={{display:'flex', justifyContent:'center', width:'100%'}}>
-                                    <Radio value={'5'}/>
+                                    <Radio value='5'/>
                                 </div>
                             </Grid>
                             <Grid style={{marginLeft:'10px', display:'flex', flexDirection:'column'}}>
                                 <img src={img6} style={{height:'100px'}} />
                                 <div style={{display:'flex', justifyContent:'center', width:'100%'}}>
-                                    <Radio value={'6'}/>
+                                    <Radio value='6'/>
                                 </div>
                             </Grid>
                             <Grid style={{marginLeft:'10px', display:'flex', flexDirection:'column'}}>
                                 <img src={img7} style={{height:'100px'}} />
                                 <div style={{display:'flex', justifyContent:'center', width:'100%'}}>
-                                    <Radio value={'7'}/>
+                                    <Radio value='7'/>
                                 </div>
                             </Grid>
                             <Grid style={{marginLeft:'10px', display:'flex', flexDirection:'column'}}>
                                 <img src={img8} style={{height:'100px'}} />
                                 <div style={{display:'flex', justifyContent:'center', width:'100%'}}>
-                                    <Radio value={'8'}/>
+                                    <Radio value='8'/>
                                 </div>
                             </Grid>
                             <Grid style={{marginLeft:'10px', display:'flex', flexDirection:'column'}}>
                                 <img src={img9} style={{height:'100px'}} />
                                 <div style={{display:'flex', justifyContent:'center', width:'100%'}}>
-                                    <Radio value={'9'}/>
+                                    <Radio value='9'/>
                                 </div>
                             </Grid>
                             <Grid style={{marginLeft:'10px', display:'flex', flexDirection:'column'}}>
                                 <img src={img10} style={{height:'100px'}} />
                                 <div style={{display:'flex', justifyContent:'center', width:'100%'}}>
-                                    <Radio value={'10'}/>
+                                    <Radio value='10'/>
                                 </div>
                             </Grid>
                     </Grid>

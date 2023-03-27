@@ -82,7 +82,7 @@ const useStyles = makeStyles({
         }
     }, 
     dashboard:{
-        border:'1px #A9A9A9 solid'
+        border:'1px #D8D8D8 solid'
     } 
 
   });

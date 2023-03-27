@@ -14,6 +14,7 @@ import ExpandLess from "@material-ui/icons/ExpandLess"
 import ExpandMore from "@material-ui/icons/ExpandMore"
 import AnnouncementIcon from '@material-ui/icons/Announcement';
 import EventIcon from "@material-ui/icons/Event"
+import EventPost from "../ClubMain/EventPost";
 
 const serverURL = ""
 
@@ -47,6 +48,7 @@ const useStyles = makeStyles((theme) => ({
 const Dashboard = () => {
 
   const [announcements, setAnnouncements] = React.useState([])
+  const [events, setEvents] = React.useState([]);
 
   const [clubAnnouncementSelected, setClubAnnouncementSelected] = React.useState("")
 
@@ -67,6 +69,7 @@ const Dashboard = () => {
       console.log('User ID:', user.uid);
       getAnnouncements();
       getMyClubs();
+      getEvents();
     }
     else {
       console.log('Failed')
@@ -74,6 +77,7 @@ const Dashboard = () => {
   }, [user]);
 
   const filteredAnnouncements = announcements.filter((announcement) => announcement.name.includes(clubAnnouncementSelected))
+  const filteredEvents = events.filter((event) => event.name.includes(clubEventSelected))
 
   function isAdmin(announcement) {
     return (((announcement.role == "owner" || announcement.role == "admin") && announcement.visibility == "private") || announcement.visibility == "public")
@@ -94,7 +98,6 @@ const Dashboard = () => {
           return 0 //default return value (no sorting)
         })
         setAnnouncements(parsed)
-        setLoading(false)
       })
   }
 
@@ -148,6 +151,44 @@ const Dashboard = () => {
     return body;
   }
 
+  const getEvents = () => {
+    callApiGetUpcomingEvents()
+    .then(res => {
+        var parsed = JSON.parse(res.express);
+        // parsed.sort(function (a, b) {
+        //   var timeA = a.time_posted, timeB = b.time_posted.toLowerCase()
+        //   if (timeA > timeB) //sort string ascending
+        //     return -1
+        //   if (timeA < timeB)
+        //     return 1
+        //   return 0 //default return value (no sorting)
+        // })
+        setEvents(parsed)
+        setLoading(false);
+        
+      })
+  }
+
+
+  const callApiGetUpcomingEvents = async () => {
+    const url = serverURL + '/api/getDashboardEvents';
+    const userID = user.uid
+    const response = await fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            //authorization: `Bearer ${this.state.token}`
+        },
+        body: JSON.stringify({
+            userID: userID,
+        })
+    });
+
+    const body = await response.json();
+    if (response.status !== 200) throw Error(body.message);
+    return body;
+  }  
+
   if (loading === true) {
     return (<div align="center">
       <CircularProgress />
@@ -170,8 +211,8 @@ const Dashboard = () => {
             <Grid item>
               <AnnouncementHeader />
             </Grid>
-            <Grid item style={{ listStyle: 'none'}} xs={12}>
-              {filteredAnnouncements.length !== 0 ?
+            <Grid item style={{ listStyle: 'none', paddingBottom:'50px'}} xs={12}>
+              {(filteredAnnouncements.length !== 0) ?
                 filteredAnnouncements.map((announcement, index) =>
                   <AnnouncementPost
                     admin={isAdmin(announcement)}
@@ -185,10 +226,29 @@ const Dashboard = () => {
               }
             </Grid>
           </>
-          :
-          <Grid item xs={12}>
-            <EventsHeader />
-          </Grid>
+          :<>
+            <Grid item xs={12}>
+              <EventsHeader />
+            </Grid>
+            <Grid style={{ listStyle: 'none', paddingBottom:'50px'}} xs={12}>
+              {filteredEvents.length !== 0 ? 
+              filteredEvents.map((event, index) =>
+              <EventPost
+                event={event} 
+                admin={false} 
+                index={index} 
+                currentUser={user} 
+                pastEvent={false} 
+                onChange={getEvents}
+                onDashboard={onDashboard}
+                club_name={event.name}
+                club_id={event.club_id}
+              />
+            ) :
+              <Typography variant="h6" style={{marginTop: "20px" }}>This club has no upcoming events.</Typography>
+            }
+            </Grid> 
+          </>
         }
       </Grid>
     </Grid>
@@ -203,6 +263,7 @@ const SideBar = (props) => {
         zIndex: 0,
         maxWidth: "25px",
         flexShrink: 0,
+        minWidth:'244px'
       }}
     >
       <Toolbar />
@@ -217,11 +278,6 @@ const SideBar = (props) => {
           />
         ))}
       </Box>
-      {/* <ListItem key='View All' style={{ maxWidth: "250px", display: 'flex', justifyContent: 'space-between', position: 'absolute', bottom: 0 }}>
-        <Link onClick={() => { props.setClubAnnouncementSelected("") }} style={{ textAlign: "right", marginLeft: "140px", cursor: 'pointer' }}>
-          <ListItemText primary={'View All'} sx={{ fontFamily: 'Arvo, serif' }} />
-        </Link>
-      </ListItem> */}
     </Drawer>
   )
 }
@@ -250,7 +306,8 @@ const MyClubs = (props) => {
             </ListItemButton>
             <ListItemButton button={true} style={{ textAlign: 'justify' }} onClick=
               {() => {
-                props.setClubEventSelected(true)
+                props.setClubAnnouncementSelected(false)
+                props.setClubEventSelected(props.text)
               }}>
               <EventIcon />
               <ListItemText primary="Events" style={{ paddingLeft: '5%' }} />
@@ -264,7 +321,7 @@ const MyClubs = (props) => {
 
 const AnnouncementHeader = () => {
   return (
-    <Card style={{ height:'200px', backgroundColor: '#6072C7', margin: '40px 0 30px 0', display: 'flex', alignContent: 'center'}}>
+    <Card style={{ height:'250px', backgroundColor: '#6072C7', margin: '40px 0 30px 0', display: 'flex', alignContent: 'center'}}>
       <Grid container xs={12}>
         <Grid item xs={8} style={{ display: 'flex', alignItems: 'center' }}>
           <CardContent>
@@ -281,7 +338,7 @@ const AnnouncementHeader = () => {
 
 const EventsHeader = () => {
   return (
-    <Card style={{ height:'200px', backgroundColor: '#ee9d79', margin: '40px 0 30px 0', display: 'flex', alignContent: 'center'}}>
+    <Card style={{ height:'250px', backgroundColor: '#ee9d79', margin: '40px 0 30px 0', display: 'flex', alignContent: 'center'}}>
       <Grid container xs={12}>
         <Grid item xs={7} style={{ display: 'flex', alignItems: 'center' }}>
           <CardContent>
