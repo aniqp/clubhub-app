@@ -382,10 +382,25 @@ app.post("/api/acceptUser", async (req, res) => {
 	});
 	connection.end();
   })};
-	});
-	connection.end();
-	return response;
-  }
+  app.get("/api/getApplicationType/:clubID", async (req, res) => {
+	const currentUser = req["currentUser"];
+	const clubID = req.params["clubID"];
+	console.log("clubID: " + clubID)
+  
+	// Check if is admin/owner of this club
+	const admin = await isAdmin(currentUser, clubID);
+	if (!admin.status) {
+	  return res.status(400).send(admin.message);
+	}
+  
+	const type = await getApplicationType(clubID);
+	if (!type.status) {
+	  return res.status(400).send(type.message);
+	}
+	console.log("type: " + JSON.stringify(type.data))
+	const acceptAll = !type.data["hold_applications"];
+	return res.status(200).json({data: {acceptAll: acceptAll}});
+  });
   
 
 app.post('/api/getAllClubs', (req, res) => {
