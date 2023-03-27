@@ -20,6 +20,7 @@ import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import CheckCircleOutlinedIcon from '@material-ui/icons/CheckCircleOutlined';
 import InputIcon from '@material-ui/icons/Input';
 import { toast } from 'react-toastify';
+import { useUser } from '../Firebase';
 import "react-toastify/dist/ReactToastify.css";
 
 const ImageUploadAndDisplay = () => {
@@ -38,6 +39,8 @@ const ImageUploadAndDisplay = () => {
   const [showMoveButton, setShowMoveButton] = useState(false)
   const [exploreImages, setExploreImages] = useState([])
   const [selectImagesModal, setSelectImagesModal] = useState(false)
+  const [admin, setAdmin] = useState(false)
+  const user = useUser();
   // const [selectedImage, setSelectedImage] = useState(null)
 
   console.log(checkedImages)
@@ -202,6 +205,50 @@ const ImageUploadAndDisplay = () => {
     fetchExploreImages();
   }, [selectImagesModal, selectMenu, clubID]);
 
+  React.useEffect(() => {
+    if (user) {
+      let userID = user.uid;
+      // console.log(userID)
+      getUserRole(userID);
+    } else {
+      setAdmin(false);
+    }
+  }, [user]);
+
+  const getUserRole = (userID) => {
+    callApiGetUserRole(userID)
+      .then(res => {
+        var parsed = JSON.parse(res.express);
+        if (parsed.length >= 1) {
+          if (parsed[0].role === 'owner' || parsed[0].role === 'admin') {
+            setAdmin(true);
+          }
+        } else {
+          setAdmin(false);
+        }
+        // console.log(parsed);
+      })
+  }
+
+  const callApiGetUserRole = async (userID) => {
+    const url = '/api/getCurrentUserRole';
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        //authorization: `Bearer ${this.state.token}`
+      },
+      body: JSON.stringify({
+        clubID: clubID,
+        userID: userID,
+      })
+    });
+
+    const body = await response.json();
+    if (response.status !== 200) throw Error(body.message);
+    return body;
+  }
+
 
   return (
     <div>
@@ -261,16 +308,18 @@ const ImageUploadAndDisplay = () => {
             incorrectFileAlert={incorrectFileAlert}
             setIncorrectFileAlert={setIncorrectFileAlert}
           />
-          <ImageSpeedDial
-            setOpenSpeedDial={setOpenSpeedDial}
-            openSpeedDial={openSpeedDial}
-            setOpenModal={setOpenModal}
-            setDeleteMenu={setDeleteMenu}
-            deleteMenu={deleteMenu}
-            selectMenu={selectMenu}
-            setSelectMenu={setSelectMenu}
-            setCheckedImages={setCheckedImages}
-          />
+          {admin &&
+            <ImageSpeedDial
+              setOpenSpeedDial={setOpenSpeedDial}
+              openSpeedDial={openSpeedDial}
+              setOpenModal={setOpenModal}
+              setDeleteMenu={setDeleteMenu}
+              deleteMenu={deleteMenu}
+              selectMenu={selectMenu}
+              setSelectMenu={setSelectMenu}
+              setCheckedImages={setCheckedImages}
+            />
+          }
         </Grid>
       </Grid>
       <Modal
