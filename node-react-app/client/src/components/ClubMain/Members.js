@@ -261,7 +261,7 @@ const Members = ({ name, members, isAdmin, acceptAll }) => {
         <Card className={classes.memberCount}>
           <img src={membersIcon} style={{ height: "50px" }}></img>
           <Typography className={classes.text2} color="secondary">
-            {members.length}
+            {members.filter((member) => member.role !== "pending").length}
           </Typography>
           <Typography className={classes.text1} color="textSecondary">
             Club Members
