@@ -130,13 +130,6 @@ const Announcements = () => {
                 if (parsed.length == 0){
                     setNoAnnouncementMsg('NO ANNOUNCEMENTS YET')
                 }
-                if (parsed.length > 0) {
-                    let x = parsed.find((announcement)=> announcement.visibility === 'public')
-                    if (!x){
-                        console.log('in')
-                        setNoAnnouncementMsg('NO ANNOUNCEMENTS YET')
-                    }
-                }
             })
     }
 

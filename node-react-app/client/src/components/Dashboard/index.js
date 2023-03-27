@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {
   makeStyles, Grid, Box, Typography, Drawer, Toolbar, List, Divider, Button,
-  ListItem, ListItemText, Link, Card, CardMedia, CardContent, Collapse
+  ListItem, ListItemText, Link, Card, CardMedia, CardContent, Collapse, Tooltip
 } from "@material-ui/core";
 import ListItemButton from "@material-ui/core/ListItem"
 import { useUser } from '../Firebase/context';
@@ -15,7 +15,10 @@ import ExpandMore from "@material-ui/icons/ExpandMore"
 import AnnouncementIcon from '@material-ui/icons/Announcement';
 import EventIcon from "@material-ui/icons/Event"
 import EventPost from "../ClubMain/EventPost";
-
+import MarkunreadMailboxIconOutlined from '@material-ui/icons/MarkunreadMailboxOutlined'
+import { ToggleButton } from "@material-ui/lab";
+import { ToggleButtonGroup } from "@material-ui/lab";
+import DateRangeOutlinedIcon from '@material-ui/icons/DateRangeOutlined'
 const serverURL = ""
 
 const useStyles = makeStyles((theme) => ({
@@ -58,11 +61,15 @@ const Dashboard = () => {
 
   const [loading, setLoading] = React.useState(true)
 
+  const [alignment, setAlignment] = React.useState(null)
+
   const onDashboard = true;
 
   const user = useUser();
 
   const classes = useStyles();
+
+  console.log(announcements[0])
 
   useEffect(() => {
     if (user) {
@@ -75,6 +82,11 @@ const Dashboard = () => {
       console.log('Failed')
     }
   }, [user]);
+
+  const handleAlignment = (event, newAlignment) => {
+    setAlignment(newAlignment);
+  };
+
 
   const filteredAnnouncements = announcements.filter((announcement) => announcement.name.includes(clubAnnouncementSelected))
   const filteredEvents = events.filter((event) => event.name.includes(clubEventSelected))
@@ -153,7 +165,7 @@ const Dashboard = () => {
 
   const getEvents = () => {
     callApiGetUpcomingEvents()
-    .then(res => {
+      .then(res => {
         var parsed = JSON.parse(res.express);
         // parsed.sort(function (a, b) {
         //   var timeA = a.time_posted, timeB = b.time_posted.toLowerCase()
@@ -165,7 +177,7 @@ const Dashboard = () => {
         // })
         setEvents(parsed)
         setLoading(false);
-        
+
       })
   }
 
@@ -174,20 +186,20 @@ const Dashboard = () => {
     const url = serverURL + '/api/getDashboardEvents';
     const userID = user.uid
     const response = await fetch(url, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            //authorization: `Bearer ${this.state.token}`
-        },
-        body: JSON.stringify({
-            userID: userID,
-        })
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        //authorization: `Bearer ${this.state.token}`
+      },
+      body: JSON.stringify({
+        userID: userID,
+      })
     });
 
     const body = await response.json();
     if (response.status !== 200) throw Error(body.message);
     return body;
-  }  
+  }
 
   if (loading === true) {
     return (<div align="center">
@@ -197,12 +209,15 @@ const Dashboard = () => {
 
   return (
     <Grid container>
-      <Grid item xs={3} style={{zIndex:'100'}}>
+      <Grid item xs={3} style={{ zIndex: '100' }}>
         <SideBar
           myClubs={myClubs}
           clubAnnouncementSelected={clubAnnouncementSelected}
           setClubAnnouncementSelected={setClubAnnouncementSelected}
           setClubEventSelected={setClubEventSelected}
+          alignment={alignment}
+          handleAlignment={handleAlignment}
+          setAlignment = {setAlignment}
         />
       </Grid>
       <Grid item xs={8}>
@@ -211,7 +226,7 @@ const Dashboard = () => {
             <Grid item>
               <AnnouncementHeader />
             </Grid>
-            <Grid item style={{ listStyle: 'none', paddingBottom:'50px'}} xs={12}>
+            <Grid item style={{ listStyle: 'none', paddingBottom: '50px' }} xs={12}>
               {(filteredAnnouncements.length !== 0) ?
                 filteredAnnouncements.map((announcement, index) =>
                   <AnnouncementPost
@@ -222,34 +237,34 @@ const Dashboard = () => {
                     club_id={announcement.club_id}
                   />
                 ) :
-                myClubs.length > 1 && announcements.length === 0 && clubAnnouncementSelected? <Typography variant="h6" style={{marginTop: "20px" }}>This club has no recent announcements.</Typography> :
-                myClubs.length > 1 && announcements.length === 0 && <Typography variant="h6" style={{marginTop: "20px" }}>You have no recent announcements.</Typography>
+                myClubs.length >= 1 && filteredAnnouncements.length === 0 && clubAnnouncementSelected ? <Typography variant="h6" style={{ marginTop: "20px" }}>This club has no recent announcements.</Typography> :
+                  myClubs.length >= 1 && announcements.length === 0 && <Typography variant="h6" style={{ marginTop: "20px" }}>You have no recent announcements.</Typography>
               }
             </Grid>
           </>
-          :<>
+          : <>
             <Grid item xs={12}>
               <EventsHeader />
             </Grid>
-            <Grid style={{ listStyle: 'none', paddingBottom:'50px'}} xs={12}>
-              {filteredEvents.length !== 0 ? 
-              filteredEvents.map((event, index) =>
-              <EventPost
-                event={event} 
-                admin={false} 
-                index={index} 
-                currentUser={user} 
-                pastEvent={false} 
-                onChange={getEvents}
-                onDashboard={onDashboard}
-                club_name={event.name}
-                club_id={event.club_id}
-              />
-            ) :
-            myClubs.length > 0 && events.length > 0? <Typography variant="h6" style={{marginTop: "20px" }}>This club has no upcoming events.</Typography> :
-            myClubs.length > 0 && events.length === 0 && <Typography variant="h6" style={{marginTop: "20px" }}>You have no upcoming events.</Typography>
-            }
-            </Grid> 
+            <Grid style={{ listStyle: 'none', paddingBottom: '50px' }} xs={12}>
+              {filteredEvents.length !== 0 ?
+                filteredEvents.map((event, index) =>
+                  <EventPost
+                    event={event}
+                    admin={false}
+                    index={index}
+                    currentUser={user}
+                    pastEvent={false}
+                    onChange={getEvents}
+                    onDashboard={onDashboard}
+                    club_name={event.name}
+                    club_id={event.club_id}
+                  />
+                ) :
+                myClubs.length > 0 && events.length > 0 ? <Typography variant="h6" style={{ marginTop: "20px" }}>This club has no upcoming events.</Typography> :
+                  myClubs.length > 0 && events.length === 0 && <Typography variant="h6" style={{ marginTop: "20px" }}>You have no upcoming events.</Typography>
+              }
+            </Grid>
           </>
         }
       </Grid>
@@ -276,17 +291,37 @@ const SideBar = (props) => {
         zIndex: 0,
         maxWidth: "250px",
         flexShrink: 0,
-        minWidth:'244px'
+        minWidth: '244px'
       }}
     >
       <Toolbar />
       <Box sx={{ overflow: 'auto', maxWidth: '250px' }} textAlign="center">
         <Typography variant="h6" style={{ marginTop: "25px", fontFamily: 'Biryani, sans-serif', fontWeight: 600 }}>My Clubs</Typography>
-        {props.myClubs.length > 0 && 
-            <Button style={{width:"220px", marginTop:'10px', background:'#6072C7', color:'white', fontSize:'10pt'}} onClick={handleAllClubAnnouncements}>All Club Announcements</Button>
-        }
-        {props.myClubs.length > 0 && 
-            <Button style={{width:"220px", marginTop:'10px', background:'#ee9d79', color:'white', fontSize:'10pt'}} onClick={handleAllClubEvents}>All Club Events</Button>
+        {props.myClubs.length > 0 &&
+          <ToggleButtonGroup
+            value={props.alignment}
+            exclusive
+            onChange={props.handleAlignment}
+            aria-label="display "
+            color={props.alignment === 'left' ? '#6072C7' : 'transparent'}
+          >
+            <ToggleButton value="left" onClick={handleAllClubAnnouncements} style={{
+              backgroundColor: props.alignment === 'left' && '#6072C7',
+              color: props.alignment === 'left' && 'white'
+            }}>
+              <Tooltip title="View all club announcements">
+                <MarkunreadMailboxIconOutlined fontSize="small" />
+              </Tooltip>
+            </ToggleButton>
+            <ToggleButton value="right" onClick={handleAllClubEvents} style={{
+              backgroundColor: props.alignment === 'right' && '#ee9d79',
+              color: props.alignment === 'right' && 'white'
+            }}>
+              <Tooltip title="View all club events">
+                <DateRangeOutlinedIcon fontSize="small" />
+              </Tooltip>
+            </ToggleButton>
+          </ToggleButtonGroup>
         }
         {props.myClubs.map((text, index) => (
           <MyClubs
@@ -294,10 +329,11 @@ const SideBar = (props) => {
             setClubAnnouncementSelected={props.setClubAnnouncementSelected}
             setClubEventSelected={props.setClubEventSelected}
             text={text}
+            setAlignment = {props.setAlignment}
           />
         ))}
-        {props.myClubs.length === 0 && 
-          <Typography style = {{maxWidth:"225px", paddingTop: '10px'}}>You haven't joined any clubs yet. Check out the explore page to get started!</Typography>
+        {props.myClubs.length === 0 &&
+          <Typography style={{ maxWidth: "225px", paddingTop: '10px' }}>You haven't joined any clubs yet. Check out the explore page to get started!</Typography>
         }
       </Box>
     </Drawer>
@@ -322,6 +358,7 @@ const MyClubs = (props) => {
               {() => {
                 props.setClubAnnouncementSelected(props.text)
                 props.setClubEventSelected(false)
+                props.setAlignment(null)
               }}>
               <AnnouncementIcon />
               <ListItemText primary="Announcements" style={{ paddingLeft: '5%' }} />
@@ -330,6 +367,7 @@ const MyClubs = (props) => {
               {() => {
                 props.setClubAnnouncementSelected(false)
                 props.setClubEventSelected(props.text)
+                props.setAlignment(null)
               }}>
               <EventIcon />
               <ListItemText primary="Events" style={{ paddingLeft: '5%' }} />
@@ -343,7 +381,7 @@ const MyClubs = (props) => {
 
 const AnnouncementHeader = () => {
   return (
-    <Card style={{ height:'250px', backgroundColor: '#6072C7', margin: '40px 0 30px 0', display: 'flex', alignContent: 'center'}}>
+    <Card style={{ height: '250px', backgroundColor: '#6072C7', margin: '40px 0 30px 0', display: 'flex', alignContent: 'center' }}>
       <Grid container xs={12}>
         <Grid item xs={7} style={{ display: 'flex', alignItems: 'center' }}>
           <CardContent>
@@ -351,7 +389,7 @@ const AnnouncementHeader = () => {
             <Typography variant="h6" style={{ fontFamily: 'Biryani, sans-serif', fontWeight: 400, color: 'white', marginTop: '20px' }}>View your clubs' recent announcements!</Typography>
           </CardContent>
         </Grid>
-        <Grid item xs={5} style={{ display: 'flex', justifyContent: 'flex-end'}}>
+        <Grid item xs={5} style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <CardMedia component="img" image={announcementHero} />
         </Grid>
       </Grid>
@@ -360,7 +398,7 @@ const AnnouncementHeader = () => {
 
 const EventsHeader = () => {
   return (
-    <Card style={{ height:'250px', backgroundColor: '#ee9d79', margin: '40px 0 30px 0', display: 'flex', alignContent: 'center'}}>
+    <Card style={{ height: '250px', backgroundColor: '#ee9d79', margin: '40px 0 30px 0', display: 'flex', alignContent: 'center' }}>
       <Grid container xs={12}>
         <Grid item xs={6} style={{ display: 'flex', alignItems: 'center' }}>
           <CardContent>
@@ -368,8 +406,8 @@ const EventsHeader = () => {
             <Typography variant="h6" style={{ fontFamily: 'Biryani, sans-serif', fontWeight: 400, color: 'white', marginTop: '20px' }}>View your club's upcoming events!</Typography>
           </CardContent>
         </Grid>
-        <Grid item xs={6} style={{ display: 'flex', justifyContent: 'flex-end'}}>
-          <CardMedia component="img" image={eventsHero} style = {{width: '90%', paddingRight: '10px'}} />
+        <Grid item xs={6} style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <CardMedia component="img" image={eventsHero} style={{ width: '90%', paddingRight: '10px' }} />
         </Grid>
       </Grid>
     </Card>)
