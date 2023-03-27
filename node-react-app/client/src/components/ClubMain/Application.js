@@ -183,7 +183,7 @@ export const Application = ({ members, isAdmin, refetchMembers }) => {
         {isAdmin &&
         (<Card className={classes.application}>
           <Typography>
-            Application Type: {acceptAll ? "Accept All" : "Hold All"}
+            Application Type: {acceptAll ? "Accept All" : "Approval Required"}
           </Typography>
           <FormControlLabel
             control={
