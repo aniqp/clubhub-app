@@ -8,6 +8,7 @@ import { useUser } from '../Firebase';
 import "react-toastify/dist/ReactToastify.css";
 import AnnouncementPost from './AnnouncementPost';
 import img from '../../images/no-announcements.jpg'
+import history from '../Navigation/history';
 
 const useStyles = makeStyles((theme) => ({
     root:{
@@ -27,6 +28,51 @@ const Announcements = () => {
     const [admin, setAdmin] = React.useState(false);
     const [noAnnouncementMsg, setNoAnnouncementMsg] = React.useState('')
     const [clubAnnouncements, setClubAnnouncements] = React.useState([]);
+    const [isPermitted, setIsPermitted] = React.useState(false);
+
+    // CLUB MEMBERS
+    const getClubMembers = () => {
+        // console.log('getting members');
+        callApiGetClubMembers()
+            .then(res => {
+                var parsed = JSON.parse(res.express);
+                if (parsed.length > 0 && user){
+                    let x = parsed.find((member) => member.uid === user.uid)
+
+                    if (!x){
+                        history.push('/')
+                    } else {
+                        setIsPermitted(true);
+                    }
+                }
+                if (parsed.length == 0){
+                    history.push('/')
+                }
+            })
+    }
+
+
+    const callApiGetClubMembers = async () => {
+        const url = serverURL + '/api/getClubMembers';
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                //authorization: `Bearer ${this.state.token}`
+            },
+            body: JSON.stringify({
+                clubID: clubID
+            })
+        });
+
+        const body = await response.json();
+        if (response.status !== 200) throw Error(body.message);
+        return body;
+    }
+
+    React.useEffect(()=>{
+        getClubMembers();
+    },[])
     
     React.useEffect(() => {
         if (user) {
@@ -111,7 +157,7 @@ const Announcements = () => {
         return body;
     }
 
-    
+    if (!isPermitted) return null;
     return(<>
         <ClubBoardHeader active={"1"}/>
             <Grid className={[classes.root]} sx={{height:'100%'}}>

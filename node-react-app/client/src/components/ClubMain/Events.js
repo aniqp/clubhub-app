@@ -30,6 +30,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import caution from '../../images/caution-icon.png';
 import { Link } from "react-router-dom";
 import EventPost from "./EventPost";
+import history from "../Navigation/history";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -123,6 +124,47 @@ const Events = () => {
     const [isLoadingUpcomingEvents, setIsLoadingUpcomingEvents] = React.useState(true);
     const [isLoadingPastEvents, setIsLoadingPastEvents] = React.useState(true);
     const [admin, setAdmin] = React.useState(false);
+    const [isPermitted, setIsPermitted] = React.useState(false);
+
+    // CLUB MEMBERS
+    const getClubMembers = () => {
+        // console.log('getting members');
+        callApiGetClubMembers()
+            .then(res => {
+                var parsed = JSON.parse(res.express);
+                if (parsed.length > 0 && user){
+                    let x = parsed.find((member) => member.uid === user.uid)
+
+                    if (!x){
+                        history.push('/')
+                    } else {
+                        setIsPermitted(true);
+                    }
+                }
+                if (parsed.length == 0){
+                    history.push('/')
+                }
+            })
+    }
+
+
+    const callApiGetClubMembers = async () => {
+        const url = serverURL + '/api/getClubMembers';
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                //authorization: `Bearer ${this.state.token}`
+            },
+            body: JSON.stringify({
+                clubID: clubID
+            })
+        });
+
+        const body = await response.json();
+        if (response.status !== 200) throw Error(body.message);
+        return body;
+    }
 
     React.useEffect(() => {
         if (user) {
@@ -170,6 +212,7 @@ const Events = () => {
 
     React.useEffect(() => {
         getEvents();
+        getClubMembers();
     }, [])
 
     const timestamp = () => {
@@ -253,7 +296,7 @@ const Events = () => {
 
     console.log(openEventForm)
 
-
+    if (!isPermitted) return null;
     return(<>
         <ClubBoardHeader active={"2"}/>
         <Grid style={{minHeight:'100vh', display:'flex', justifyContent:'space-around', paddingTop:'20px', background:'#f5f5f5'}}>
