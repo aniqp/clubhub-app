@@ -1,7 +1,7 @@
-import React, {useEffect, useRef, useQuery, useState} from "react";
+import React, {useEffect, useState} from "react";
 import history from '../Navigation/history';
 import { useParams } from 'react-router-dom';
-import { makeStyles, Card, Grid, Button, Typography, Collapse, CardContent, Tooltip, Dialog } from "@material-ui/core";
+import { makeStyles, Menu, MenuItem, IconButton, Box, Card, Grid, Button, Typography, Collapse, CardContent, Tooltip, Dialog } from "@material-ui/core";
 import Skeleton from '@material-ui/lab/Skeleton';
 import sidebar from '../../images/events/sidebar.jpg'
 import PeopleIcon from '@material-ui/icons/People';
@@ -19,11 +19,15 @@ import Avatar from '@material-ui/core/Avatar';
 import AvatarGroup from '@material-ui/lab/AvatarGroup';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+import CloseIcon from '@material-ui/icons/Close';
 import { serverURL } from "../../constants/config";
 import { deepOrange, indigo, teal, red, deepPurple, lightGreen } from '@material-ui/core/colors';
 import { useUser } from '../Firebase';
 import EventForm from "./EventForm";
 import ClubBoardHeader from "./ClubBoardHeader";
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import DeleteIcon from '@material-ui/icons/Delete';
+import caution from '../../images/caution-icon.png';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -54,6 +58,7 @@ const useStyles = makeStyles((theme) => ({
     },
     img:{
         height:'180px',
+        width:'265px',
         borderRadius:'12px',
         
     }, detailsHeader:{
@@ -100,6 +105,8 @@ const useStyles = makeStyles((theme) => ({
         color: 'grey',
     }, hidden:{
         display:'none',
+    }, activeBtn3:{
+        background:'rgba(0, 0, 0, 0.08)',
     }
 
   }));
@@ -111,7 +118,53 @@ const Events = () => {
     const [pastEvents, setPastEvents] = React.useState([]);
     const [openEventForm, setOpenEventForm] = React.useState(false);
     const user = useUser();
+    const [isLoadingUpcomingEvents, setIsLoadingUpcomingEvents] = React.useState(true);
+    const [isLoadingPastEvents, setIsLoadingPastEvents] = React.useState(true);
+    const [admin, setAdmin] = React.useState(false);
 
+    React.useEffect(() => {
+        if (user) {
+            let userID = user.uid;
+            // console.log(userID)
+            getUserRole(userID);
+        } else {
+            setAdmin(false);
+        }
+    }, [user]);
+
+    const getUserRole = (userID) => {
+        callApiGetUserRole(userID)
+            .then(res => {
+                var parsed = JSON.parse(res.express);
+                if (parsed.length >= 1){
+                    if (parsed[0].role === 'owner' || parsed[0].role === 'admin'){
+                        setAdmin(true);
+                    }
+                } else {
+                    setAdmin(false);
+                }
+                // console.log(parsed);
+            })
+    }
+
+    const callApiGetUserRole = async (userID) => {
+        const url = serverURL + '/api/getCurrentUserRole';
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                //authorization: `Bearer ${this.state.token}`
+            },
+            body: JSON.stringify({
+                clubID: clubID,
+                userID: userID,
+            })
+        });
+
+        const body = await response.json();
+        if (response.status !== 200) throw Error(body.message);
+        return body;
+    }
 
     React.useEffect(() => {
         getEvents();
@@ -135,12 +188,15 @@ const Events = () => {
             .then(res => {
                 var parsed = JSON.parse(res.express);
                 setUpcomingEvents(parsed);
+                setIsLoadingUpcomingEvents(false);
+
             })
         
         callApiGetPastEvents()
             .then(res => {
                 var parsed = JSON.parse(res.express);
                 setPastEvents(parsed);
+                setIsLoadingPastEvents(false);
             })
     }
 
@@ -203,17 +259,30 @@ const Events = () => {
                 <Grid>
                     <Card style={{padding:'20px'}}>
                     <Typography style={{fontSize:'22pt', fontWeight:'300'}}>Upcoming Events</Typography>
+                        {upcomingEvents.length > 0 ? <>
                         {Object.values(upcomingEvents).map((event, index) => 
-                            <EventList event={event} index={index} currentUser={user} pastEvent={false}/>
-                        )}
+                            <EventList event={event} admin={admin} index={index} currentUser={user} pastEvent={false} onChange={getEvents}/>
+                        )}</> : <>
+                        {!isLoadingUpcomingEvents &&
+                        <Grid style={{display:'flex', justifyContent:'center', padding:'50px'}}>
+                            <Typography style={{color: '#C0C0C0', letterSpacing: '0.5px', fontSize: '14pt'}}>NO UPCOMING EVENTS</Typography>
+                        </Grid>
+                        }</>}
                     </Card>
                 </Grid>
                 <Grid style={{marginTop:'50px'}}>
                     <Card style={{padding:'20px'}}>
                     <Typography style={{fontSize:'22pt', fontWeight:'300'}}>Past Events</Typography>
+                        {pastEvents.length > 0 ? 
+                        <> 
                         {Object.values(pastEvents).map((event, index) => 
-                            <EventList event={event} index={index} currentUser={user} pastEvent={true}/>
+                            <EventList event={event} admin={admin} index={index} currentUser={user} pastEvent={true}/>
                         )}
+                        </> : <> {!isLoadingPastEvents &&
+                        <Grid style={{display:'flex', justifyContent:'center', padding:'50px'}}>
+                            <Typography style={{color:'#C0C0C0', letterSpacing: '0.5px', fontSize: '14pt'}}>NO PAST EVENTS</Typography>
+                        </Grid>} </>
+                        }
                     </Card>
                 </Grid>
             </Grid>
@@ -273,11 +342,14 @@ const EventImage = ({image, skeletonWidth, skeletonHeight}) => {
     )
 }
 
-const EventList = ({event, index, currentUser, pastEvent}) => {
+const EventList = ({event, index, currentUser, pastEvent, onChange, admin}) => {
     const classes = useStyles();
     const [expanded, setExpanded] = React.useState(null);
     const [attendance, setAttendance] = React.useState([]);
     const [status, setStatus] = React.useState(null);
+
+    const [deleteEventModal, setDeleteEventModal] = React.useState(false);
+    const [attendanceModal, setAttendanceModal] = React.useState(false);
 
     React.useEffect(() => {
         getAttendance();
@@ -411,6 +483,32 @@ const EventList = ({event, index, currentUser, pastEvent}) => {
         endDateTime = endDateTime[1] + ' '+ endDateTime[2] + ' '+  endDateTime[4] + ' ' + endDateTime[5]
     }
 
+    const handleDelete = () => {
+        callApiDeleteEvent()
+            .then(res => {
+                var parsed = JSON.parse(res.express);
+                onChange();
+            })
+    }
+
+    const callApiDeleteEvent = async () => {
+        const url = serverURL + '/api/deleteEvent';
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                //authorization: `Bearer ${this.state.token}`
+            },
+            body: JSON.stringify({
+                eventID: event.id,
+            })
+        });
+
+        const body = await response.json();
+        if (response.status !== 200) throw Error(body.message);
+        return body;
+    }
+
 
     return(
         <Card style={{ margin:'20px 0 30px', padding:'20px 10px 20px 20px'}}>
@@ -418,12 +516,21 @@ const EventList = ({event, index, currentUser, pastEvent}) => {
                 <Grid sx={3}>
                     <EventImage image={event.placeholderPhoto} skeletonWidth={280} skeletonHeight = {180}/>
                 </Grid>
-                <Grid xs={7} style={{borderRight:'1px solid lightgray',}}>
-                    <Typography color='secondary' style={{fontFamily:"system-ui",letterSpacing:'1.1px', padding: '2px 30px 0px 30px', fontSize: '11pt', fontWeight: 400}}>
-                        {event.start_time_text}
-                    </Typography>
-                    <Typography style={{padding: '5px 30px', fontSize: '18pt', fontWeight: 600}}>{event.title}</Typography>
-                    <Typography style={{padding: '5px 30px', fontSize: '10pt', fontWeight: 400}}>{event.body}</Typography>
+
+                <Grid xs={7} style={{borderRight:'1px solid lightgray', display:'flex', flexDirection:'column', justifyContent:'space-between'}}>
+                    <Grid>
+                        <Grid style={{display:'flex', padding:'0 10px 0 30px', justifyContent:'space-between', alignItems:'center'}}>
+                            <Typography color='secondary' style={{fontFamily:"system-ui",letterSpacing:'1.1px', fontSize: '11pt', fontWeight: 400}}>
+                                {event.start_time_text}
+                            </Typography>
+                            {admin && <>
+                            <LongMenu deleteEvent={()=> setDeleteEventModal(true)}/>
+                            <DeleteDialog open={deleteEventModal} close={()=>{setDeleteEventModal(false)}} onSubmit={handleDelete} title={event.title} /> </>}
+                        </Grid>
+                        <Typography style={{padding: '5px 30px', fontSize: '18pt', fontWeight: 600}}>{event.title}</Typography>
+                        <Typography style={{padding: '5px 30px', fontSize: '10pt', fontWeight: 400}}>{event.body}</Typography>
+                    </Grid>
+
                     <Grid style={{display:'flex', justifyContent:'end', padding:'0 30px'}}>
                         <Button onClick={() => {handleExpandClick(index)}} style={{textTransform:'none', margin:'5px 0'}}>
                             <b style={{color:'rgba(0, 0, 0, 0.54)', letterSpacing:'0.5px', fontSize:'9.5pt'}}>
@@ -435,7 +542,7 @@ const EventList = ({event, index, currentUser, pastEvent}) => {
                     </Grid>
                 </Grid>
                 <Grid xs={2} style={{ paddingLeft:'10px', display:'flex', flexDirection:'column', alignItems:'end', justifyContent:'space-between'}}>
-                    <Grid style={{display:'flex', flexDirection:'column'}}>
+                    <Grid style={{display:'flex', flexDirection:'column', marginRight:'10px'}}>
                         <Typography style={{display: 'flex', paddingLeft:'10px', paddingBottom: '6px',fontSize: '10.5pt',color: 'grey'}}>
                             {!pastEvent && <>{(status) ? <>Your status:</> : <>Set your status:</> }</>}
                         </Typography>
@@ -544,6 +651,10 @@ const EventList = ({event, index, currentUser, pastEvent}) => {
                                 <Typography className={classes.detailsHeader}>Not Going</Typography>
                                 <AvatarGroupList list={notAttending} />
                             </Grid>}
+                            {attendance.length > 0 && <>
+                            <Button variant="outlined" color="primary" style={{textTransform:'none', margin:'20px 0'}} onClick={()=>{setAttendanceModal(true)}}>See Attendance List</Button>
+                            <AttendanceModal open={attendanceModal} close={()=>{setAttendanceModal(false)}} going={attending} maybe={maybeAttending} notGoing={notAttending}/>
+                            </>}
                         </Grid>  
                     </Grid>
                 </CardContent>
@@ -588,4 +699,174 @@ const EventFormDialog = ({open, close, clubID, onChange}) => {
         </Dialog>
         </>
     )
+}
+
+const ITEM_HEIGHT = 48;
+
+const LongMenu = ({deleteEvent}) => {
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  return (
+    <div>
+      <IconButton
+        aria-label="more"
+        id="long-button"
+        aria-controls={open ? 'long-menu' : undefined}
+        aria-expanded={open ? 'true' : undefined}
+        aria-haspopup="true"
+        onClick={handleClick}
+      >
+        <MoreVertIcon />
+      </IconButton>
+      <Menu
+        id="long-menu"
+        MenuListProps={{
+          'aria-labelledby': 'long-button',
+        }}
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        PaperProps={{
+          style: {
+            maxHeight: ITEM_HEIGHT * 4.5,
+            width: '20ch',
+          },
+        }}
+      >
+        <MenuItem onClick={deleteEvent} >
+            <DeleteIcon onClick={deleteEvent} style={{marginRight:'5px'}}/> Delete Event
+        </MenuItem>
+      </Menu>
+    </div>
+  );
+}
+
+
+const DeleteDialog = ({open, close, onSubmit, title}) => {
+
+    if (!open) return null
+    return(
+        <Dialog open={open} close={close}>
+            <Grid container style={{display:'flex', flexDirection:'column', padding:'25px 25px 15px'}}>
+                <Grid item style={{display:'flex', justifyContent:'center'}}>
+                    <img src={caution} style={{height:'70px', marginLeft:'15px'}} />
+                    <Box>
+                        <Typography style={{margin:'10px 20px 5px 20px', fontWeight:'600', letterSpacing:'0.02em'}}>Delete Event</Typography>
+                        <Typography style={{margin:'0 20px 20px 20px'}}>Are you sure you want to delete the following event?</Typography>
+                        <Typography style={{margin:'0 20px 20px 20px'}}>Event title: <b>{title}</b></Typography>
+                    </Box> 
+                </Grid>
+                <Grid style={{display:'flex', flexDirection:'row', justifyContent:'center', padding:'10px 10px 15px 10px'}}>
+                    <Button fullWidth onClick={close} variant='outlined' style={{margin:'0 10px'}}>Cancel</Button>
+                    <Button fullWidth onClick={()=> {onSubmit(); close();}} variant='outlined' style={{margin:'0 10px', background:'#F01C39', color:'white'}}>Delete</Button>   
+                </Grid>
+            </Grid>
+        </Dialog>
+    )
+}
+
+const AttendanceModal = ({open, close, going, notGoing, maybe}) => {
+    const classes = useStyles();
+    const [activeBtn, setActiveBtn] = React.useState('1');
+
+    const handleClick = (e) => {
+        // console.log(e);
+        setActiveBtn(e.currentTarget.value);
+    };
+
+    
+    if (!open) return null
+    return(
+        <>
+        <Dialog open={open} close={close}>
+            <Grid style={{width:'400px'}}>
+                <Grid style={{display:'flex', justifyContent:'end'}}>
+                    <IconButton onClick={close}>
+                        <CloseIcon/>
+                    </IconButton>
+                </Grid>
+                <Grid style={{padding:'0 20px 20px'}}>
+                    <Grid style={{textAlign:'center', margin:'-25px 0 10px 0'}}>
+                        <Typography>Event Attendance List</Typography>
+                    </Grid>
+                    <Grid>
+                        <ButtonGroup fullWidth value={activeBtn}>
+                            <Button 
+                                value="1" 
+                                onClick={handleClick}
+                                className={activeBtn === '1' && classes.activeBtn3 }
+                                style={{padding:'10px 0', borderBottomLeftRadius: 0, color:'rgba(0, 0, 0, 0.38)'}}>
+                                Going
+                            </Button>
+                            <Button onClick={handleClick} className={activeBtn === '2' && classes.activeBtn3 } value="2" style={{color:'rgba(0, 0, 0, 0.38)'}}>
+                                Maybe
+                            </Button>
+                            <Button onClick={handleClick} className={activeBtn === '3' && classes.activeBtn3 } value="3" style={{borderBottomRightRadius: 0, color:'rgba(0, 0, 0, 0.38)'}}>
+                                Not Going
+                            </Button>
+                        </ButtonGroup>
+                    </Grid>
+                    {activeBtn === '1' && <ButtonListItem list={going} emptyMessage={"No members declared they are going"}/>}
+                    {activeBtn === '2' && <ButtonListItem list={maybe} emptyMessage={"No members declared they might be going"}/>}
+                    {activeBtn === '3' && <ButtonListItem list={notGoing} emptyMessage={"No members declared they are not attending"}/>}
+                </Grid>
+            </Grid>
+        </Dialog>
+        </>
+    )
+
+}
+
+const ButtonListItem = ({list, emptyMessage}) => {
+    const classes = useStyles();
+    const colours = [indigo[300], deepOrange[300], deepPurple[300], teal[300], lightGreen[300], red[300]];
+    const getColour = () => colours[Math.floor(Math.random() * colours.length)];
+    
+    const initials = (name) => {
+        let x = name.split(' ');
+        let firstInitial = x[0][0];
+        let lastInitial = x[1][0]
+        return firstInitial+lastInitial
+    }
+    
+    // Pagination
+    const [currentPage, setCurrentPage] = useState(1);
+    const [usersPerPage, setUsersPerPage] = useState(4);
+    const indexOfLastUser = (currentPage) * usersPerPage;
+    const indexOfFirstUser = indexOfLastUser - usersPerPage;
+    const currentUsers = list.slice(indexOfFirstUser, indexOfLastUser);
+    const handlePageClick = (event, value) => {
+        setCurrentPage(value);
+    }
+
+    return(<> 
+    <Grid style={{border:'1px solid rgba(0, 0, 0, 0.12)', borderTop:'0', borderBottom:'0'}}>
+        {list.length > 0 ? <>
+        {Object.values(currentUsers).map((member, index) => 
+            <Grid style={{display:'flex', padding:'10px 5px', alignItems:'center', borderBottom:'1px solid rgba(0, 0, 0, 0.12)'}}>
+                <Avatar 
+                    style={{backgroundColor: getColour()}}>
+                    {initials(member.name)}
+                </Avatar>
+                <Typography style={{paddingLeft:'10px'}}>
+                    {member.name}
+                </Typography>
+            </Grid>
+        )}</> : 
+        <Grid style={{borderBottom:'1px solid rgba(0, 0, 0, 0.12)', textAlign:'center'}}>
+            <Typography style={{padding:'30px', color:'grey'}}>
+                    {emptyMessage}
+            </Typography>
+        </Grid>}
+    </Grid>
+    <Grid style={{display:'flex', justifyContent:'center', padding:'10px 0'}}>
+        <Pagination variant="outlined" color="primary" shape='rounded' count={Math.ceil(list.length/usersPerPage)} page={currentPage} onChange={handlePageClick}/>
+    </Grid></>)
 }

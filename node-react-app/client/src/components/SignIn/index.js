@@ -5,6 +5,7 @@ import { useSignInWithGoogle, useSignOut } from 'react-firebase-hooks/auth'
 import { serverURL } from '../../constants/config'
 import { useAuthHeader, useUser } from '../Firebase/context'
 import profile from '../../images/login-profile.png';
+import history from '../Navigation/history'
 
 
 const useStyles = makeStyles((theme) => ({
@@ -70,11 +71,11 @@ export const SignIn = () => {
             TransitionComponent={Zoom}
             TransitionProps={{ timeout: 200 }}
             >
-            <Button onClick={() => alert('User Profile: Coming in Sprint 2!')}>
+            <Button>
                 <img src={profile} className={classes.icon}></img>
             </Button>
         </Tooltip>
-        <Button className={classes.log} onClick={logOut}>
+        <Button className={classes.log} onClick={()=>{logOut(); history.push(`/`)}}>
             Log Out
         </Button>
     </>)

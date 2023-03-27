@@ -29,7 +29,6 @@ import lock from '../../images/lock-icon.png';
 import { toast } from 'react-toastify'; 
 import "react-toastify/dist/ReactToastify.css";
 
-
 const useStyles = makeStyles((theme) => ({
     root:{
         background:'#f5f5f5',
@@ -245,7 +244,6 @@ const Post = ({admin, announcement, onChange}) => {
         if (response.status !== 200) throw Error(body.message);
         return body;
     }
-
     toast.configure();
     const notify = () => {
         // console.log('in')
@@ -254,7 +252,6 @@ const Post = ({admin, announcement, onChange}) => {
             autoClose: true
         });
     }
-
 
     const handleEditClick = (data) => {
         console.log(data);
@@ -295,7 +292,17 @@ const Post = ({admin, announcement, onChange}) => {
     if (announcement.visibility === 'private'){
         radiobtnVal = '2';
     }
+    const [expanded, setExpanded] = React.useState(null);
 
+    const handleExpandClick = (clickedIndex) => {
+        if (expanded === clickedIndex){
+            setExpanded(null)
+        } else {
+            setExpanded(clickedIndex)
+        }
+    };
+    
+    if (!isPermitted) return null;
     return(<>
         {((announcement.visibility === 'private' && admin) || (announcement.visibility === 'public')) &&
         <Card style={{maxHeight:'400px', boxShadow:'none', margin:'25px 0 0', borderRadius:'10px', background:'none',}} >
