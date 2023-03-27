@@ -57,7 +57,7 @@ export const SignIn = () => {
     console.log('user:' + user);
     return !user ? 
     (<>
-        <Button variant='outlined' className={[classes.log, classes.login]} onClick={logIn}>
+        <Button variant='outlined' className={`${classes.log} ${classes.login}`} onClick={logIn}>
             Log In
         </Button>
     </>
