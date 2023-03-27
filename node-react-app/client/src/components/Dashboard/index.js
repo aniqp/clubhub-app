@@ -221,10 +221,10 @@ const Dashboard = () => {
                     onDashboard={onDashboard}
                     club_id={announcement.club_id}
                   />
-                ) :
-                myClubs.length > 0 && announcements.length > 0? <Typography variant="h6" style={{marginTop: "20px" }}>This club has no recent announcements.</Typography> :
-                myClubs.length > 0 && announcements.length === 0 && <Typography variant="h6" style={{marginTop: "20px" }}>You have no recent announcements.</Typography>
-              }
+                ) :<>
+                {(myClubs.length > 0 && announcements.length > 0 ) ? <Typography variant="h6" style={{marginTop: "20px" }}>This club has no recent announcements.</Typography> :
+                <>{myClubs.length > 0 && announcements.length === 0 && <Typography variant="h6" style={{marginTop: "20px" }}>You have no recent announcements.</Typography>}</>}
+              </>}
             </Grid>
           </>
           :<>
@@ -246,7 +246,8 @@ const Dashboard = () => {
                 club_id={event.club_id}
               />
             ) :
-              <Typography variant="h6" style={{marginTop: "20px" }}>This club has no upcoming events.</Typography>
+            myClubs.length > 0 && events.length > 0? <Typography variant="h6" style={{marginTop: "20px" }}>This club has no upcoming events.</Typography> :
+            myClubs.length > 0 && events.length === 0 && <Typography variant="h6" style={{marginTop: "20px" }}>You have no upcoming events.</Typography>
             }
             </Grid> 
           </>
@@ -257,6 +258,17 @@ const Dashboard = () => {
 };
 
 const SideBar = (props) => {
+
+  const handleAllClubAnnouncements = () => {
+    props.setClubAnnouncementSelected('');
+    props.setClubEventSelected(false);
+  }
+
+  const handleAllClubEvents = () => {
+    props.setClubAnnouncementSelected('');
+    props.setClubEventSelected('');
+  }
+
   return (
     <Drawer
       variant="permanent"
@@ -270,6 +282,12 @@ const SideBar = (props) => {
       <Toolbar />
       <Box sx={{ overflow: 'auto', maxWidth: '250px' }} textAlign="center">
         <Typography variant="h6" style={{ marginTop: "25px", fontFamily: 'Biryani, sans-serif', fontWeight: 600 }}>My Clubs</Typography>
+        {props.myClubs.length > 0 && 
+            <Button style={{width:"220px", marginTop:'10px', background:'#6072C7', color:'white', fontSize:'10pt'}} onClick={handleAllClubAnnouncements}>All Club Announcements</Button>
+        }
+        {props.myClubs.length > 0 && 
+            <Button style={{width:"220px", marginTop:'10px', background:'#ee9d79', color:'white', fontSize:'10pt'}} onClick={handleAllClubEvents}>All Club Events</Button>
+        }
         {props.myClubs.map((text, index) => (
           <MyClubs
             myClubs={props.myClubs}

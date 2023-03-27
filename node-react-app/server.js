@@ -644,6 +644,7 @@ app.post('/api/getDashboardEvents', (req,res) => {
 	INNER JOIN clubs on clubs.id = memberships.club_id
 	WHERE memberships.uid = ?
 	AND DATE(e.time_posted) >= DATE(DATE_SUB(NOW(), INTERVAL 12 WEEK))
+	AND memberships.role != 'pending'
 	order by e.start_time asc`;
 
 	const data = userID
