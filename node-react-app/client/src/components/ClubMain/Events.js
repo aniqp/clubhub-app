@@ -31,6 +31,8 @@ import caution from '../../images/caution-icon.png';
 import { Link } from "react-router-dom";
 import EventPost from "./EventPost";
 import history from "../Navigation/history";
+import CircularProgress from "@material-ui/core/CircularProgress"
+
 
 
 const useStyles = makeStyles((theme) => ({
@@ -125,6 +127,21 @@ const Events = () => {
     const [isLoadingPastEvents, setIsLoadingPastEvents] = React.useState(true);
     const [admin, setAdmin] = React.useState(false);
     const [isPermitted, setIsPermitted] = React.useState(false);
+    const [imageLoading, setImageLoading] = useState(true);
+    const [attendanceLoading, setAttendanceLoading] = useState(true);
+
+    // const [loading, setLoading] = React.useState(true)
+
+    React.useEffect(() => {
+        if (user) {
+            let userID = user.uid;
+            // console.log(userID)
+            getUserRole(userID);
+        } else {
+            setAdmin(false);
+        }
+    }, [user]);
+
 
     // CLUB MEMBERS
     const getClubMembers = () => {
@@ -165,16 +182,6 @@ const Events = () => {
         if (response.status !== 200) throw Error(body.message);
         return body;
     }
-
-    React.useEffect(() => {
-        if (user) {
-            let userID = user.uid;
-            // console.log(userID)
-            getUserRole(userID);
-        } else {
-            setAdmin(false);
-        }
-    }, [user]);
 
     const getUserRole = (userID) => {
         callApiGetUserRole(userID)
@@ -294,11 +301,16 @@ const Events = () => {
         setOpenEventForm(true);
     };
 
-    console.log(openEventForm)
+    if (isLoadingUpcomingEvents && isLoadingPastEvents && imageLoading) {
+        return (<div align="center">
+          <CircularProgress />
+        </div>)
+    }
+    
 
     if (!isPermitted) return null;
     return(<>
-        <ClubBoardHeader active={"2"}/>
+        {/* <ClubBoardHeader active={"2"}/> */}
         <Grid style={{minHeight:'100vh', display:'flex', justifyContent:'space-around', paddingTop:'20px', background:'#f5f5f5'}}>
             <Grid xs={8}>
                 <Grid>
@@ -343,7 +355,7 @@ const Events = () => {
                     </Button>
                     <EventFormDialog open={openEventForm} close={handleClose} clubID={clubID} onChange={getEvents}/>
                     <Grid style={{padding:'10px', display:'flex', justifyContent:'center', flexDirection:'column'}}>
-                        <EventImage image={11} skeletonWidth={250} skeletonHeight = {160}/>
+                        <EventImage loading={imageLoading} onLoad={()=> setImageLoading(false)} image={11} skeletonWidth={250} skeletonHeight = {160}/>
                     </Grid>
                 </Card>}
             </Grid>
@@ -353,7 +365,7 @@ const Events = () => {
 
 export default Events;
 
-const EventImage = ({image, skeletonWidth, skeletonHeight}) => {
+const EventImage = ({image, skeletonWidth, skeletonHeight, loading, onLoad }) => {
     const placeholders = {
         1:img1,
         2:img2,
@@ -369,7 +381,6 @@ const EventImage = ({image, skeletonWidth, skeletonHeight}) => {
     }
 
     const classes = useStyles();
-    const [loading, setLoading] = useState(true);
 
     return(
         <div style={{display: "flex", justifyContent: "center", alignItems: "center", }} >
@@ -377,7 +388,7 @@ const EventImage = ({image, skeletonWidth, skeletonHeight}) => {
                 src={placeholders[image]} 
                 className={classes.img}
                 style={{display: loading?"none":"block", width:"100%"}} 
-                onLoad={(e)=>{setLoading(false)}} />
+                onLoad={onLoad} />
             <Skeleton 
                 variant="rect" 
                 animation="pulse" 

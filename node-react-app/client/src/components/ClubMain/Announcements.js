@@ -9,6 +9,7 @@ import "react-toastify/dist/ReactToastify.css";
 import AnnouncementPost from './AnnouncementPost';
 import img from '../../images/no-announcements.jpg'
 import history from '../Navigation/history';
+import CircularProgress from "@material-ui/core/CircularProgress"
 
 const useStyles = makeStyles((theme) => ({
     root:{
@@ -157,9 +158,10 @@ const Announcements = () => {
         return body;
     }
 
+
     if (!isPermitted) return null;
     return(<>
-        <ClubBoardHeader active={"1"}/>
+        {/* <ClubBoardHeader active={"1"}/> */}
             <Grid className={[classes.root]} sx={{height:'100%'}}>
                 <Grid style={{display:'flex'}}>
                     {(clubAnnouncements.length > 0 && noAnnouncementMsg === '') ?
