@@ -140,7 +140,7 @@ const ClubCard = ({ club, isMember, isPending, onJoin }) => {
                         disabled 
                         className={classes.btn}
                         color='secondary'
-                        variant='outlined'>{isPending.includes(club.id)? "Pending Approval": "Joined"}</Button>
+                        variant='outlined'>{isPending.includes(club.id)? "Pending": "Joined"}</Button>
                     ) : ( 
                     <Button 
                         onClick={() => {handleJoinClub(club.id)}}
