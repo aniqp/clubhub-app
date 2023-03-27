@@ -61,7 +61,7 @@ const Dashboard = () => {
 
   const [loading, setLoading] = React.useState(true)
 
-  const [alignment, setAlignment] = React.useState(null)
+  const [alignment, setAlignment] = React.useState('left')
 
   const onDashboard = true;
 
