@@ -662,7 +662,7 @@ app.post('/api/getDashboardEvents', (req,res) => {
 	// let clubID = req.body.clubID;
 	let userID = req.body.userID;
 
-	let sql = `SELECT clubs.name, e.club_id, e.title, e.id, e.location, e.start_time, e.end_time, e.body, e.price, e.allDay, e.placeholderPhoto, e.start_time_text, e.end_time_text, memberships.role, clubs.id club_id  from events e
+	let sql = `SELECT clubs.name, e.club_id, e.title, e.id, e.location, e.location_type, e.additionalDetails, e.start_time, e.end_time, e.body, e.price, e.allDay, e.placeholderPhoto, e.start_time_text, e.end_time_text, memberships.role, clubs.id club_id  from events e
 	INNER JOIN memberships on memberships.club_id = e.club_id
 	INNER JOIN clubs on clubs.id = memberships.club_id
 	WHERE memberships.uid = ?

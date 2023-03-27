@@ -323,13 +323,13 @@ const AnnouncementHeader = () => {
   return (
     <Card style={{ height:'250px', backgroundColor: '#6072C7', margin: '40px 0 30px 0', display: 'flex', alignContent: 'center'}}>
       <Grid container xs={12}>
-        <Grid item xs={8} style={{ display: 'flex', alignItems: 'center' }}>
+        <Grid item xs={7} style={{ display: 'flex', alignItems: 'center' }}>
           <CardContent>
             <Typography variant="h5" style={{ fontFamily: 'Biryani, sans-serif', fontWeight: 600, color: 'white' }}>What's new in Clubsville?</Typography>
             <Typography variant="h6" style={{ fontFamily: 'Biryani, sans-serif', fontWeight: 400, color: 'white', marginTop: '20px' }}>View your clubs' recent announcements!</Typography>
           </CardContent>
         </Grid>
-        <Grid item xs={4} style={{ display: 'flex', justifyContent: 'flex-end'}}>
+        <Grid item xs={5} style={{ display: 'flex', justifyContent: 'flex-end'}}>
           <CardMedia component="img" image={announcementHero} />
         </Grid>
       </Grid>
@@ -340,13 +340,13 @@ const EventsHeader = () => {
   return (
     <Card style={{ height:'250px', backgroundColor: '#ee9d79', margin: '40px 0 30px 0', display: 'flex', alignContent: 'center'}}>
       <Grid container xs={12}>
-        <Grid item xs={7} style={{ display: 'flex', alignItems: 'center' }}>
+        <Grid item xs={6} style={{ display: 'flex', alignItems: 'center' }}>
           <CardContent>
             <Typography variant="h5" style={{ fontFamily: 'Biryani, sans-serif', fontWeight: 600, color: 'white' }}>Get ready for get-togethers</Typography>
             <Typography variant="h6" style={{ fontFamily: 'Biryani, sans-serif', fontWeight: 400, color: 'white', marginTop: '20px' }}>View your club's upcoming events!</Typography>
           </CardContent>
         </Grid>
-        <Grid item xs={5} style={{ display: 'flex', justifyContent: 'flex-end'}}>
+        <Grid item xs={6} style={{ display: 'flex', justifyContent: 'flex-end'}}>
           <CardMedia component="img" image={eventsHero} style = {{width: '90%', paddingRight: '10px'}} />
         </Grid>
       </Grid>
