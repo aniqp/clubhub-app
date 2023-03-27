@@ -1,47 +1,45 @@
 import React, { useState, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import { Button, Card, Typography } from "@material-ui/core";
-import Grid from "@material-ui/core/Grid";
+import { makeStyles, Grid, Button, Card, Typography } from "@material-ui/core";
 import history from '../Navigation/history';
 import { getAuth } from 'firebase/auth';
-import { useUser } from '../Firebase/context';
 import { useSignInWithGoogle } from 'react-firebase-hooks/auth';
-import { useAuthHeader } from '../Firebase/context';
+import { useUser, useAuthHeader } from '../Firebase/context';
 import { serverURL } from '../../constants/config'
-import { toast } from 'react-toastify'; 
+import { toast } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
 
+
 const useStyles = makeStyles((theme) => ({
-    li:{
-        listStyle:'none'
+    li: {
+        listStyle: 'none'
     },
     card: {
-        height:'125px',
-        margin:'0 0 20px 0',
-        padding:'10px',
-        display:'flex', 
-        flexDirection:'row', 
-        justifyContent:'space-between'
+        height: '125px',
+        margin: '0 0 20px 0',
+        padding: '10px',
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between'
     },
-    exploreBtns:{
-        display:'flex', 
-        flexDirection:'column', 
-        justifyContent:'space-around',
-        outline:'0.8px'
+    exploreBtns: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-around',
+        outline: '0.8px'
     },
-    btn:{
-        border:'1.5px solid',
+    btn: {
+        border: '1.5px solid',
     }
 
 }));
 
-const ClubCard = ({club, isMember, onJoin}) => {
-    const classes = useStyles(); 
+const ClubCard = ({ club, isMember, onJoin }) => {
+    const classes = useStyles();
     const user = useUser();
 
     const truncate = (input) => {
         if (input.length > 100) {
-           return input.substring(0, 200) + '...';
+            return input.substring(0, 200) + '...';
         }
         return input;
     };
@@ -61,7 +59,7 @@ const ClubCard = ({club, isMember, onJoin}) => {
     const authHeader = useAuthHeader()
     const [unfufilledJoin, setUnFulfilledJoin] = React.useState('');
 
-    const logIn = async (clubID) => {
+    const logIn = async(clubID) => {
         const result = await signInWithGoogle();
         if (!result) {
             console.log('Login failed')
@@ -76,7 +74,7 @@ const ClubCard = ({club, isMember, onJoin}) => {
             }
         }
         const response = await fetch(serverURL.concat('api/login'), request)
-        
+
     }
 
     const handleJoinClub = (clubID) => {
@@ -84,11 +82,11 @@ const ClubCard = ({club, isMember, onJoin}) => {
             const userID = user.uid;
             setUnFulfilledJoin('');
             callApiJoinClub(userID, clubID)
-            .then(res => {
-                console.log('club join successful')
-                onJoin();
-                notify()
-            })
+                .then(res => {
+                    console.log('club join successful')
+                    onJoin();
+                    notify()
+                })
         } else {
             console.log('not signed in')
             logIn(clubID);
@@ -99,12 +97,12 @@ const ClubCard = ({club, isMember, onJoin}) => {
     useEffect(() => {
         console.log('change in user: ' + user);
         console.log('unfulfilled join: ' + unfufilledJoin);
-        if (unfufilledJoin){
+        if (unfufilledJoin) {
             handleJoinClub(unfufilledJoin);
         }
-    },[user])
+    }, [user])
 
-    const callApiJoinClub = async (userID, clubID) => {
+    const callApiJoinClub = async(userID, clubID) => {
         const url = serverURL + '/api/joinClub';
         const response = await fetch(url, {
             method: "POST",
@@ -122,25 +120,38 @@ const ClubCard = ({club, isMember, onJoin}) => {
         return body;
     }
 
-    return(
-        <li key={club.id} className={classes.li}>
-            <Card variant="outlined" className={classes.card}>
-                <Grid item xs={8}>
-                    <Typography variant='h6' style={{padding:'0 0 10px 0'}}>{club.name}</Typography>
-                    <Typography style={{fontSize:'0.8rem'}}>{truncate(club.description)}</Typography>
-                </Grid>
-                <Grid item xs={3} className={classes.exploreBtns}>
-                    <Button className={classes.btn} onClick={() => history.push(`/clubs/${club.id}`)} color='primary' variant='outlined'>Club Details</Button>
-                    {isMember.includes(club.id) ? (                           
-                        <Button disabled className={classes.btn} color='secondary' variant='outlined'>Join Club</Button>
-                    ) : (                            
-                        <Button onClick={() => {handleJoinClub(club.id)}} className={classes.btn} color='secondary' variant='outlined'>Join Club</Button>
-                    )}
-                </Grid>
-            </Card>
+    return ( 
+        <li key={club.id} className={classes.li} >
+            <Card variant="outlined" className={classes.card} >
+                <Grid item xs={ 8 } >
+                    <Typography variant = 'h6' style={{padding: '0 0 10px 0'}}>{club.name}</Typography> 
+                    <Typography style={{fontSize:'0.8rem'}}>{truncate(club.description)}</Typography> 
+                </Grid> 
+                <Grid item xs = { 3 } className = { classes.exploreBtns } >
+                        <Button 
+                            className={classes.btn}
+                            onClick={() => history.push(`/clubs/${club.id}`)}
+                            color = 'primary'
+                            variant = 'outlined'> 
+                            Club Details 
+                        </Button>
+                    {isMember.includes(club.id) ? (
+                        <Button 
+                        disabled 
+                        className={classes.btn}
+                        color='secondary'
+                        variant='outlined'>Joined</Button>
+                    ) : ( 
+                    <Button 
+                        onClick={() => {handleJoinClub(club.id)}}
+                        className={classes.btn}
+                        color='secondary'
+                        variant='outlined'>Join Club</Button>)} 
+                </Grid> 
+            </Card> 
         </li>
     )
-    
+
 }
 
 export default ClubCard;

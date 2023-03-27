@@ -8,49 +8,45 @@ describe('Rendering of Announcement Posts', () => {
     let loadAnnouncementPost;
 
     function renderComponent() {
-        loadAnnouncementPost = jest.fn().mockName('loadRestaurants');
+        loadAnnouncementPost = jest.fn().mockName('loadAnnouncements');
+
+        let announcement={
+            id: 1,
+            title:'Sample title',
+            body:'Sample content',
+            visibility: 'public',
+            time_posted_text:'Sun March 26 2023 1:44 PM',
+            placeholderPhoto: 1,
+        }
 
         render(<AnnouncementPost 
-            id={1} 
-            name='Test Club' 
-            title='This is a test to see if post shows' 
-            body='Sample content' 
-            timestamp='2023-2-23 13:44:17' 
-            onChange='' 
-            adminStatus='false' />
+            admin={false}
+            announcement={announcement} />
         );    
     }
-    
-    it('displays club name', () => {
-        renderComponent();
-
-        const clubName = screen.getByTestId('name-1');
-        expect(clubName).toBeInTheDocument();
-        expect(clubName).toHaveTextContent('Test Club');
-    })
 
     it('displays announcement title', () => {
         renderComponent();
 
-        const postTitle = screen.getByTestId('title-1');
+        const postTitle = screen.queryByTestId('title-1');
         expect(postTitle).toBeInTheDocument();
-        expect(postTitle).toHaveTextContent('This is a test to see if post shows');
+        expect(postTitle).toHaveTextContent('Sample title');
     })
 
     it('displays announcement content', () => {
         renderComponent();
 
-        const postContent = screen.getByTestId('body-1');
+        const postContent = screen.queryByTestId('body-1');
         expect(postContent).toBeInTheDocument();
         expect(postContent).toHaveTextContent('Sample content');
     })
 
-    it('displays correct timestamp', () => {
+    it('displays timestamp', () => {
         renderComponent();
 
         const postTime = screen.getByTestId('timestamp-1');
         expect(postTime).toBeInTheDocument();
-        expect(postTime).toHaveTextContent('1:44 PM');
+        expect(postTime).toHaveTextContent('Sun March 26 2023 1:44 PM');
     })
 
 })
