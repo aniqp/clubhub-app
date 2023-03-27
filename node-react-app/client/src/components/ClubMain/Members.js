@@ -74,21 +74,21 @@ const useStyles = makeStyles((theme) => ({
     padding: "10px 10px",
     alignItems: "center",
     height: "75px",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
   },
   application: {
     margin: "10px 10px",
     padding: "10px 10px",
     alignItems: "center",
     height: "75px",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
   },
   accept: {
     background: "#BBFFBB",
   },
   deny: {
     background: "#FFBBBB",
-  }
+  },
 }));
 
 const Application = ({ members, acceptAll }) => {
@@ -145,30 +145,36 @@ const Application = ({ members, acceptAll }) => {
   };
 
   return (
-    <Grid xs={2} item container direction="row">
-      Application
-      <Card className={classes.application}>
-        <Typography>
-          Application Type: {acceptAll ? "AcceptAll" : "See Applicants"}
-        </Typography>
-        <FormControlLabel
-          control={
-            <Switch checked={acceptAll} disabled={!!applicants?.length} />
-          }
-          label={!!applicants?.length ? "Must have empty list" : "Accept All"}
-        />
-      </Card>
-      {!acceptAll &&
-        applicants?.map((app) => (
-          <Card
-            key={app.name}
-            className={classes.applicant}
-          >
-            <span>{app.name}</span>
-            <Button className={classes.deny} onClick={() => denyUser(app)}>Deny</Button>
-            <Button className={classes.accept} onClick={() => acceptUser(app)}>Accept</Button>
-          </Card>
-        ))}
+    <Grid xs={2} item>
+      <Grid container direction="row">
+        Application
+        <Card className={classes.application}>
+          <Typography>
+            Application Type: {acceptAll ? "AcceptAll" : "See Applicants"}
+          </Typography>
+          <FormControlLabel
+            control={
+              <Switch checked={acceptAll} disabled={!!applicants?.length} />
+            }
+            label={!!applicants?.length ? "Must have empty list" : "Accept All"}
+          />
+        </Card>
+        {!acceptAll &&
+          applicants?.map((app) => (
+            <Card key={app.name} className={classes.applicant}>
+              <span>{app.name}</span>
+              <Button className={classes.deny} onClick={() => denyUser(app)}>
+                Deny
+              </Button>
+              <Button
+                className={classes.accept}
+                onClick={() => acceptUser(app)}
+              >
+                Accept
+              </Button>
+            </Card>
+          ))}
+      </Grid>
     </Grid>
   );
 };
@@ -210,13 +216,17 @@ const Members = ({ name, members, isAdmin, acceptAll }) => {
               </Grid>
               <Grid item style={{ display: "flex", justifyContent: "center" }}>
                 {member.role === "owner" && (
-                  <Typography className={`${classes.role} ${classes.ownerRole}`}>
+                  <Typography
+                    className={`${classes.role} ${classes.ownerRole}`}
+                  >
                     {" "}
                     {member.role}
                   </Typography>
                 )}
                 {member.role === "admin" && (
-                  <Typography className={`${classes.role} ${classes.adminRole}`}>
+                  <Typography
+                    className={`${classes.role} ${classes.adminRole}`}
+                  >
                     {" "}
                     {member.role}
                   </Typography>
