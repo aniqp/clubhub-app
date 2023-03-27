@@ -278,52 +278,77 @@ app.post('/api/getCurrentUserRole', (req,res) => {
 
 });
 
-app.post('/api/acceptUser', (req, res) => {
-	let connection = mysql.createConnection(config)
-	const user = req['user'];
-	const clubID = req['clubID'];
-	if (!user) {res.status(400).send("No user provided"); next();};
-	
+app.post("/api/acceptUser", async (req, res) => {
+	const currentUser = req["currentUser"];
+	const user = req.body["user"];
+	const clubID = req.body["clubID"];
+	console.log(req.body);
+  
+	if (!user) {
+	  return res.status(400).send("No user provided");
+	}
+  
+	// Check if is admin/owner of this club
+	const admin = await isAdmin(currentUser, clubID);
+	if (!admin.status) {
+	  return res.status(400).send(admin.message);
+	}
+  
+	let connection = mysql.createConnection(config);
 	const query = `
-	UPDATE memberships
-	SET role="user"
-	WHERE uid=? AND club_id=?
-	`
-	const data = [user.uid, clubID]
-
+	  UPDATE memberships
+	  SET role="user"
+	  WHERE uid=? AND club_id=?
+	  `;
+	const data = [user.uid, clubID];
+  
 	connection.query(query, data, (error, results, fields) => {
-		if (error) {
-		  // Return an error if the query failed
-		  res.status(500).json({ error: error.message });
-		} else {
-		  // Return a success message
-		  res.status(200).send(`User ${user.name} accepted to club`);
-		}
-	  });
+	  if (error) {
+		// Return an error if the query failed
+		res.status(500).send(error.message);
+	  } else {
+		// Return a success message
+		res.status(200).send(`User ${user.name} accepted to club`);
+	  }
+	});
 	connection.end();
-});
-
-app.delete('/api/denyUser', (req, res) => {
-	let connection = mysql.createConnection(config)
-	const user = req['user'];
-	if (!user) {res.status(400).send("No user provided"); next();};
-	
+  });
+  
+  app.delete("/api/denyUser", async(req, res) => {
+	let connection = mysql.createConnection(config);
+	const currentUser = req["currentUser"];
+	const user = req.body["user"];
+	const clubID = req.body["clubID"];
+	console.log(req.body);
+  
+	if (!user) {
+	  return res.status(400).send("No user provided");
+	}
+  
+	// Check if is admin/owner of this club
+	const admin = await isAdmin(currentUser, clubID);
+	console.log(admin)
+	if (!admin.status) {
+	  return res.status(400).send(admin.message);
+	}
+	// delete membership record
 	const query = `
-	DELETE memberships
-	WHERE uid=? AND club_id=?
-	`
-	const data = [user.uid, clubID]
+	  DELETE FROM memberships
+	  WHERE uid=? AND club_id=?`;
 
+	const data = [user.uid, clubID];
+  
 	connection.query(query, data, (error, results, fields) => {
-		if (error) {
-		  // Return an error if the query failed
-		  res.status(500).json({ error: error.message });
-		} else {
-		  // Return a success message
-		  res.status(200).send(`User ${user.name} denied from club`);
-		}
-	  });
+	  if (error) {
+		// Return an error if the query failed
+		res.status(500).text(error.message);
+	  } else {
+		// Return a success message
+		res.status(200).send(`User ${user.name} denied from club`);
+	  }
+	});
 	connection.end();
+  });
   
   async function isAdmin(user, clubID) {
 	let connection = mysql.createConnection(config);  
