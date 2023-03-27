@@ -30,6 +30,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import caution from '../../images/caution-icon.png';
 import { Link } from "react-router-dom";
 import GroupsRoundedIcon from '@material-ui/icons/Group';
+import eventCreationModal from './EventForm'
 
 
 const useStyles = makeStyles((theme) => ({
@@ -113,8 +114,7 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-const EventPost = ({ event, index, currentUser, pastEvent, onChange, admin, onDashboard, club_id, club_name }) => {
-    console.log(event);
+const EventPost = ({ event, index, currentUser, pastEvent, onChange, admin, onDashboard, club_id, club_name, upcomingEvents }) => {
     const classes = useStyles();
     const [expanded, setExpanded] = React.useState(null);
     const [attendance, setAttendance] = React.useState([]);
@@ -123,9 +123,11 @@ const EventPost = ({ event, index, currentUser, pastEvent, onChange, admin, onDa
     const [deleteEventModal, setDeleteEventModal] = React.useState(false);
     const [attendanceModal, setAttendanceModal] = React.useState(false);
 
+    // console.log("attendance: " + attendance)
+
     React.useEffect(() => {
         getAttendance();
-    }, [])
+    }, [upcomingEvents])
 
     const getAttendance = () => {
         callApiGetAttendance()

@@ -132,6 +132,8 @@ const Events = () => {
 
     // const [loading, setLoading] = React.useState(true)
 
+    console.log(upcomingEvents)
+
     React.useEffect(() => {
         if (user) {
             let userID = user.uid;
@@ -318,7 +320,7 @@ const Events = () => {
                     <Typography style={{fontSize:'22pt', fontWeight:'300'}}>Upcoming Events</Typography>
                         {upcomingEvents.length > 0 ? <>
                         {Object.values(upcomingEvents).map((event, index) => 
-                            <EventPost event={event} admin={admin} index={index} currentUser={user} pastEvent={false} onChange={getEvents}/>
+                            <EventPost event={event} admin={admin} index={index} currentUser={user} pastEvent={false} onChange={getEvents} upcomingEvents = {upcomingEvents}/>
                         )}</> : <>
                         {!isLoadingUpcomingEvents &&
                         <Grid style={{display:'flex', justifyContent:'center', padding:'50px'}}>
