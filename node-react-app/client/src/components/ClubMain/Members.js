@@ -1,11 +1,10 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Grid,
   Card,
   Button,
   Switch,
-  FormControlLabel,
-  CardContent,
+  FormControlLabel
 } from "@material-ui/core";
 import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
@@ -91,7 +90,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Application = ({ members }) => {
+const Application = ({ members, refetchMembers }) => {
   const classes = useStyles();
   const { clubID } = useParams();
   const authHeader = useAuthHeader();
@@ -130,6 +129,7 @@ const Application = ({ members }) => {
 
     if (response?.status === 200) {
       console.log(await response.text());
+      refetchMembers();
     } else {
       console.error("Could not accept user. ERROR:", await response.text());
     }
@@ -163,6 +163,7 @@ const Application = ({ members }) => {
 
     if (response?.status === 200) {
       console.log(await response.text());
+      refetchMembers();
     } else {
       console.error("Could not deny user. ERROR:", await response.text());
     }
@@ -200,36 +201,58 @@ const Application = ({ members }) => {
       // console.log(await getApplicationType())
       setAcceptAll(await getApplicationType())
   })()}, [])
+  
+
+  const changeApplicationType = async () => {
+    const applicationType = !acceptAll;
+    setAcceptAll(applicationType);
+    const data = {
+      clubID,
+      applicationType
+    }
+
+    const request = {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
         ...authHeader(),
         Accept: "*/*",
       },
-      body: {
-        user,
-        clubID,
-      },
-    };
-    const URL = serverURL + "/api/denyUser";
-    // Fetch accept user api
-    try {
-      const response = await fetch(URL, request);
-    } catch {
-      console.error("Could not deny user");
+      body: JSON.stringify(data),
     }
+    const URL = serverURL + "/api/changeApplicationType";
+    let response
+    try {
+      response = await fetch(URL, request);
+    } catch (error) {
+      console.error(error);
+    }
+
+    if (response.status === 200) {
+      console.log(await response.text());
+      setAcceptAll(applicationType);
+    } else {
+      console.error("Could not accept user. ERROR:", await response.text());
+      setAcceptAll((cur) => !cur);
+    }
+
   };
+
+
 
   return (
     <Grid xs={2} item>
-      <Grid container direction="row">
+      <Grid container direction="column">
         Application
         <Card className={classes.application}>
           <Typography>
-            Application Type: {acceptAll ? "AcceptAll" : "See Applicants"}
+            Application Type: {acceptAll ? "Accept All" : "Hold Applications"}
           </Typography>
           <FormControlLabel
             control={
-              <Switch checked={!!acceptAll} disabled={!!applicants?.length} />
+              <Switch checked={!!acceptAll} disabled={!!applicants?.length} onChange={changeApplicationType}/>
             }
-            label={!!applicants?.length ? "Must have empty list" : "Accept All"}
+            label={!!applicants?.length ? "Empty List to change type" : "Accept All"}
           />
         </Card>
         {!acceptAll &&
@@ -252,7 +275,7 @@ const Application = ({ members }) => {
   );
 };
 
-const Members = ({ name, members, isAdmin, acceptAll }) => {
+const Members = ({ name, members, isAdmin, acceptAll, ...rest}) => {
   const classes = useStyles();
 
   return (
@@ -319,7 +342,7 @@ const Members = ({ name, members, isAdmin, acceptAll }) => {
                 &nbsp;
                 <Typography color='secondary' className={classes.headerFont}>{members.length} members</Typography> 
             </Grid> */}
-      {isAdmin && <Application members={members} acceptAll={isAdmin} />}
+      {isAdmin && <Application members={members} {...rest}/>}
     </Grid>
   );
 };
