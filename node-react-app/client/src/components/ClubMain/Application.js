@@ -180,7 +180,6 @@ export const Application = ({ members, refetchMembers }) => {
   return (
     <Grid xs={2} item>
       <Grid container direction="column">
-        Application
         <Card className={classes.application}>
           <Typography>
             Application Type: {acceptAll ? "Accept All" : "Hold Applications"}
