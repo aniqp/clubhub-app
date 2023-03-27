@@ -1,13 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { storage } from "../Firebase/firebase";
 import {
-  ref,
-  uploadBytes,
-  uploadBytesResumable,
-  getDownloadURL,
-  listAll,
-  deleteObject,
-  getMetadata
+  ref, uploadBytes, uploadBytesResumable, getDownloadURL, listAll, deleteObject, getMetadata
 } from "firebase/storage";
 import ClubBoardHeader from './ClubBoardHeader';
 import { useParams } from 'react-router-dom';
@@ -25,6 +19,8 @@ import KeyboardReturnIcon from '@material-ui/icons/KeyboardReturn'
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import CheckCircleOutlinedIcon from '@material-ui/icons/CheckCircleOutlined';
 import InputIcon from '@material-ui/icons/Input';
+import { toast } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
 
 const ImageUploadAndDisplay = () => {
 
@@ -131,8 +127,13 @@ const ImageUploadAndDisplay = () => {
     const imageRef = ref(storage, `${imageName}`);
     const exploreFileName = decodeURIComponent(imageUrl.split('/').pop().split('?')[0]).split("clubboard/")[1];
     const exploreFileRef = ref(storage, `images/${clubID}/explore/${exploreFileName}`)
+    const exploreFileRefExists = await getDownloadURL(exploreFileRef)
+      .then(() => true)
+      .catch(() => false)
     await deleteObject(imageRef);
-    await deleteObject(exploreFileRef)
+    if (exploreFileRefExists) {
+      await deleteObject(exploreFileRef)
+    }
     setImages((prevState) => prevState.filter((url) => url !== imageUrl));
   };
 
@@ -142,6 +143,15 @@ const ImageUploadAndDisplay = () => {
     const fileName = filePath.split("explore/")[1]
     return fileName;
   }
+  
+  toast.configure();
+  const alert = () => {
+    // console.log('in')
+    toast.error("You can only select a maximum of 3 images to display on the explore page!", {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: true
+    });
+}
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -205,7 +215,7 @@ const ImageUploadAndDisplay = () => {
                     setSelectMenu(false)
                   }, 5000)
                 } else {
-                  console.log("array too long");
+                  alert();
                 }
               }}>
               Display
