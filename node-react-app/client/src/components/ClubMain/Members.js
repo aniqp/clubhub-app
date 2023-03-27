@@ -181,7 +181,7 @@ const Members = ({ name, onChange }) => {
                 <Card className={classes.memberCount } >
                     <img src={membersIcon} style = {{ height: '50px' } } /> 
                     <Typography className = { classes.text2 } color = 'primary' > 
-                        { members.length } 
+                        { members.filter((m) => m.role !== "pending").length } 
                     </Typography> 
                     <Typography className = { classes.text1 } color = "text.secondary" > 
                         Club Members
@@ -218,7 +218,7 @@ const Members = ({ name, onChange }) => {
                                     </TableCell> 
                                 </TableRow> 
                             </TableHead> 
-                            {members.map((member) => ( 
+                            {members.filter((member) => member.role !== "pending" ).map((member) => ( 
                             <TableBody >
                                 <TableRow sx = {{ '&:last-child td, &:last-child th':{ border: 0 }}} >
                                     <TableCell component = "th" scope = "row" >
