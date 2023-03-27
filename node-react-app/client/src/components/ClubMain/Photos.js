@@ -87,6 +87,7 @@ const ImageUploadAndDisplay = () => {
       );
       setOpenModal(false)
       setImage(null)
+      successfulUpload()
     }
   };
 
@@ -135,6 +136,7 @@ const ImageUploadAndDisplay = () => {
       await deleteObject(exploreFileRef)
     }
     setImages((prevState) => prevState.filter((url) => url !== imageUrl));
+    successfulDelete();
   };
 
   const formatFileName = async (item) => {
@@ -143,15 +145,35 @@ const ImageUploadAndDisplay = () => {
     const fileName = filePath.split("explore/")[1]
     return fileName;
   }
-  
+
   toast.configure();
   const alert = () => {
-    // console.log('in')
     toast.error("You can only select a maximum of 3 images to display on the explore page!", {
-        position: toast.POSITION.TOP_RIGHT,
-        autoClose: true
+      position: toast.POSITION.TOP_RIGHT,
+      autoClose: true
     });
-}
+  }
+
+  const successfulDelete = () => {
+    toast.success("Image successfully deleted.", {
+      position: toast.POSITION.TOP_RIGHT,
+      autoClose: true
+    });
+  }
+
+  const successfulUpload = () => {
+    toast.success("Image successfully uploaded.", {
+      position: toast.POSITION.TOP_RIGHT,
+      autoClose: true
+    });
+  }
+
+  const successfulMove = () => {
+    toast.success("Image(s) will be displayed on Explore page.", {
+      position: toast.POSITION.TOP_RIGHT,
+      autoClose: true
+    });
+  }
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -213,6 +235,7 @@ const ImageUploadAndDisplay = () => {
                   setTimeout(() => {
                     setSelectImagesModal(false)
                     setSelectMenu(false)
+                    successfulMove()
                   }, 5000)
                 } else {
                   alert();
@@ -288,7 +311,7 @@ const ImageGrid = (props) => {
           <img src={image} alt="Club" onMouseOver={(e) => e.currentTarget.style.filter = 'brightness(70%)'}
             onMouseOut={(e) => e.currentTarget.style.filter = 'brightness(100%)'}
             style={{ borderRadius: '16px', objectFit: 'cover', width: '100%', height: '100%', cursor: 'pointer' }}
-            onClick={() => { setSelectedImage(image); console.log(typeof (image)) }}
+            onClick={() => { setSelectedImage(image) }}
           />
           {props.deleteMenu &&
             <div>
@@ -298,7 +321,7 @@ const ImageGrid = (props) => {
                 }}
                 onClick={() => {
                   props.setOpenDeleteModal(true);
-                  setImageDeleted(image)
+                  setImageDeleted(image);
                 }}>
                 X
               </button>
