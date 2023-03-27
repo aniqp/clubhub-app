@@ -1,11 +1,9 @@
-import React, { useState } from 'react';
-import { makeStyles, Checkbox, Radio, RadioGroup, FormControlLabel, TextField, InputAdornment, Box, Dialog, DialogTitle, DialogContent, DialogActions, Paper, Typography, Button, Grid, Card, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
+import React from 'react';
+import { Application } from './Application';
+import { makeStyles, Paper, Typography, Button, Grid, Card, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
 import profile from '../../images/profile-icon.png';
 import membersIcon from '../../images/members.png';
 import { useUser } from '../Firebase';
-import search from '../../images/search-icon.png';
-import info from '../../images/info-icon.png';
-import { Pagination } from "@material-ui/lab";
 import ManageAdmin from './members/dialogs/ManageAdmin';
 import TransferOwnership from './members/dialogs/TransferOwner';
 import { useParams } from 'react-router-dom';
@@ -126,7 +124,7 @@ const Members = ({ name, onChange }) => {
         if (members.length > 0){
             setCurrentUserRole(members.find((member) => member.uid == user.uid).role)
             
-            if (currentUserRole !== 'user'){
+            if (["owner", "admin"].includes(currentUserRole)){
                 setIsAdmin(true);
             } else {
                 setIsAdmin(false);
@@ -134,7 +132,6 @@ const Members = ({ name, onChange }) => {
         }
     }, [members, currentUserRole]);
 
-    
     
     const [openOwnerDialog, setOpenOwnerDialog] = React.useState(false);
     const [openAdminDialog, setOpenAdminDialog] = React.useState(false);
@@ -203,7 +200,7 @@ const Members = ({ name, onChange }) => {
                 <Card className={classes.memberCount } >
                     <img src={membersIcon} style = {{ height: '50px' } } /> 
                     <Typography className = { classes.text2 } color = 'primary' > 
-                        { members.length } 
+                        { members.filter((m) => m.role !== "pending").length } 
                     </Typography> 
                     <Typography className = { classes.text1 } color = "text.secondary" > 
                         Club Members
@@ -240,7 +237,7 @@ const Members = ({ name, onChange }) => {
                                     </TableCell> 
                                 </TableRow> 
                             </TableHead> 
-                            {members.map((member) => ( 
+                            {members.filter((member) => member.role !== "pending" ).map((member) => ( 
                             <TableBody >
                                 <TableRow sx = {{ '&:last-child td, &:last-child th':{ border: 0 }}} >
                                     <TableCell component = "th" scope = "row" >
@@ -265,8 +262,9 @@ const Members = ({ name, onChange }) => {
                                 </TableRow> 
                             </TableBody>))} 
                         </Table> 
-                    </TableContainer>} 
+                    </TableContainer>}
             </Grid>        
+            <Application members={members} isAdmin={isAdmin} refetchMembers={getClubMembers}/>
         </Grid>
         </>)
 }

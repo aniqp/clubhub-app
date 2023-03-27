@@ -24,7 +24,7 @@ app.use(express.static(path.join(__dirname, "client/build")));
 
 // Allow localhost to make calls to API
 app.use((req, res, next) => {
-	console.log(req.headers.origin)
+	// console.log(req.headers.origin)
 	if (req.headers.origin?.includes('://localhost:')) {
 		console.log('Accepted')
 		res.header('Access-Control-Allow-Origin', req.headers.origin)
@@ -112,7 +112,7 @@ app.post('/api/getClubs', (req, res) => {
 	// FROM clubs
 	// WHERE clubs.id = ${clubID}`;
 	
-	const sql = `SELECT name, description
+	const sql = `SELECT name, description, hold_applications
 	FROM clubs
 	WHERE clubs.id = ?`;
 
@@ -184,6 +184,7 @@ app.post('/api/postAnnouncement', (req, res) => {
 		res.send({ express: string })
 		//console.log(string)
 	});
+	connection.end();
 })
 
 app.post('/api/deleteAnnouncement', (req, res) => {
@@ -284,6 +285,166 @@ app.post('/api/getCurrentUserRole', (req,res) => {
 
 });
 
+app.post("/api/acceptUser", async (req, res) => {
+	const currentUser = req["currentUser"];
+	const user = req.body["user"];
+	const clubID = req.body["clubID"];
+	console.log(req.body);
+  
+	if (!user) {
+	  return res.status(400).send("No user provided");
+	}
+  
+	// Check if is admin/owner of this club
+	const admin = await isAdmin(currentUser, clubID);
+	if (!admin.status) {
+	  return res.status(400).send(admin.message);
+	}
+  
+	let connection = mysql.createConnection(config);
+	const query = `
+	  UPDATE memberships
+	  SET role="user"
+	  WHERE uid=? AND club_id=?
+	  `;
+	const data = [user.uid, clubID];
+  
+	connection.query(query, data, (error, results, fields) => {
+	  if (error) {
+		// Return an error if the query failed
+		res.status(500).send(error.message);
+	  } else {
+		// Return a success message
+		res.status(200).send(`User ${user.name} accepted to club`);
+	  }
+	});
+	connection.end();
+  });
+  
+  app.delete("/api/denyUser", async(req, res) => {
+	let connection = mysql.createConnection(config);
+	const currentUser = req["currentUser"];
+	const user = req.body["user"];
+	const clubID = req.body["clubID"];
+	console.log(req.body);
+  
+	if (!user) {
+	  return res.status(400).send("No user provided");
+	}
+  
+	// Check if is admin/owner of this club
+	const admin = await isAdmin(currentUser, clubID);
+	console.log(admin)
+	if (!admin.status) {
+	  return res.status(400).send(admin.message);
+	}
+	// delete membership record
+	const query = `
+	  DELETE FROM memberships
+	  WHERE uid=? AND club_id=?`;
+
+	const data = [user.uid, clubID];
+  
+	connection.query(query, data, (error, results, fields) => {
+	  if (error) {
+		// Return an error if the query failed
+		res.status(500).text(error.message);
+	  } else {
+		// Return a success message
+		res.status(200).send(`User ${user.name} denied from club`);
+	  }
+	});
+	connection.end();
+  });
+  
+  async function isAdmin(user, clubID) {
+	let connection = mysql.createConnection(config);  
+	return new Promise((resolve, reject) => {
+	let response = {status: false, message: "Unknown error"};
+	if (!user) {
+	  response = { status: false, message: "No user provided" };
+	  resolve(response);
+	}	  
+	// Check if user is an admin or owner of the club
+	const adminQuery = `
+	  SELECT role
+	  FROM memberships
+	  WHERE uid=? AND club_id=? AND (role="admin" OR role="owner")
+	  `;
+	connection.query(adminQuery, [user.uid, clubID], (error, results) => {
+	  if (error) {
+		console.error(error.message);
+		response = { status: false, message: error.message };
+		}
+	  if (!results.length > 0) {
+		console.log("user is not admin")
+		response = {
+		  status: false,
+		  message: "User is not an admin or owner of the club",
+		};
+	} else {
+		  console.log("user is admin")
+		  response = {
+			  status: true,
+			  message: "User is an admin or owner of the club",
+			};
+	}
+	resolve(response)
+	});
+	connection.end();
+  })};
+  app.get("/api/getApplicationType/:clubID", async (req, res) => {
+	const currentUser = req["currentUser"];
+	const clubID = req.params["clubID"];
+	console.log("clubID: " + clubID)
+  
+	// Check if is admin/owner of this club
+	const admin = await isAdmin(currentUser, clubID);
+	if (!admin.status) {
+	  return res.status(400).send(admin.message);
+	}
+  
+	const type = await getApplicationType(clubID);
+	if (!type.status) {
+	  return res.status(400).send(type.message);
+	}
+	console.log("type: " + JSON.stringify(type.data))
+	const acceptAll = !type.data["hold_applications"];
+	return res.status(200).json({acceptAll: acceptAll});
+  });
+  
+  app.put("/api/changeApplicationType", async (req, res) => {
+	const currentUser = req["currentUser"];
+	const clubID = req.body["clubID"];
+	const newType = !req.body["applicationType"];
+  
+	// Check if is admin/owner of this club
+	const admin = await isAdmin(currentUser, clubID);
+	if (!admin.status) {
+	  return res.status(400).send(admin.message);
+	}
+  
+	let connection = mysql.createConnection(config);
+	// change application type for this club
+	const query = `
+	UPDATE clubs
+	SET hold_applications=?
+	WHERE id=?`;
+	
+	const data = [newType, clubID];
+	
+	connection.query(query, data, (error, results) => {
+	  if (error) {
+		// Return an error if the query failed
+		res.status(500).send(error.message);
+	  } else {
+		// Return a success message
+		res.status(200).send("Application type changed to " + (newType ? "Hold Applications" : "Accept All"));
+	  }
+	});
+	connection.end();
+  });
+
 app.post('/api/getAllClubs', (req, res) => {
 	// Query all clubs from the clubs table
 	let connection = mysql.createConnection(config)
@@ -310,7 +471,7 @@ app.post('/api/checkMembership', (req,res) => {
 	// let clubID = req.body.clubID;
 	let userID = req.body.userID;
 
-	let sql = `select club_id from memberships where uid = ?`;
+	let sql = `select club_id, role from memberships where uid = ?`;
 
 	const data = [userID];
 	
@@ -327,34 +488,80 @@ app.post('/api/checkMembership', (req,res) => {
 
 });
 
-app.post('/api/joinClub', (req,res) => {
+async function getApplicationType(clubID) {
+	let connection = mysql.createConnection(config);
+	return new Promise((resolve, reject) => {
+	  let response = { status: false, message: "Unknown error" };
+	  if (!clubID) {
+		response = { status: false, message: "No club ID provided" };
+		resolve(response);
+	  }
+	  // Check if user is an admin or owner of the club
+	  const adminQuery = `
+		SELECT hold_applications
+		FROM clubs
+		WHERE id=?
+		`;
+	  connection.query(adminQuery, [clubID], (error, results) => {
+		if (error) {
+		  console.error(error.message);
+		  response = { status: false, message: error.message };
+		}
+		if (!results?.length > 0) {
+		  response = {
+			status: false,
+			message: "No club found",
+		  };
+		} else {
+		  response = {
+			status: true,
+			message: "Club found",
+			data: results[0],
+		  };
+		}
+		resolve(response);
+	  });
+	  connection.end();
+	}
+)};
+
+app.post('/api/joinClub', async (req,res) => {
 	let data = req.body;
 
 	let connection = mysql.createConnection(config);
 	let clubID = req.body.clubID;
 	let userID = req.body.userID;
 
-	let sql = `insert into memberships(uid, club_id, role)
-	values(?, ?, 'user')`;
+	const applicationType = await getApplicationType(clubID)
+	if (!applicationType.status) {
+		let string = JSON.stringify('Error')
+		// res.send({ express: string });
+		console.log(applicationType.message)
+		return res.status(400).send({express: applicationType.message});
+	}
+	const acceptAll = !applicationType.data["hold_applications"];
 
-	const values = [userID, clubID];
+	const role = acceptAll ? "user" : "pending";
+
+	let sql = `insert into memberships(uid, club_id, role)
+	values(?, ?, ?)`;
+
+	const values = [userID, clubID, role];
 	
 	connection.query(sql, values, (error, results, fields) => {
         if (error) {
             connection.query(`ROLLBACK`, (error, results, fields) => {
                 let string = JSON.stringify('Error')
                 res.send({ express: string });
-                connection.end();
             });
         } else {
             connection.query(`COMMIT`, data, (error, results, fields) => {
-                let string = JSON.stringify('Success')
-                res.send({ express: string });
-                connection.end();
-            })
-        };
+                let string = JSON.stringify(acceptAll ? 'Success' : 'Pending')
+                res.send({ express: string });            
+			})};
     })
 
+	connection.end();
 });
 
 
@@ -384,7 +591,8 @@ app.post('/api/getMyClubs', (req,res) => {
 	let sql = `SELECT clubs.id, clubs.name, clubs.description, clubs.categories FROM clubs
 	JOIN memberships ON
 	clubs.id = memberships.club_id
-	AND memberships.uid = ?`;
+	AND memberships.uid = ?
+	WHERE memberships.role = 'owner' OR memberships.role = 'admin' OR memberships.role = 'user'`;
 
 	const data = userID
 
@@ -421,6 +629,33 @@ app.post('/api/getAnnouncements', (req,res) => {
 		res.send({ express: string })
 		//console.log(string)
 	});
+	connection.end();
+});
+
+app.post('/api/getDashboardEvents', (req,res) => {
+
+	let connection = mysql.createConnection(config);
+	// let clubID = req.body.clubID;
+	let userID = req.body.userID;
+
+	let sql = `SELECT clubs.name, e.club_id, e.title, e.id, e.location, e.start_time, e.end_time, e.body, e.price, e.allDay, e.placeholderPhoto, e.start_time_text, e.end_time_text, memberships.role, clubs.id club_id  from events e
+	INNER JOIN memberships on memberships.club_id = e.club_id
+	INNER JOIN clubs on clubs.id = memberships.club_id
+	WHERE memberships.uid = ?
+	AND DATE(e.time_posted) >= DATE(DATE_SUB(NOW(), INTERVAL 12 WEEK))
+	order by e.start_time asc`;
+
+	const data = userID
+
+	connection.query(sql, data, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message);
+		}
+		let string = JSON.stringify(results);
+		res.send({ express: string })
+		//console.log(string)
+	});
+	connection.end();
 });
 
 app.post('/api/getDashboardEvents', (req,res) => {
