@@ -399,10 +399,10 @@ const PostModal = ({ open, onClose, onEdit, a_title, a_content, a_radiobtn, imag
             }
             onEdit(data);
 
-            setTitle('');
-            setContent('');
-            setRadiobtn('1');
-            setPlaceholderImage('1');
+            // setTitle('');
+            // setContent('');
+            // setRadiobtn('1');
+            // setPlaceholderImage('1');
             onClose();
         }
     }
