@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const Application = ({ members, refetchMembers }) => {
+export const Application = ({ members, isAdmin, refetchMembers }) => {
   const classes = useStyles();
   const { clubID } = useParams();
   const authHeader = useAuthHeader();
@@ -180,7 +180,7 @@ export const Application = ({ members, refetchMembers }) => {
   return (
     <Grid xs={3} item>
       <Grid container direction="column">
-        {!acceptAll &&
+        {isAdmin &&
         (<Card className={classes.application}>
           <Typography>
             Application Type: {acceptAll ? "Accept All" : "Hold All"}
@@ -198,7 +198,7 @@ export const Application = ({ members, refetchMembers }) => {
             }
           />
         </Card>)}
-        {!acceptAll &&
+        {isAdmin &&
           applicants?.map((app) => (
             <Card xs={3} key={app.name} className={classes.applicant}>
               <Typography>{app.name}</Typography>
