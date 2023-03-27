@@ -591,7 +591,8 @@ app.post('/api/getMyClubs', (req,res) => {
 	let sql = `SELECT clubs.id, clubs.name, clubs.description, clubs.categories FROM clubs
 	JOIN memberships ON
 	clubs.id = memberships.club_id
-	AND memberships.uid = ?`;
+	AND memberships.uid = ?
+	WHERE memberships.role = 'owner' OR memberships.role = 'admin' OR memberships.role = 'user'`;
 
 	const data = userID
 
