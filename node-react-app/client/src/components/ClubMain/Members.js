@@ -103,30 +103,68 @@ const Application = ({ members, acceptAll }) => {
   // const applicants = [{ name: "George", role: "pending" }];
 
   const acceptUser = async (user) => {
+    console.log("Trying to accept user", user)
+    const data = {
+      user,
+      clubID,
+    }
     const request = {
       method: "POST",
       headers: {
+        "Content-Type": "application/json",
         ...authHeader(),
         Accept: "*/*",
       },
-      body: {
-        user,
-        clubID,
-      },
+      body: JSON.stringify(data),
     };
     const URL = serverURL + "/api/acceptUser";
     // Fetch accept user api
+    let response
     try {
-      const response = await fetch(URL, request);
-    } catch {
-      console.error("Could not accept user");
+      response = await fetch(URL, request);
+    } catch (error) {
+      console.error(error);
     }
+
+    if (response?.status === 200) {
+      console.log(await response.text());
+    } else {
+      console.error("Could not accept user. ERROR:", await response.text());
+    }
+
   };
 
   const denyUser = async (user) => {
+    console.log("Trying to deny user", user)
+    const data = {
+      user,
+      clubID,
+    }
+    
     const request = {
       method: "DELETE",
       headers: {
+        "Content-Type": "application/json",
+        ...authHeader(),
+        Accept: "*/*",
+      },
+      body: JSON.stringify(data),
+    };
+    const URL = serverURL + "/api/denyUser";
+    // Fetch deny user api
+    let response
+    try {
+      response = await fetch(URL, request);
+    } catch (error) {
+      console.error(error);
+    }
+
+    if (response?.status === 200) {
+      console.log(await response.text());
+    } else {
+      console.error("Could not deny user. ERROR:", await response.text());
+    }
+  };
         ...authHeader(),
         Accept: "*/*",
       },
