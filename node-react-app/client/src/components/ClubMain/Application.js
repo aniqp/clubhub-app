@@ -1,3 +1,39 @@
+import { useMemo, useState } from "react";
+import { useParams } from "react-router-dom";
+import {
+  Typography,
+  Grid,
+  Card,
+  FormControlLabel,
+  Button,
+} from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { useAuthHeader } from "../Firebase/"
+
+const useStyles = makeStyles((theme) => ({
+  applicant: {
+    display: "flex",
+    margin: "10px 10px",
+    padding: "10px 10px",
+    alignItems: "center",
+    height: "75px",
+    justifyContent: "space-between",
+  },
+  application: {
+    margin: "10px 10px",
+    padding: "10px 10px",
+    alignItems: "center",
+    height: "75px",
+    justifyContent: "space-between",
+  },
+  accept: {
+    background: "#BBFFBB",
+  },
+  deny: {
+    background: "#FFBBBB",
+  },
+}));
+
 export const Application = ({
   members,
   refetchMembers
@@ -36,7 +72,7 @@ export const Application = ({
     }
 
     if (response?.status === 200) {
-      console.log((await response.text()));
+      console.log(await response.text());
       refetchMembers();
     } else {
       console.error("Could not accept user. ERROR:", (await response.text()));
@@ -69,7 +105,7 @@ export const Application = ({
     }
 
     if (response?.status === 200) {
-      console.log((await response.text()));
+      console.log(await response.text());
       refetchMembers();
     } else {
       console.error("Could not deny user. ERROR:", (await response.text()));
@@ -135,7 +171,7 @@ export const Application = ({
     }
 
     if (response.status === 200) {
-      console.log((await response.text()));
+      console.log(await response.text());
       setAcceptAll(applicationType);
     } else {
       console.error("Could not accept user. ERROR:", (await response.text()));
