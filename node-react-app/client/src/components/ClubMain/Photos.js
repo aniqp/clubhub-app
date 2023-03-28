@@ -299,7 +299,7 @@ const ImageUploadAndDisplay = () => {
     fetchExploreImages();
   }, [selectImagesModal, selectMenu, clubID]);
 
-  if(!isPermitted) {
+  if (!isPermitted) {
     return null
   }
 
@@ -307,7 +307,7 @@ const ImageUploadAndDisplay = () => {
     <div>
       {/* <ClubBoardHeader active={"4"} /> */}
       <Grid container style={{ padding: '30px 30px' }}>
-        <Grid item xs={7} style={{ display: 'flex', justifyContent: 'start', alignItems: 'flex-end' }}>
+        <Grid item xs={7} style={{ display: 'flex', justifyContent: 'start', alignItems: photosEmpty === false ? 'flex-end' : 'flex-start' }}>
           <ImageGrid
             images={images}
             deleteImage={deleteImage}
@@ -411,7 +411,7 @@ const ImageGrid = (props) => {
     {props.photosEmpty === false ?
       <ImageList cols={3} gap={4} rowHeight={300} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', minWidth: '200px' }}>
         {props.images.map((image, index) => (
-          <ImageListItem key={index} style={{ objectFit: 'cover', minWidth: '200px' }}>
+          <ImageListItem key={index} style={{ objectFit: 'cover', width: '250px' }}>
             <img src={image} alt="Club" onMouseOver={(e) => e.currentTarget.style.filter = 'brightness(70%)'}
               onMouseOut={(e) => e.currentTarget.style.filter = 'brightness(100%)'}
               style={{ borderRadius: '16px', objectFit: 'cover', width: '100%', height: '100%', cursor: 'pointer' }}

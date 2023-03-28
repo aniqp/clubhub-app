@@ -210,7 +210,7 @@ const ClubDetails = () => {
                 <Grid item xs={9}>
                     <ImageList cols={3} gap={10} rowHeight={300}>
                         {images.map((image, index) => (
-                            <ImageListItem key={index} style={{ objectFit: 'cover', minWidth: '200px' }}>
+                            <ImageListItem key={index} style={{ objectFit: 'cover', width: '250px' }}>
                                 <img src={image} alt="Club" onMouseOver={(e) => e.currentTarget.style.filter = 'brightness(70%)'}
                                     onMouseOut={(e) => e.currentTarget.style.filter = 'brightness(100%)'}
                                     style={{ borderRadius: '16px', objectFit: 'cover', width: '100%', height: '100%', cursor: 'pointer' }}
