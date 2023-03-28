@@ -66,7 +66,7 @@ Club Board page  <br /> (**POV: Club Member**) | <img width="1440" alt="Screen S
 ### Breakdown of Pages in App with Screenshots
 
 App Pages | Description/Functionality | Screenshot of Page
-------------- | -------------
+|----------| ------------- | ----- |
 Landing page | Users are directed upon first rendering of the application. | <img width="1440" alt="Screen Shot 2023-03-03 at 3 31 28 PM" src="https://user-images.githubusercontent.com/72565412/222830761-9e907ab7-4da5-4705-88f9-d4d1373310d5.png">
 Dashboard page | Users can view their all their club announcements and events in one place. | <img width="946" alt="image" src="https://user-images.githubusercontent.com/89875233/228154963-6dbcdd99-a7f7-4b4b-b501-8440e88b8ef9.png">
 Explore page | Users can access the list of all available clubs at University of Waterloo, join clubs, and access a club’s Detailed Club page |<img width="1440" alt="Screen Shot 2023-03-03 at 3 35 33 PM" src="https://user-images.githubusercontent.com/72565412/222830804-027f1aa6-4352-4fc8-8fb5-ea089a98a48f.png">
