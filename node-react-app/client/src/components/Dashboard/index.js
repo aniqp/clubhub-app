@@ -217,7 +217,7 @@ const Dashboard = () => {
           setClubEventSelected={setClubEventSelected}
           alignment={alignment}
           handleAlignment={handleAlignment}
-          setAlignment = {setAlignment}
+          setAlignment={setAlignment}
         />
       </Grid>
       <Grid item xs={8}>
@@ -305,22 +305,22 @@ const SideBar = (props) => {
             aria-label="display "
             color={props.alignment === 'left' ? '#6072C7' : 'transparent'}
           >
-            <ToggleButton value="left" onClick={handleAllClubAnnouncements} style={{
-              backgroundColor: props.alignment === 'left' && '#6072C7',
-              color: props.alignment === 'left' && 'white'
-            }}>
-              <Tooltip title="View all club announcements">
+            <Tooltip title="View all club announcements">
+              <ToggleButton value="left" onClick={handleAllClubAnnouncements} style={{
+                backgroundColor: props.alignment === 'left' && '#6072C7',
+                color: props.alignment === 'left' && 'white'
+              }}>
                 <MarkunreadMailboxIconOutlined fontSize="small" />
-              </Tooltip>
-            </ToggleButton>
-            <ToggleButton value="right" onClick={handleAllClubEvents} style={{
-              backgroundColor: props.alignment === 'right' && '#ee9d79',
-              color: props.alignment === 'right' && 'white'
-            }}>
-              <Tooltip title="View all club events">
+              </ToggleButton>
+            </Tooltip>
+            <Tooltip title="View all club events">
+              <ToggleButton value="right" onClick={handleAllClubEvents} style={{
+                backgroundColor: props.alignment === 'right' && '#ee9d79',
+                color: props.alignment === 'right' && 'white'
+              }}>
                 <DateRangeOutlinedIcon fontSize="small" />
-              </Tooltip>
-            </ToggleButton>
+              </ToggleButton>
+            </Tooltip>
           </ToggleButtonGroup>
         }
         {props.myClubs.map((text, index) => (
@@ -329,7 +329,7 @@ const SideBar = (props) => {
             setClubAnnouncementSelected={props.setClubAnnouncementSelected}
             setClubEventSelected={props.setClubEventSelected}
             text={text}
-            setAlignment = {props.setAlignment}
+            setAlignment={props.setAlignment}
           />
         ))}
         {props.myClubs.length === 0 &&

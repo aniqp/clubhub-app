@@ -533,9 +533,15 @@ const AvatarGroupList = ({ list }) => {
 
     const initials = (name) => {
         let x = name.split(' ');
-        let firstInitial = x[0][0];
-        let lastInitial = x[1][0]
-        return firstInitial + lastInitial
+        if (x.length > 1) {
+            let firstInitial = x[0][0];
+            let lastInitial = ""
+            if(x[1][0]) {
+                lastInitial = x[1][0]
+            }
+            return firstInitial + lastInitial
+        }
+        return x[0][0]
     }
 
     return (<>
@@ -703,9 +709,15 @@ const ButtonListItem = ({ list, emptyMessage }) => {
     }
     const initials = (name) => {
         let x = name.split(' ');
-        let firstInitial = x[0][0];
-        let lastInitial = x[1][0]
-        return firstInitial + lastInitial
+        if (x.length > 1) {
+            let firstInitial = x[0][0];
+            let lastInitial = ""
+            if(x[1][0]) {
+                lastInitial = x[1][0]
+            }
+            return firstInitial + lastInitial
+        }
+        return x[0][0]
     }
 
     // Pagination
