@@ -240,6 +240,7 @@ const Events = () => {
         callApiGetUpcomingEvents()
             .then(res => {
                 var parsed = JSON.parse(res.express);
+                console.log("parsed from getEvents: " + parsed)
                 setUpcomingEvents(parsed);
                 setIsLoadingUpcomingEvents(false);
 

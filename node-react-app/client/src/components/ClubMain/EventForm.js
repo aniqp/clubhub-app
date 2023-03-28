@@ -275,10 +275,8 @@ const EventForm = ({close, clubID, onChange}) => {
 
             callApiAddEvent(startDateTimeText, endDateTime, endDateTimeText, start_time)
             .then(res => {
-                var parsed = JSON.parse(res.express);
                 onChange();
                 close();
-
                 // Reset form values
                 setTitle('');
                 setDescription('');

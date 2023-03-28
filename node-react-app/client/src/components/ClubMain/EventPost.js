@@ -120,6 +120,7 @@ const EventPost = ({ event, index, currentUser, pastEvent, onChange, admin, onDa
     const [attendance, setAttendance] = React.useState([]);
     const [status, setStatus] = React.useState(null);
 
+
     const [deleteEventModal, setDeleteEventModal] = React.useState(false);
     const [attendanceModal, setAttendanceModal] = React.useState(false);
 
@@ -127,14 +128,14 @@ const EventPost = ({ event, index, currentUser, pastEvent, onChange, admin, onDa
 
     React.useEffect(() => {
         getAttendance();
-    }, [isLoadingUpcomingEvents])
-
-    console.log("status :" + status)
+        console.log("getAttendance was called")
+    }, [event.id])
 
     const getAttendance = () => {
         callApiGetAttendance()
             .then(res => {
                 var parsed = JSON.parse(res.express);
+                console.log("parsed:", parsed)
                 setAttendance(parsed);
                 if (parsed.length > 0) {
                     let user = parsed.find((member) => member.uid === currentUser.uid);
@@ -142,17 +143,24 @@ const EventPost = ({ event, index, currentUser, pastEvent, onChange, admin, onDa
                     if (user) {
                         status = user.status;
                     }
+                    console.log("status: " + status)
                     if (status) {
                         setStatus(status)
                     } else {
                         setStatus(null);
                     }
+                    console.log(parsed)
+                    console.log("status : " + status)
+                }
+                else {
+                    setStatus(null)
                 }
             })
     }
 
     const callApiGetAttendance = async () => {
         const url = serverURL + '/api/getAttendance';
+        console.log("sent event id: " + event.id)
         const response = await fetch(url, {
             method: "POST",
             headers: {
