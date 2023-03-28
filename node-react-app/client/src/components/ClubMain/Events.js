@@ -144,7 +144,6 @@ const Events = () => {
         }
     }, [user]);
 
-
     // CLUB MEMBERS
     const getClubMembers = () => {
         // console.log('getting members');
@@ -320,7 +319,7 @@ const Events = () => {
                     <Typography style={{fontSize:'22pt', fontWeight:'300'}}>Upcoming Events</Typography>
                         {upcomingEvents.length > 0 ? <>
                         {Object.values(upcomingEvents).map((event, index) => 
-                            <EventPost event={event} admin={admin} index={index} currentUser={user} pastEvent={false} onChange={getEvents} upcomingEvents = {upcomingEvents}/>
+                            <EventPost event={event} admin={admin} index={index} currentUser={user} pastEvent={false} onChange={getEvents} isLoadingUpcomingEvents = {isLoadingUpcomingEvents}/>
                         )}</> : <>
                         {!isLoadingUpcomingEvents &&
                         <Grid style={{display:'flex', justifyContent:'center', padding:'50px'}}>

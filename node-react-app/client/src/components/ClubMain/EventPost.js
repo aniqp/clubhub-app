@@ -114,7 +114,7 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-const EventPost = ({ event, index, currentUser, pastEvent, onChange, admin, onDashboard, club_id, club_name, upcomingEvents }) => {
+const EventPost = ({ event, index, currentUser, pastEvent, onChange, admin, onDashboard, club_id, club_name, isLoadingUpcomingEvents }) => {
     const classes = useStyles();
     const [expanded, setExpanded] = React.useState(null);
     const [attendance, setAttendance] = React.useState([]);
@@ -127,7 +127,9 @@ const EventPost = ({ event, index, currentUser, pastEvent, onChange, admin, onDa
 
     React.useEffect(() => {
         getAttendance();
-    }, [upcomingEvents])
+    }, [isLoadingUpcomingEvents])
+
+    console.log("status :" + status)
 
     const getAttendance = () => {
         callApiGetAttendance()
