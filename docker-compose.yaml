@@ -11,11 +11,11 @@ services:
     ports:
       - $MYSQLDB_LOCAL_PORT:$MYSQLDB_DOCKER_PORT
     volumes:
-      - ~/msci245/db:/var/lib/mysql
+      - ~/msci342/db:/var/lib/mysql
   app:
     depends_on:
       - mysqldb
-    build: ./msci245-project
+    build: ./node-react-app
     restart: unless-stopped
     env_file: ./.env
     ports:
